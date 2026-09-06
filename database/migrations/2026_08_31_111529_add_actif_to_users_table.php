@@ -15,10 +15,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
 
-            // Par défaut, tous les nouveaux comptes sont actifs.
-            $table->boolean('actif')
-                  ->default(true)
-                  ->after('role');
+            // Indique si le compte utilisateur est actif.
+$table->boolean('actif')->default(true);
         });
     }
 
