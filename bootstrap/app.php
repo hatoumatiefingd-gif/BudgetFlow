@@ -11,7 +11,6 @@ return Application::configure(basePath: dirname(__DIR__))
    )
    ->withMiddleware(function (Middleware $middleware): void {
        // Railway agit comme un proxy HTTPS devant Laravel.
-       // On fait confiance aux en-têtes transmis par Railway.
        $middleware->trustProxies(
            at: '*',
            headers:
@@ -20,7 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
                Request::HEADER_X_FORWARDED_PORT |
                Request::HEADER_X_FORWARDED_PROTO
        );
+       // Middleware pour les rôles utilisateur / administrateur
+       $middleware->alias([
+           'role' => \App\Http\Middleware\RoleMiddleware::class,
+       ]);
    })
    ->withExceptions(function (Exceptions $exceptions): void {
        //
-   })->create();
+   })
+   ->create();
