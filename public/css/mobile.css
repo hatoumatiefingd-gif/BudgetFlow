@@ -234,3 +234,283 @@
         width: 100% !important;
     }
 }
+/* =========================================
+  ESPACE UTILISATEUR - VERSION MOBILE
+  Dashboard, Dépenses, Revenus,
+  Récurrentes, Notifications
+========================================= */
+@media (max-width: 768px) {
+   /* STRUCTURE GÉNÉRALE */
+   .app {
+       width: 100% !important;
+       display: block !important;
+       min-height: 100vh !important;
+   }
+   /* MENU */
+   .sidebar {
+       width: 100% !important;
+       min-height: auto !important;
+       padding: 18px !important;
+       border-right: none !important;
+       border-bottom: 1px solid #e5e7eb !important;
+       box-sizing: border-box !important;
+   }
+   .side-logo {
+       margin-bottom: 18px !important;
+       text-align: center !important;
+   }
+   .side-logo img {
+       width: 170px !important;
+   }
+   .sidebar nav {
+       width: 100% !important;
+       display: grid !important;
+       grid-template-columns: 1fr 1fr !important;
+       gap: 8px !important;
+   }
+   .sidebar nav a {
+       width: 100% !important;
+       margin: 0 !important;
+       padding: 11px 8px !important;
+       font-size: 13px !important;
+       justify-content: center !important;
+       text-align: center !important;
+       box-sizing: border-box !important;
+   }
+   .profile-link {
+       margin-top: 14px !important;
+   }
+   .profile-link a {
+       justify-content: center !important;
+   }
+   .logout {
+       margin-top: 8px !important;
+   }
+   /* CONTENU */
+   .content {
+       width: 100% !important;
+       padding: 22px 15px !important;
+       box-sizing: border-box !important;
+   }
+   /* =========================
+      DASHBOARD
+   ========================= */
+   .dash-header h1 {
+       font-size: 30px !important;
+   }
+   .dash-header p {
+       font-size: 15px !important;
+   }
+   .dash-summary {
+       grid-template-columns: 1fr !important;
+       gap: 14px !important;
+   }
+   .dash-card {
+       padding: 18px !important;
+       min-height: auto !important;
+   }
+   .dash-icon {
+       width: 55px !important;
+       height: 55px !important;
+       font-size: 23px !important;
+   }
+   .dash-card h2 {
+       font-size: 27px !important;
+   }
+   .dash-bottom {
+       grid-template-columns: 1fr !important;
+   }
+   .dash-panel {
+       padding: 18px !important;
+   }
+   .panel-title h2 {
+       font-size: 23px !important;
+   }
+   .bf-summary-strip {
+       grid-template-columns: 1fr !important;
+       gap: 15px !important;
+       padding: 18px !important;
+   }
+   .bf-summary-divider {
+       display: none !important;
+   }
+   .bf-analysis-grid {
+       grid-template-columns: 1fr !important;
+   }
+   .bf-analysis-card {
+       padding: 20px 15px !important;
+   }
+   .bf-chart-column {
+       border-right: none !important;
+       padding-right: 0 !important;
+   }
+   .bf-budget-message {
+       width: 100% !important;
+       max-width: 100% !important;
+   }
+   /* =========================
+      DÉPENSES
+   ========================= */
+   .budget-expense-header,
+   .d-header {
+       width: 100% !important;
+       display: flex !important;
+       flex-direction: column !important;
+       align-items: stretch !important;
+       gap: 15px !important;
+   }
+   .budget-expense-header h1 {
+       font-size: 30px !important;
+   }
+   .budget-expense-add,
+   .d-add-btn {
+       width: 100% !important;
+       text-align: center !important;
+       justify-content: center !important;
+       box-sizing: border-box !important;
+   }
+   .budget-expense-stats,
+   .dep-stats-modern {
+       width: 100% !important;
+       grid-template-columns: 1fr !important;
+       gap: 12px !important;
+   }
+   .budget-stat-card {
+       min-height: auto !important;
+       padding: 18px !important;
+   }
+   .budget-filter-bar,
+   .dep-filter-modern {
+       width: 100% !important;
+       display: block !important;
+       padding: 18px !important;
+       box-sizing: border-box !important;
+   }
+   .budget-filter-form {
+       width: 100% !important;
+       display: flex !important;
+       flex-direction: column !important;
+       gap: 10px !important;
+       margin-top: 15px !important;
+   }
+   .budget-filter-group,
+   .budget-filter-group select {
+       width: 100% !important;
+   }
+   .budget-history,
+   .dep-list-modern {
+       width: 100% !important;
+   }
+   .budget-history-table-head {
+       display: none !important;
+   }
+   .budget-history-row {
+       grid-template-columns: 1fr !important;
+       gap: 12px !important;
+       padding: 18px !important;
+   }
+   /* =========================
+      REVENUS
+   ========================= */
+   .revenu-header {
+       width: 100% !important;
+       flex-direction: column !important;
+       align-items: stretch !important;
+       gap: 15px !important;
+   }
+   .revenu-add-btn {
+       width: 100% !important;
+       text-align: center !important;
+       box-sizing: border-box !important;
+   }
+   .revenu-total-card {
+       width: 100% !important;
+       padding: 25px 20px !important;
+       box-sizing: border-box !important;
+   }
+   .revenu-total-card h2 {
+       font-size: 38px !important;
+   }
+   .revenu-total-card::after {
+       display: none !important;
+   }
+   .revenu-grid {
+       width: 100% !important;
+       grid-template-columns: 1fr !important;
+       gap: 15px !important;
+   }
+   .revenu-card {
+       padding: 22px !important;
+   }
+   /* =========================
+      DÉPENSES RÉCURRENTES
+   ========================= */
+   .rec-header {
+       width: 100% !important;
+       flex-direction: column !important;
+       align-items: stretch !important;
+       gap: 15px !important;
+   }
+   .rec-header h1 {
+       font-size: 29px !important;
+   }
+   .rec-add-btn {
+       width: 100% !important;
+       text-align: center !important;
+       box-sizing: border-box !important;
+   }
+   .rec-total-card {
+       width: 100% !important;
+       padding: 24px 20px !important;
+       box-sizing: border-box !important;
+   }
+   .rec-total-card h2 {
+       font-size: 37px !important;
+   }
+   .rec-total-icon {
+       display: none !important;
+   }
+   .rec-grid {
+       width: 100% !important;
+       grid-template-columns: 1fr !important;
+   }
+   .rec-card {
+       grid-template-columns: 55px 1fr !important;
+       padding: 20px !important;
+   }
+   .rec-date {
+       grid-column: 1 / -1 !important;
+   }
+   /* =========================
+      NOTIFICATIONS
+   ========================= */
+   .notif-tabs {
+       flex-direction: column !important;
+       gap: 12px !important;
+   }
+   .notif-tab {
+       width: 100% !important;
+       height: auto !important;
+       padding: 18px !important;
+       font-size: 17px !important;
+       box-sizing: border-box !important;
+   }
+   .notif-card {
+       width: 100% !important;
+       padding: 17px !important;
+       box-sizing: border-box !important;
+   }
+   .notif-card h3 {
+       font-size: 18px !important;
+   }
+   /* FORMULAIRES AJOUT / MODIFICATION */
+   .form-page {
+       padding: 15px !important;
+   }
+   .form-card {
+       width: 100% !important;
+       max-width: 100% !important;
+       padding: 22px !important;
+       box-sizing: border-box !important;
+   }
+}
