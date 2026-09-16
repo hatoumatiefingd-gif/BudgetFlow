@@ -6,6 +6,7 @@
     <title>Connexion - BudgetFlow</title>
 
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/mobile.css') }}?v=1">
 </head>
 
 <body class="connexion-body">

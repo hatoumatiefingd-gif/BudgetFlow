@@ -6,6 +6,7 @@
     <title>BudgetFlow</title>
 
     <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('css/mobile.css') }}?v=1">
 <body>
 
 <header>

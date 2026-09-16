@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Inscription - BudgetFlow</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/mobile.css') }}?v=1">
 </head>
 <body>
 
