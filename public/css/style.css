@@ -5611,3 +5611,152 @@ header .max-w-7xl{
     font-size:12px;
     font-weight:600;
 }
+/* =========================
+   VERSION MOBILE
+   ========================= */
+
+@media (max-width: 768px) {
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* CONTENEURS */
+    .container,
+    .wrapper,
+    .content,
+    .main-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+
+    /* HEADER */
+    header {
+        width: 100% !important;
+        padding: 20px !important;
+    }
+
+    header .container,
+    header .navbar,
+    nav {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 18px !important;
+    }
+
+    header img {
+        max-width: 220px !important;
+        height: auto !important;
+    }
+
+    header .buttons,
+    header .actions,
+    .nav-buttons {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    header a,
+    header button {
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: center !important;
+        margin: 0 !important;
+    }
+
+    /* PAGE D'ACCUEIL */
+    .hero,
+    .hero-section,
+    .hero-container {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 35px 20px !important;
+        text-align: center !important;
+    }
+
+    .hero h1,
+    h1 {
+        font-size: 42px !important;
+        line-height: 1.1 !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+    }
+
+    .hero p {
+        font-size: 18px !important;
+        line-height: 1.5 !important;
+    }
+
+    .hero img {
+        width: 100% !important;
+        max-width: 320px !important;
+        height: auto !important;
+        margin: 25px auto !important;
+    }
+
+    .hero .buttons,
+    .hero-actions {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 12px !important;
+    }
+
+    .hero .buttons a,
+    .hero-actions a {
+        width: 100% !important;
+    }
+
+    /* CONNEXION + INSCRIPTION */
+    .login-container,
+    .register-container,
+    .auth-container,
+    .auth-card,
+    form {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .login-container,
+    .register-container,
+    .auth-container,
+    .auth-card {
+        padding: 30px 20px !important;
+        margin: 20px auto !important;
+    }
+
+    form input {
+        width: 100% !important;
+        max-width: 100% !important;
+        font-size: 16px !important;
+    }
+
+    form button {
+        width: 100% !important;
+    }
+
+    .login-container h1,
+    .register-container h1,
+    .auth-container h1,
+    .auth-card h1 {
+        font-size: 34px !important;
+        text-align: center !important;
+    }
+}
