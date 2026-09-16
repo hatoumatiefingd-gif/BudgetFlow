@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BudgetFlow</title>
 
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-</head>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=2">
 <body>
 
 <header>
