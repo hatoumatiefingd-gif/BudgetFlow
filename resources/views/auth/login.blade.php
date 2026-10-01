@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - BudgetFlow</title>
 
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/mobile.css') }}?v=1">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3">
 </head>
 
 <body class="connexion-body">
 
+{{-- Page de connexion : présentation à gauche, formulaire à droite --}}
 <section class="connexion-page">
 
     <div class="connexion-left">
@@ -32,7 +32,9 @@
 
         <p>Accédez à votre compte personnel</p>
 
+        {{-- Formulaire envoyé à AuthenticatedSessionController@store --}}
         <form method="POST" action="{{ route('login') }}">
+            {{-- Jeton de sécurité obligatoire pour les formulaires POST (protection CSRF) --}}
             @csrf
 
             <label>Email</label>
@@ -46,7 +48,7 @@
             {{-- Affiche les erreurs de connexion : mauvais mot de passe ou compte désactivé --}}
 {{-- Affiche les erreurs de connexion --}}
 @error('email')
-<p style="color: #dc2626; margin-top: 6px; font-size: 14px;">
+<p class="message-erreur">
        {{ $message }}
 </p>
   

@@ -2,8 +2,9 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier une dépense récurrente</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3">
 </head>
 <body>
 
@@ -12,9 +13,11 @@
 
         <h1>Modifier une dépense récurrente</h1>
 
+        {{-- Formulaire envoyé à DepenseRecurrenteController@update --}}
         <form action="{{ route('depenses-recurrentes.update', $recurrente->idDepenseRecurrente) }}" method="POST">
 
             @csrf
+            {{-- @method('PUT') : Laravel traite ce formulaire comme une modification --}}
             @method('PUT')
 
             <label>Nom de la dépense</label>
@@ -37,6 +40,7 @@
             <label>Catégorie</label>
             <select name="idCategorie" required>
 
+                {{-- La catégorie actuelle est sélectionnée par défaut --}}
                 @foreach($categories as $categorie)
 
                     <option
@@ -51,6 +55,7 @@
             </select>
 
             <label>Fréquence</label>
+            {{-- La fréquence actuelle est sélectionnée par défaut --}}
             <select name="frequence" required>
 
                 <option

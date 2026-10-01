@@ -2,8 +2,9 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier un revenu</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3">
 </head>
 <body>
 
@@ -12,11 +13,14 @@
 
         <h1>Modifier un revenu</h1>
 
+        {{-- Formulaire envoyé à RevenuController@update --}}
         <form action="{{ route('revenus.update', $revenu->idRevenu) }}" method="POST">
             @csrf
+            {{-- @method('PUT') : Laravel traite ce formulaire comme une modification --}}
             @method('PUT')
 
             <label>Montant</label>
+            {{-- Les champs sont pré-remplis avec les valeurs actuelles du revenu --}}
             <input type="number" step="0.01" name="montant" value="{{ $revenu->montant }}" required>
 
             <label>Source</label>
@@ -26,6 +30,7 @@
             <input
     type="date"
     name="dateRevenu"
+    value="{{ $revenu->dateRevenu }}"
     min="2026-07-01"
     required>
 

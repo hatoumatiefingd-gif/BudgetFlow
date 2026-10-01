@@ -18,6 +18,8 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div>
                 <a href="/">
+                    {{-- Ce layout ne charge pas style.css (seulement Tailwind),
+                         la taille du logo est donc indiquée directement ici. --}}
                     <img
 
     src="{{ asset('logo.png') }}"

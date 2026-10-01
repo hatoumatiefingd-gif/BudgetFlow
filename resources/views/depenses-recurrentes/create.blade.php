@@ -2,8 +2,9 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter une dépense récurrente</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3">
 </head>
 <body>
 
@@ -12,7 +13,9 @@
 
         <h1>Ajouter une dépense récurrente</h1>
 
+        {{-- Formulaire envoyé à DepenseRecurrenteController@store --}}
         <form action="{{ route('depenses-recurrentes.store') }}" method="POST">
+            {{-- Jeton de sécurité obligatoire pour les formulaires POST (protection CSRF) --}}
             @csrf
 
             <label>Nom de la dépense</label>
@@ -23,6 +26,7 @@
 
             <label>Catégorie</label>
             <select name="idCategorie" required>
+                {{-- Une option par catégorie, envoyées par le contrôleur --}}
                 @foreach($categories as $categorie)
                     <option value="{{ $categorie->idCategorie }}">
                         {{ ucfirst($categorie->nomCategorie) }}
@@ -31,6 +35,7 @@
             </select>
 
             <label>Fréquence</label>
+            {{-- Les trois fréquences acceptées par le contrôleur --}}
             <select name="frequence" required>
                 <option value="Mensuel">Mensuel</option>
                 <option value="Hebdomadaire">Hebdomadaire</option>

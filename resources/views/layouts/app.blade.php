@@ -14,8 +14,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         {{-- CSS personnalisé de BudgetFlow --}}
-<link rel="stylesheet" href="{{ asset('css/style.css') }}">
-<link rel="stylesheet" href="{{ asset('css/mobile.css') }}?v=2">
+<link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3">
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
