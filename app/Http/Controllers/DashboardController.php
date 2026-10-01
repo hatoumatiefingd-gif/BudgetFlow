@@ -30,8 +30,7 @@ class DashboardController extends Controller
         $annee = request('annee', now()->year);
 
         /*
-         * Les dépenses récurrentes sont traitées selon la vraie date actuelle.
-         * Le filtre du tableau de bord ne modifie donc pas leur fonctionnement.
+         * Traite les dépenses récurrentes arrivées à échéance.
          */
         $this->traiterDepensesRecurrentes();
 
@@ -42,7 +41,6 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        // Récupère les 5 dernières dépenses du mois sélectionné.
         $depenses = Depense::with('categorie')
             ->where('idUtilisateur', $userId)
             ->whereMonth('dateDepense', $mois)
@@ -52,8 +50,11 @@ class DashboardController extends Controller
             ->get();
 
 
-        // Calcule le total réel des dépenses du mois sélectionné.
-        $totalDepenses = Depense::where('idUtilisateur', $userId)
+        // Calcule le total des dépenses du mois sélectionné.
+        $totalDepenses = Depense::where(
+                'idUtilisateur',
+                $userId
+            )
             ->whereMonth('dateDepense', $mois)
             ->whereYear('dateDepense', $annee)
             ->sum('montant');
@@ -65,8 +66,10 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        // Calcule le total réel des revenus du mois sélectionné.
-        $totalRevenus = Revenu::where('idUtilisateur', $userId)
+        $totalRevenus = Revenu::where(
+                'idUtilisateur',
+                $userId
+            )
             ->whereMonth('dateRevenu', $mois)
             ->whereYear('dateRevenu', $annee)
             ->sum('montant');
@@ -78,19 +81,22 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        // Calcule le montant restant pour le mois sélectionné.
         $budgetRestant = $totalRevenus - $totalDepenses;
 
 
-        // Calcule le pourcentage des revenus déjà dépensés.
         $depensesPourcentage = $totalRevenus > 0
-            ? min(($totalDepenses / $totalRevenus) * 100, 100)
+            ? min(
+                ($totalDepenses / $totalRevenus) * 100,
+                100
+            )
             : 0;
 
 
-        // Calcule le taux d'épargne réel.
         $tauxEpargne = $totalRevenus > 0
-            ? max(($budgetRestant / $totalRevenus) * 100, 0)
+            ? max(
+                ($budgetRestant / $totalRevenus) * 100,
+                0
+            )
             : 0;
 
 
@@ -101,10 +107,8 @@ class DashboardController extends Controller
         */
 
         /*
-         * Les notifications automatiques sont créées uniquement
-         * pour le vrai mois actuel.
-         *
-         * Ainsi, consulter un ancien mois ne crée aucune nouvelle alerte.
+         * Les notifications budgétaires sont générées
+         * seulement pour le véritable mois actuel.
          */
         if (
             $mois == now()->month &&
@@ -126,7 +130,6 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        // Récupère les 3 dernières notifications de l'utilisateur.
         $notifications = NotificationBudget::where(
                 'idUtilisateur',
                 $userId
@@ -143,7 +146,6 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        // Recherche la catégorie dans laquelle l'utilisateur dépense le plus.
         $categoriePrincipale = Depense::select(
                 'idCategorie',
                 DB::raw('SUM(montant) as total')
@@ -172,8 +174,6 @@ class DashboardController extends Controller
             'depensesPourcentage',
             'tauxEpargne',
             'categoriePrincipale',
-
-            // Nécessaires pour le filtre mois / année dans la vue.
             'mois',
             'annee'
         ));
@@ -185,102 +185,158 @@ class DashboardController extends Controller
     | DEPENSES RECURRENTES AUTOMATIQUES
     |--------------------------------------------------------------------------
     */
-// Traite automatiquement toutes les dépenses récurrentes arrivées à échéance.
-public function traiterDepensesRecurrentes()
+
+    public function traiterDepensesRecurrentes()
     {
-        // Récupère l'utilisateur actuellement connecté.
         $userId = auth()->id();
 
+        /*
+         * Transaction pour empêcher deux traitements
+         * simultanés de générer la même dépense.
+         */
+        DB::transaction(function () use ($userId) {
 
-        // Cherche les dépenses récurrentes arrivées à échéance.
-        $recurrentes = DepenseRecurrente::where(
-                'idUtilisateur',
-                $userId
-            )
-            ->whereDate(
-                'prochaineDate',
-                '<=',
-                now()->toDateString()
-            )
-            ->get();
-
-
-        foreach ($recurrentes as $recurrente) {
-
-            /*
-             * Ajoute automatiquement la dépense récurrente
-             * aux dépenses normales.
-             */
-            Depense::create([
-                'montant' => $recurrente->montant,
-                'description' =>
-                    $recurrente->nomDepenseRecurrente,
-                'dateDepense' =>
-                    $recurrente->prochaineDate,
-                'idUtilisateur' => $userId,
-                'idCategorie' =>
-                    $recurrente->idCategorie,
-            ]);
+            $recurrentes = DepenseRecurrente::where(
+                    'idUtilisateur',
+                    $userId
+                )
+                ->whereDate(
+                    'prochaineDate',
+                    '<=',
+                    now()->toDateString()
+                )
+                ->lockForUpdate()
+                ->get();
 
 
-            // Enregistre une notification réelle.
-            NotificationBudget::create([
-                'titre' =>
-                    'Paiement récurrent effectué',
+            foreach ($recurrentes as $recurrente) {
 
-                'message' =>
-                    'La dépense récurrente "' .
-                    $recurrente->nomDepenseRecurrente .
-                    '" a été intégrée automatiquement au budget.',
-
-                'type' => 'Paiement',
-
-                'dateNotification' =>
-                    now()->toDateString(),
-
-                'idUtilisateur' => $userId,
-            ]);
+                $dateEcheance = Carbon::parse(
+                    $recurrente->prochaineDate
+                );
 
 
-            /*
-             * Calcule la prochaine date
-             * selon la fréquence choisie.
-             */
-            $date = Carbon::parse(
-                $recurrente->prochaineDate
-            );
+                /*
+                 * Vérifie que la même dépense n'existe pas déjà
+                 * pour cette échéance.
+                 */
+                $depense = Depense::firstOrCreate(
+                    [
+                        'idUtilisateur' => $userId,
+
+                        'description' =>
+                            $recurrente->nomDepenseRecurrente,
+
+                        'montant' =>
+                            $recurrente->montant,
+
+                        'dateDepense' =>
+                            $dateEcheance->toDateString(),
+
+                        'idCategorie' =>
+                            $recurrente->idCategorie,
+                    ]
+                );
 
 
-            if ($recurrente->frequence === 'Mensuel') {
+                /*
+                 * Crée la notification uniquement lorsque
+                 * la dépense vient réellement d'être créée.
+                 */
+                if ($depense->wasRecentlyCreated) {
 
+                    NotificationBudget::create([
+                        'titre' =>
+                            'Paiement récurrent effectué',
+
+                        'message' =>
+                            'La dépense récurrente "' .
+                            $recurrente->nomDepenseRecurrente .
+                            '" a été intégrée automatiquement au budget.',
+
+                        'type' =>
+                            'Paiement',
+
+                        'dateNotification' =>
+                            now()->toDateString(),
+
+                        'idUtilisateur' =>
+                            $userId,
+                    ]);
+                }
+
+
+                /*
+                 * Calcule la prochaine échéance.
+                 */
+                if ($recurrente->frequence === 'Mensuel') {
+
+                    $dateEcheance->addMonth();
+
+                } elseif (
+                    $recurrente->frequence === 'Hebdomadaire'
+                ) {
+
+                    $dateEcheance->addWeek();
+
+                } elseif (
+                    $recurrente->frequence === 'Annuel'
+                ) {
+
+                    $dateEcheance->addYear();
+
+                } else {
+
+                    // Sécurité par défaut.
+                    $dateEcheance->addMonth();
+                }
+
+
+                /*
+                 * Si l'échéance calculée est encore dans le passé,
+                 * on l'avance jusqu'à la prochaine date future.
+                 *
+                 * Cela évite de générer plusieurs anciennes copies
+                 * lorsqu'une date récurrente est restée très en retard.
+                 */
+                while (
+                    $dateEcheance->lt(
+                        now()->startOfDay()
+                    )
+                ) {
+
+                    if ($recurrente->frequence === 'Mensuel') {
+
+                        $dateEcheance->addMonth();
+
+                    } elseif (
+                        $recurrente->frequence === 'Hebdomadaire'
+                    ) {
+
+                        $dateEcheance->addWeek();
+
+                    } elseif (
+                        $recurrente->frequence === 'Annuel'
+                    ) {
+
+                        $dateEcheance->addYear();
+
+                    } else {
+
+                        $dateEcheance->addMonth();
+                    }
+                }
+
+
+                /*
+                 * Enregistre la prochaine échéance.
+                 */
                 $recurrente->prochaineDate =
-                    $date->addMonth()->toDateString();
+                    $dateEcheance->toDateString();
 
-            } elseif (
-                $recurrente->frequence === 'Hebdomadaire'
-            ) {
-
-                $recurrente->prochaineDate =
-                    $date->addWeek()->toDateString();
-
-            } elseif (
-                $recurrente->frequence === 'Annuel'
-            ) {
-
-                $recurrente->prochaineDate =
-                    $date->addYear()->toDateString();
-
-            } else {
-
-                // Par défaut : fréquence mensuelle.
-                $recurrente->prochaineDate =
-                    $date->addMonth()->toDateString();
+                $recurrente->save();
             }
-
-
-            // Enregistre la nouvelle échéance.
-            $recurrente->save();
-        }
+        });
     }
 
 
@@ -297,10 +353,6 @@ public function traiterDepensesRecurrentes()
         $budgetRestant,
         $depensesPourcentage
     ) {
-        /*
-         * Les notifications concernent toujours
-         * le véritable mois actuel.
-         */
         $moisActuel = now()->format('Y-m');
 
 
@@ -398,10 +450,6 @@ public function traiterDepensesRecurrentes()
         $message,
         $type
     ) {
-        /*
-         * Vérifie si une notification identique
-         * existe déjà pendant le mois actuel.
-         */
         $existe = NotificationBudget::where(
                 'idUtilisateur',
                 $userId
@@ -418,20 +466,24 @@ public function traiterDepensesRecurrentes()
             ->exists();
 
 
-        // Si elle existe déjà, on ne la recrée pas.
+        // Ne recrée pas une notification déjà existante.
         if ($existe) {
             return;
         }
 
 
-        // Enregistre la nouvelle notification.
         NotificationBudget::create([
             'titre' => $titre,
+
             'message' => $message,
+
             'type' => $type,
+
             'dateNotification' =>
                 now()->toDateString(),
-            'idUtilisateur' => $userId,
+
+            'idUtilisateur' =>
+                $userId,
         ]);
     }
 }

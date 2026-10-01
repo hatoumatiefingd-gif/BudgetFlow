@@ -484,10 +484,13 @@ nav a{
    background:#f3f4f6;
 }
 .sidebar nav a.active{
-   background:#4f46e5;
+   /* Bleu marine foncé pour le lien actif du menu */
+background:#4F46E5;
+   /* Texte blanc pour garder un bon contraste */
    color:white;
-   box-shadow:0 6px 12px rgba(79,70,229,0.25);
-}
+
+   /* Ombre assortie au bleu foncé */
+box-shadow:0 8px 20px rgba(91,90,243,0.25);}
 /* ==========================================
   PROFIL + DECONNEXION EN BAS
 ========================================== */
@@ -3376,10 +3379,13 @@ nav a{
    background:#f3f4f6;
 }
 .sidebar nav a.active{
-    background:#7485ff;
-    color:white;
-    box-shadow:0 8px 20px rgba(116,133,255,0.22);
-}
+   /* Bleu marine foncé pour le lien actif du menu */
+background:#5b5af3;
+   /* Texte blanc pour garder un bon contraste */
+   color:white;
+
+   /* Ombre assortie au bleu foncé */
+box-shadow:0 8px 20px rgba(79,70,229,0.28);}
 /* ==========================================
   PROFIL + DECONNEXION EN BAS
 ========================================== */
@@ -5728,4 +5734,43 @@ header .max-w-7xl{
        box-sizing: border-box !important;
        font-size: 16px !important;
    }
+}
+
+/* ==========================================================
+   CORRECTION FINALE DU MENU ACTIF
+   Cette règle est placée tout en bas du fichier afin
+   d'éviter qu'une ancienne règle CSS ne remplace la couleur.
+========================================================== */
+
+html body .app .sidebar nav a.active,
+html body .sidebar nav a.active{
+
+   /* Couleur de fond bleu marine très foncé */
+   background:#5b5af3 !important;
+
+   /* On force aussi background-color au cas où une autre
+      règle utilise background-color au lieu de background */
+  background:#5b5af3 !important;
+
+   /* Supprime un éventuel dégradé qui pourrait masquer
+      la nouvelle couleur de fond */
+   background-image:none !important;
+
+   /* Le texte reste blanc */
+   color:#ffffff !important;
+
+   /* Ombre légère assortie au bouton */
+   box-shadow:0 8px 20px rgba(91,90,243,0.25) !important;
+}
+/* ==========================================================
+   CORRECTION FINALE DU MENU ACTIF
+========================================================== */
+
+html body .app .sidebar nav a.active,
+html body .sidebar nav a.active {
+    background: #4F46E5 !important;
+    background-color: #4F46E5 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 20px rgba(23, 37, 84, 0.28) !important;
 }

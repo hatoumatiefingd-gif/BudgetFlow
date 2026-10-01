@@ -9,17 +9,15 @@ use Illuminate\Http\Request;
 
 class DepenseRecurrenteController extends Controller
 {
+    /**
+     * Affiche les dépenses récurrentes
+     * de l'utilisateur connecté.
+     */
     public function index()
     {
-        /*
-         * Lance le traitement automatique des dépenses récurrentes
-         * avant d'afficher la liste.
-         */
-        app(DashboardController::class)->traiterDepensesRecurrentes();
-
-        // Récupère les dépenses récurrentes de l'utilisateur connecté.
         $recurrentes = DepenseRecurrente::with('categorie')
             ->where('idUtilisateur', auth()->id())
+            ->orderBy('prochaineDate', 'asc')
             ->get();
 
         return view(
@@ -28,9 +26,12 @@ class DepenseRecurrenteController extends Controller
         );
     }
 
+
+    /**
+     * Affiche le formulaire d'ajout.
+     */
     public function create()
     {
-        // Récupère les catégories disponibles.
         $categories = Categorie::all();
 
         return view(
@@ -39,21 +40,23 @@ class DepenseRecurrenteController extends Controller
         );
     }
 
+
+    /**
+     * Enregistre une nouvelle dépense récurrente.
+     */
     public function store(Request $request)
     {
-        /*
-         * Vérifie les données saisies avant
-         * d'enregistrer la dépense récurrente.
-         */
         $request->validate([
             'nomDepenseRecurrente' => 'required|string|max:255',
             'montant' => 'required|numeric|min:0',
-            'frequence' => 'required',
-            'prochaineDate' => 'required|date|after_or_equal:2026-07-01',
+            'frequence' => 'required|in:Mensuel,Hebdomadaire,Annuel',
+            'prochaineDate' => 'required|date|after_or_equal:today',
             'idCategorie' => 'required',
+        ], [
+            'prochaineDate.after_or_equal' =>
+                'La prochaine date doit être aujourd’hui ou une date future.',
         ]);
 
-        // Enregistre la nouvelle dépense récurrente.
         $recurrente = DepenseRecurrente::create([
             'nomDepenseRecurrente' =>
                 $request->nomDepenseRecurrente,
@@ -74,10 +77,6 @@ class DepenseRecurrenteController extends Controller
                 auth()->id(),
         ]);
 
-        /*
-         * Crée une notification pour informer
-         * l'utilisateur du nouveau paiement à venir.
-         */
         NotificationBudget::create([
             'titre' => 'Paiement à venir',
 
@@ -101,16 +100,18 @@ class DepenseRecurrenteController extends Controller
             ->route('depenses-recurrentes.index');
     }
 
+
+    /**
+     * Affiche le formulaire de modification.
+     */
     public function edit($id)
     {
-        // Récupère uniquement la dépense appartenant à l'utilisateur.
         $recurrente = DepenseRecurrente::where(
                 'idUtilisateur',
                 auth()->id()
             )
             ->findOrFail($id);
 
-        // Récupère les catégories pour le formulaire.
         $categories = Categorie::all();
 
         return view(
@@ -119,28 +120,29 @@ class DepenseRecurrenteController extends Controller
         );
     }
 
+
+    /**
+     * Modifie une dépense récurrente existante.
+     */
     public function update(Request $request, $id)
     {
-        /*
-         * Vérifie les nouvelles données
-         * avant la modification.
-         */
         $request->validate([
             'nomDepenseRecurrente' => 'required|string|max:255',
             'montant' => 'required|numeric|min:0',
-            'frequence' => 'required',
-            'prochaineDate' => 'required|date|after_or_equal:2026-07-01',
+            'frequence' => 'required|in:Mensuel,Hebdomadaire,Annuel',
+            'prochaineDate' => 'required|date|after_or_equal:today',
             'idCategorie' => 'required',
+        ], [
+            'prochaineDate.after_or_equal' =>
+                'La prochaine date doit être aujourd’hui ou une date future.',
         ]);
 
-        // Recherche la dépense récurrente de l'utilisateur.
         $recurrente = DepenseRecurrente::where(
                 'idUtilisateur',
                 auth()->id()
             )
             ->findOrFail($id);
 
-        // Enregistre les nouvelles informations.
         $recurrente->update([
             'nomDepenseRecurrente' =>
                 $request->nomDepenseRecurrente,
@@ -162,16 +164,18 @@ class DepenseRecurrenteController extends Controller
             ->route('depenses-recurrentes.index');
     }
 
+
+    /**
+     * Supprime une dépense récurrente.
+     */
     public function destroy($id)
     {
-        // Recherche uniquement la dépense de l'utilisateur connecté.
         $recurrente = DepenseRecurrente::where(
                 'idUtilisateur',
                 auth()->id()
             )
             ->findOrFail($id);
 
-        // Supprime la dépense récurrente.
         $recurrente->delete();
 
         return redirect()
