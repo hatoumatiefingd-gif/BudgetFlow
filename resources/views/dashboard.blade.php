@@ -3,33 +3,30 @@
 
 <head>
     <meta charset="UTF-8">
-
     <title>Tableau de bord - BudgetFlow</title>
-
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 
 <body>
 
 @php
-
     /*
     |--------------------------------------------------------------------------
     | CALCULS DU TABLEAU DE BORD
     |--------------------------------------------------------------------------
     */
 
-    // Calcule le pourcentage du budget utilisé.
+    // Pourcentage du budget utilisé
     $depensesPourcentage = $totalRevenus > 0
         ? min(($totalDepenses / $totalRevenus) * 100, 100)
-        : 0;
+        : ($totalDepenses > 0 ? 100 : 0);
 
-    // Calcule le taux d'épargne réel du mois.
+    // Taux d'épargne
     $tauxEpargne = $totalRevenus > 0
         ? max(($budgetRestant / $totalRevenus) * 100, 0)
         : 0;
 
-    // Détermine l'état actuel du budget.
+    // État du budget
     if ($budgetRestant > 0) {
 
         $etatBudget = 'Budget sain';
@@ -45,7 +42,6 @@
         $etatBudget = 'Budget en alerte';
         $etatClass = 'danger';
     }
-
 @endphp
 
 
@@ -60,7 +56,6 @@
         <div class="side-logo">
             <img src="{{ asset('logo.png') }}" alt="BudgetFlow">
         </div>
-
 
         <nav>
 
@@ -87,7 +82,7 @@
         </nav>
 
 
-        {{-- Accès au profil utilisateur --}}
+        {{-- Profil --}}
         <div class="profile-link">
 
             <a href="{{ route('profile.edit') }}">
@@ -136,46 +131,92 @@
             <p>
                 Votre situation financière est mise à jour automatiquement.
             </p>
-{{-- Filtre permettant de consulter le tableau de bord par mois --}}
-<form method="GET"
-      action="{{ route('dashboard') }}"
-      class="dashboard-month-filter">
 
-    <select name="mois" onchange="this.form.submit()">
 
-        <option value="1" {{ $mois == 1 ? 'selected' : '' }}>Janvier</option>
-        <option value="2" {{ $mois == 2 ? 'selected' : '' }}>Février</option>
-        <option value="3" {{ $mois == 3 ? 'selected' : '' }}>Mars</option>
-        <option value="4" {{ $mois == 4 ? 'selected' : '' }}>Avril</option>
-        <option value="5" {{ $mois == 5 ? 'selected' : '' }}>Mai</option>
-        <option value="6" {{ $mois == 6 ? 'selected' : '' }}>Juin</option>
-        <option value="7" {{ $mois == 7 ? 'selected' : '' }}>Juillet</option>
-        <option value="8" {{ $mois == 8 ? 'selected' : '' }}>Août</option>
-        <option value="9" {{ $mois == 9 ? 'selected' : '' }}>Septembre</option>
-        <option value="10" {{ $mois == 10 ? 'selected' : '' }}>Octobre</option>
-        <option value="11" {{ $mois == 11 ? 'selected' : '' }}>Novembre</option>
-        <option value="12" {{ $mois == 12 ? 'selected' : '' }}>Décembre</option>
+            {{-- Filtre mois / année --}}
+            <form
+                method="GET"
+                action="{{ route('dashboard') }}"
+                class="dashboard-month-filter"
+            >
 
-    </select>
+                <select
+                    name="mois"
+                    onchange="this.form.submit()"
+                >
 
-    <select name="annee" onchange="this.form.submit()">
+                    <option value="1" {{ $mois == 1 ? 'selected' : '' }}>
+                        Janvier
+                    </option>
 
-        @for($a = 2026; $a <= now()->year + 5; $a++)
+                    <option value="2" {{ $mois == 2 ? 'selected' : '' }}>
+                        Février
+                    </option>
 
-            <option value="{{ $a }}"
-                {{ $annee == $a ? 'selected' : '' }}>
+                    <option value="3" {{ $mois == 3 ? 'selected' : '' }}>
+                        Mars
+                    </option>
 
-                {{ $a }}
+                    <option value="4" {{ $mois == 4 ? 'selected' : '' }}>
+                        Avril
+                    </option>
 
-            </option>
+                    <option value="5" {{ $mois == 5 ? 'selected' : '' }}>
+                        Mai
+                    </option>
 
-        @endfor
+                    <option value="6" {{ $mois == 6 ? 'selected' : '' }}>
+                        Juin
+                    </option>
 
-    </select>
+                    <option value="7" {{ $mois == 7 ? 'selected' : '' }}>
+                        Juillet
+                    </option>
 
-</form>
+                    <option value="8" {{ $mois == 8 ? 'selected' : '' }}>
+                        Août
+                    </option>
+
+                    <option value="9" {{ $mois == 9 ? 'selected' : '' }}>
+                        Septembre
+                    </option>
+
+                    <option value="10" {{ $mois == 10 ? 'selected' : '' }}>
+                        Octobre
+                    </option>
+
+                    <option value="11" {{ $mois == 11 ? 'selected' : '' }}>
+                        Novembre
+                    </option>
+
+                    <option value="12" {{ $mois == 12 ? 'selected' : '' }}>
+                        Décembre
+                    </option>
+
+                </select>
+
+
+                <select
+                    name="annee"
+                    onchange="this.form.submit()"
+                >
+
+                    @for($a = 2026; $a <= now()->year + 5; $a++)
+
+                        <option
+                            value="{{ $a }}"
+                            {{ $annee == $a ? 'selected' : '' }}
+                        >
+                            {{ $a }}
+                        </option>
+
+                    @endfor
+
+                </select>
+
+            </form>
+
         </div>
-
 
 
         {{-- ==========================================
@@ -199,7 +240,12 @@
                     </span>
 
                     <strong>
-                        {{ number_format($totalDepenses, 2, '.', ' ') }} €
+                        {{ number_format(
+                            $totalDepenses,
+                            2,
+                            '.',
+                            ' '
+                        ) }} €
                     </strong>
 
                 </div>
@@ -224,7 +270,12 @@
                     </span>
 
                     <strong>
-                        {{ number_format($totalRevenus, 2, '.', ' ') }} €
+                        {{ number_format(
+                            $totalRevenus,
+                            2,
+                            '.',
+                            ' '
+                        ) }} €
                     </strong>
 
                 </div>
@@ -248,7 +299,9 @@
                         Solde du mois
                     </span>
 
-                    <strong class="{{ $budgetRestant < 0 ? 'negative-value' : '' }}">
+                    <strong
+                        class="{{ $budgetRestant < 0 ? 'negative-value' : '' }}"
+                    >
 
                         {{ number_format(
                             $budgetRestant,
@@ -266,7 +319,6 @@
         </section>
 
 
-
         {{-- ==========================================
              ANALYSE DU BUDGET
         ========================================== --}}
@@ -274,7 +326,7 @@
         <section class="bf-analysis-card">
 
 
-            {{-- En-tête de l'analyse --}}
+            {{-- En-tête --}}
             <div class="bf-analysis-header">
 
                 <div>
@@ -294,7 +346,7 @@
                 </div>
 
 
-                {{-- État dynamique du budget --}}
+                {{-- État dynamique --}}
                 <div class="bf-status {{ $etatClass }}">
 
                     @if($etatClass === 'danger')
@@ -304,9 +356,13 @@
                     @elseif($etatClass === 'neutral')
 
                         @if($totalRevenus == 0 && $totalDepenses == 0)
+
                             Aucune donnée
+
                         @else
+
                             Budget équilibré
+
                         @endif
 
                     @else
@@ -318,7 +374,6 @@
                 </div>
 
             </div>
-
 
 
             <div class="bf-analysis-grid">
@@ -335,7 +390,6 @@
                         <canvas id="budgetChart"></canvas>
 
 
-                        {{-- Informations au centre du graphique --}}
                         <div class="bf-donut-center">
 
                             <strong>
@@ -354,7 +408,6 @@
                     </div>
 
                 </div>
-
 
 
                 {{-- ==========================================
@@ -389,7 +442,6 @@
                     </div>
 
 
-
                     {{-- Budget restant --}}
                     <div class="bf-indicator">
 
@@ -401,7 +453,9 @@
                                 Budget restant
                             </p>
 
-                            <strong class="{{ $budgetRestant < 0 ? 'negative-value' : '' }}">
+                            <strong
+                                class="{{ $budgetRestant < 0 ? 'negative-value' : '' }}"
+                            >
 
                                 {{ number_format(
                                     $budgetRestant,
@@ -415,7 +469,6 @@
                         </div>
 
                     </div>
-
 
 
                     {{-- Taux d'épargne --}}
@@ -443,7 +496,6 @@
                     </div>
 
 
-
                     {{-- Catégorie principale --}}
                     <div class="bf-indicator">
 
@@ -459,7 +511,8 @@
 
                             <strong>
 
-                                {{ $categoriePrincipale
+                                {{
+                                    $categoriePrincipale
                                     && $categoriePrincipale->categorie
 
                                     ? ucfirst(
@@ -480,76 +533,93 @@
                 </div>
 
 
-
                 {{-- ==========================================
                      MESSAGE DYNAMIQUE
                 ========================================== --}}
 
-                {{-- Message dynamique selon la situation du budget --}}
-<div class="bf-budget-message {{ $etatClass }}">
-
-    @if($etatClass === 'danger')
-
-        {{-- Budget dépassé --}}
-        <div class="bf-message-icon">!</div>
-
-        <p>
-            Vos dépenses dépassent vos revenus de
-
-            <strong>
-                {{ number_format(abs($budgetRestant), 2, '.', ' ') }} €
-            </strong>
-
-            ce mois-ci.
-        </p>
+                <div class="bf-budget-message {{ $etatClass }}">
 
 
-    @elseif($etatClass === 'neutral')
+                    @if($etatClass === 'danger')
 
-        @if($totalRevenus == 0 && $totalDepenses == 0)
+                        <div class="bf-message-icon">
+                            !
+                        </div>
 
-            {{-- Aucun mouvement pour le mois sélectionné --}}
-            <div class="bf-message-icon">○</div>
+                        <p>
 
-            <p>
-                Aucune donnée enregistrée pour ce mois.
-            </p>
+                            Vos dépenses dépassent vos revenus de
 
-        @else
+                            <strong>
+                                {{ number_format(
+                                    abs($budgetRestant),
+                                    2,
+                                    '.',
+                                    ' '
+                                ) }} €
+                            </strong>
 
-            {{-- Revenus et dépenses exactement égaux --}}
-            <div class="bf-message-icon">=</div>
+                            ce mois-ci.
 
-            <p>
-                Votre budget est parfaitement équilibré ce mois-ci.
-            </p>
-
-        @endif
+                        </p>
 
 
-    @else
+                    @elseif($etatClass === 'neutral')
 
-        {{-- Budget positif --}}
-        <div class="bf-message-icon">✓</div>
 
-        <p>
-            Il vous reste
+                        @if($totalRevenus == 0 && $totalDepenses == 0)
 
-            <strong>
-                {{ number_format($budgetRestant, 2, '.', ' ') }} €
-            </strong>
+                            <div class="bf-message-icon">
+                                ○
+                            </div>
 
-            disponibles ce mois-ci.
-        </p>
+                            <p>
+                                Aucune donnée enregistrée pour ce mois.
+                            </p>
 
-    @endif
+                        @else
 
-</div>
+                            <div class="bf-message-icon">
+                                =
+                            </div>
+
+                            <p>
+                                Votre budget est parfaitement équilibré ce mois-ci.
+                            </p>
+
+                        @endif
+
+
+                    @else
+
+                        <div class="bf-message-icon">
+                            ✓
+                        </div>
+
+                        <p>
+
+                            Il vous reste
+
+                            <strong>
+                                {{ number_format(
+                                    $budgetRestant,
+                                    2,
+                                    '.',
+                                    ' '
+                                ) }} €
+                            </strong>
+
+                            disponibles ce mois-ci.
+
+                        </p>
+
+                    @endif
+
+                </div>
 
             </div>
 
         </section>
-
 
 
         {{-- ==========================================
@@ -565,7 +635,6 @@
 
             <div class="dash-panel">
 
-
                 <div class="panel-title">
 
                     <h2>
@@ -579,16 +648,13 @@
                 </div>
 
 
-
                 @forelse($depenses as $depense)
-
 
                     <div class="dash-row">
 
 
-                        {{-- Icône selon la catégorie --}}
+                        {{-- Icône catégorie --}}
                         <div class="row-icon">
-
 
                             @php
 
@@ -629,19 +695,15 @@
 
                             @endif
 
-
                         </div>
 
 
-
-                        {{-- Informations de la dépense --}}
+                        {{-- Informations --}}
                         <div class="row-info">
-
 
                             <h3>
                                 {{ ucfirst($depense->description) }}
                             </h3>
-
 
                             <p>
 
@@ -654,9 +716,7 @@
 
                             </p>
 
-
                         </div>
-
 
 
                         {{-- Montant --}}
@@ -671,38 +731,31 @@
 
                         </strong>
 
-
                     </div>
 
 
                 @empty
 
-
                     <p>
                         Aucune dépense récente.
                     </p>
 
-
                 @endforelse
-
 
             </div>
 
 
-
             {{-- ==========================================
-                 ALERTES RÉCENTES
+                 ALERTES
             ========================================== --}}
 
             <div class="dash-panel">
-
 
                 <div class="panel-title">
 
                     <h2>
                         Alertes
                     </h2>
-
 
                     <a href="{{ route('notifications.index') }}">
                         Voir toutes ›
@@ -711,16 +764,12 @@
                 </div>
 
 
-
                 @forelse($notifications as $notification)
-
 
                     <div class="alert-line">
 
 
-                        {{-- Icône selon le type --}}
                         <div class="alert-icon">
-
 
                             @if($notification->type == 'Alerte')
 
@@ -740,23 +789,18 @@
 
                             @endif
 
-
                         </div>
 
 
-
                         <div>
-
 
                             <h3>
                                 {{ $notification->titre }}
                             </h3>
 
-
                             <p>
                                 {{ $notification->message }}
                             </p>
-
 
                             <small>
 
@@ -769,121 +813,210 @@
 
                             </small>
 
-
                         </div>
-
 
                     </div>
 
 
                 @empty
 
-
                     <p>
                         Aucune alerte pour le moment.
                     </p>
 
-
                 @endforelse
-
 
             </div>
 
-
         </section>
-
 
     </main>
 
 </div>
 
 
-{{-- Bibliothèque graphique recommandée dans le cahier des charges --}}
+{{-- ==========================================
+     GRAPHIQUE CHART.JS
+========================================== --}}
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // Données réelles calculées depuis la base de données.
+
+    // Données venant de Laravel
     const revenus = {{ $totalRevenus }};
     const depenses = {{ $totalDepenses }};
 
-    // Montant restant du budget.
-    const restant = Math.max(revenus - depenses, 0);
 
-    // Montant utilisé sans dépasser le montant total des revenus.
-    const utilise = revenus > 0
-        ? Math.min(depenses, revenus)
+    // Aucun revenu et aucune dépense
+    const aucuneDonnee =
+        revenus === 0 &&
+        depenses === 0;
+
+
+    // Dépenses présentes mais aucun revenu
+    const depensesSansRevenus =
+        revenus === 0 &&
+        depenses > 0;
+
+
+    // Budget restant
+    const restant = revenus > 0
+        ? Math.max(revenus - depenses, 0)
         : 0;
 
-    // Permet de garder le donut visible lorsqu'il n'y a aucune donnée.
-    const aucuneDonnee = revenus === 0 && depenses === 0;
 
-    // Couleur du budget selon le niveau de dépenses.
+    // Budget utilisé
+    const utilise = depensesSansRevenus
+        ? depenses
+        : (
+            revenus > 0
+                ? Math.min(depenses, revenus)
+                : 0
+        );
+
+
+    // Couleur par défaut : bleu BudgetFlow
     let couleurBudget = '#4f46e5';
 
-    if (revenus > 0) {
-        const pourcentage = (depenses / revenus) * 100;
 
-        if (pourcentage >= 100) {
-            couleurBudget = '#ef4444';
-        } else if (pourcentage >= 80) {
-            couleurBudget = '#f59e0b';
-        } else {
-            couleurBudget = '#4f46e5';
-        }
+    // Dépenses mais aucun revenu
+    if (depensesSansRevenus) {
+
+        couleurBudget = '#ef4444';
+
     }
 
-    const graphique = document.getElementById('budgetChart');
+    // Revenus présents
+    else if (revenus > 0) {
+
+        const pourcentage =
+            (depenses / revenus) * 100;
+
+
+        // Budget atteint ou dépassé
+        if (pourcentage >= 100) {
+
+            couleurBudget = '#ef4444';
+
+        }
+
+        // Budget presque atteint
+        else if (pourcentage >= 80) {
+
+            couleurBudget = '#f59e0b';
+
+        }
+
+        // Budget normal
+        else {
+
+            couleurBudget = '#4f46e5';
+
+        }
+
+    }
+
+
+    const graphique =
+        document.getElementById('budgetChart');
+
 
     new Chart(graphique, {
+
         type: 'doughnut',
 
         data: {
+
             labels: aucuneDonnee
-                ? ['Aucune donnée']
-                : ['Budget utilisé', 'Budget restant'],
+                ? [
+                    'Aucune donnée'
+                ]
+                : [
+                    'Budget utilisé',
+                    'Budget restant'
+                ],
 
-            datasets: [{
-                // À 0 donnée, on force un cercle gris complet.
-                data: aucuneDonnee
-                    ? [1]
-                    : [utilise, restant],
+            datasets: [
 
-                backgroundColor: aucuneDonnee
-                    ? ['#d7deea']
-                    : [couleurBudget, '#e8edf5'],
+                {
 
-                borderWidth: 0,
-                hoverOffset: 4
-            }]
+                    data: aucuneDonnee
+                        ? [
+                            1
+                        ]
+                        : [
+                            utilise,
+                            restant
+                        ],
+
+                    backgroundColor: aucuneDonnee
+                        ? [
+                            '#d7deea'
+                        ]
+                        : [
+                            couleurBudget,
+                            '#e8edf5'
+                        ],
+
+                    borderWidth: 0,
+
+                    hoverOffset: 4
+
+                }
+
+            ]
+
         },
 
+
         options: {
+
             responsive: true,
+
             maintainAspectRatio: false,
+
             cutout: '74%',
 
+
             plugins: {
+
                 legend: {
+
                     display: false
+
                 },
 
+
                 tooltip: {
+
                     enabled: !aucuneDonnee,
 
+
                     callbacks: {
+
                         label: function(context) {
+
                             return context.label
                                 + ' : '
-                                + Number(context.raw).toFixed(2)
+                                + Number(
+                                    context.raw
+                                ).toFixed(2)
                                 + ' €';
+
                         }
+
                     }
+
                 }
+
             }
+
         }
+
     });
+
 </script>
 
 </body>
-
 </html>
