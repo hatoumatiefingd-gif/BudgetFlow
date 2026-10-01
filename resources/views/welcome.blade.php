@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BudgetFlow</title>
 
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=2">
-    <link rel="stylesheet" href="{{ asset('css/mobile.css') }}?v=1">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3">
+{{-- Feuille de style unique du site ("?v=3" force le navigateur à recharger la nouvelle version) --}}
+</head>
 <body>
 
+{{-- Barre du haut : logo + boutons d'inscription et de connexion --}}
 <header>
     <div class="logo">
        <img src="{{ asset('logo.png') }}" alt="BudgetFlow">
@@ -20,6 +22,7 @@
     </nav>
 </header>
 
+{{-- Bloc principal : texte de présentation à gauche, illustration à droite --}}
 <section class="accueil">
 
     <div class="accueil-texte">
@@ -35,6 +38,7 @@
             la gestion de vos revenus et l’organisation de vos finances au quotidien.
         </p>
 
+        {{-- Boutons d'appel à l'action --}}
         <div class="boutons-accueil">
             <a href="{{ route('register') }}" class="btn-principal">
                 Commencer maintenant
@@ -46,12 +50,14 @@
         </div>
     </div>
 
+    {{-- Illustration à droite du texte --}}
     <div class="illustration">
        <img src="{{ asset('finance.png') }}" alt="Illustration BudgetFlow">
     </div>
 
 </section>
 
+{{-- Section des avantages : trois cartes de présentation --}}
 <section class="avantages" id="avantages">
 
     <p class="titre-section">NOS AVANTAGES</p>
@@ -84,6 +90,7 @@
     </div>
 
 </section>
+{{-- Lien vers la politique de confidentialité (obligatoire avec le RGPD) --}}
 <div class="footer-politique">
 <a href="{{ route('politique.confidentialite') }}">
        Politique de confidentialité

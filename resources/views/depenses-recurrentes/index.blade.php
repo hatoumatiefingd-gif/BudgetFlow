@@ -2,12 +2,14 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dépenses récurrentes - BudgetFlow</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3">
 </head>
 <body>
 
 <div class="app">
+    {{-- Menu latéral de l'espace utilisateur --}}
     <aside class="sidebar">
 <div class="side-logo">
 <img src="{{ asset('logo.png') }}" alt="BudgetFlow">
@@ -37,6 +39,7 @@
 </div>
    {{-- Déconnexion --}}
 <div class="logout">
+{{-- Déconnexion : formulaire POST protégé par @csrf --}}
 <form method="POST" action="{{ route('logout') }}">
            @csrf
 <button type="submit">Déconnexion</button>
@@ -44,6 +47,7 @@
 </div>
 </aside>
 
+    {{-- Contenu principal de la page --}}
     <main class="content">
 
         <div class="rec-header">
@@ -57,6 +61,7 @@
             </a>
         </div>
 
+        {{-- Carte du total des dépenses récurrentes --}}
         <section class="rec-total-card">
             <p>Total des dépenses récurrentes</p>
 
@@ -71,6 +76,7 @@
 
         <section class="rec-grid">
 
+            {{-- @forelse affiche une carte par dépense récurrente, ou le bloc @empty s'il n'y en a aucune --}}
             @forelse($recurrentes as $recurrente)
 
                 <div class="rec-card">
@@ -102,6 +108,7 @@
                         ⋮
                     </a>
 
+                    {{-- Suppression : @method('DELETE') car un formulaire HTML ne connaît que GET et POST --}}
                     <form action="{{ route('depenses-recurrentes.destroy', $recurrente->idDepenseRecurrente) }}" method="POST">
                         @csrf
                         @method('DELETE')
@@ -111,6 +118,7 @@
 
                 </div>
 
+            {{-- Message affiché quand l'utilisateur n'a aucune dépense récurrente --}}
             @empty
 
                 <div class="rec-card">

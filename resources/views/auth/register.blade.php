@@ -2,14 +2,15 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription - BudgetFlow</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/mobile.css') }}?v=1">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3">
 </head>
 <body>
 
 <section class="inscription-page">
 
+    {{-- Partie gauche : texte de présentation --}}
     <div class="inscription-left">
         <p class="badge">Créer votre compte BudgetFlow</p>
 
@@ -21,6 +22,7 @@
         </p>
     </div>
 
+    {{-- Partie droite : carte avec le formulaire d'inscription --}}
     <div class="inscription-right">
         <div class="signup-card">
 
@@ -30,7 +32,10 @@
 
             <h1>Créer un compte</h1>
 
+            {{-- Formulaire envoyé à RegisteredUserController@store. --}}
+            {{-- "novalidate" désactive la vérification du navigateur : c'est Laravel qui vérifie. --}}
             <form method="POST" action="{{ route('register') }}" novalidate>
+                {{-- @csrf ajoute un jeton caché qui protège contre les attaques CSRF --}}
                 @csrf
 
                 <label for="name">Nom complet</label>
@@ -38,12 +43,14 @@
                     id="name"
                     type="text"
                     name="name"
+                    {{-- old('name') remet la valeur saisie si le formulaire contient une erreur --}}
                     value="{{ old('name') }}"
                     placeholder="Votre nom complet"
                 >
 
+                {{-- Affiche le message d'erreur de Laravel si le champ est invalide --}}
                 @error('name')
-                    <small style="color:red;">{{ $message }}</small>
+                    <small class="message-erreur">{{ $message }}</small>
                 @enderror
 
                 <label for="email">Adresse e-mail</label>
@@ -56,8 +63,9 @@
                 >
 
                 @error('email')
-                    <small style="color:red;">{{ $message }}</small>
+                    <small class="message-erreur">{{ $message }}</small>
                 @enderror
+{{-- Mot de passe + rappel des règles de sécurité --}}
 <label for="password">Mot de passe</label>
 <input
    id="password"
@@ -65,13 +73,14 @@
    name="password"
    placeholder="Mot de passe"
 >
-<small style="color:#666;">
+<small class="message-aide">
    Minimum 8 caractères avec une majuscule, une minuscule,
    un chiffre et un caractère spécial.
 </small>
 @error('password')
-<small style="color:red;">{{ $message }}</small>
+<small class="message-erreur">{{ $message }}</small>
 @enderror
+                {{-- Le nom "password_confirmation" est attendu par la règle "confirmed" de Laravel --}}
                 <label for="password_confirmation">Confirmer le mot de passe</label>
                 <input
                     id="password_confirmation"

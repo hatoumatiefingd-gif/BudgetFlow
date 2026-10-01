@@ -1,59 +1,107 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# BudgetFlow
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Application web de suivi de dépenses, réalisée dans le cadre du titre professionnel
+**Développeur Web et Web Mobile (DWWM)**.
 
-## About Laravel
+BudgetFlow permet à un utilisateur de suivre ses dépenses et ses revenus, de gérer ses
+abonnements (dépenses récurrentes) et de recevoir des alertes sur son budget.
+Un espace administrateur permet de consulter les comptes et les messages de contact.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fonctionnalités
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Espace utilisateur**
+- Inscription, connexion, mot de passe oublié, modification du profil
+- Tableau de bord : total des dépenses et des revenus du mois, budget restant,
+  taux d'épargne, graphique de répartition, dernières dépenses
+- Dépenses : ajout, modification, suppression, filtre par mois, année et catégorie
+- Revenus : ajout, modification, suppression, filtre par mois
+- Dépenses récurrentes : créées automatiquement à chaque échéance
+  (mensuelle, hebdomadaire ou annuelle)
+- Notifications : alertes automatiques (budget dépassé, bonne épargne, paiement à venir)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Espace administrateur**
+- Tableau de bord avec statistiques et activité récente
+- Liste et recherche des utilisateurs
+- Lecture des messages envoyés depuis le formulaire de contact
 
-## Learning Laravel
+**Pages publiques** : accueil, contact, politique de confidentialité.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Technologies
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Partie | Outils |
+|---|---|
+| Back-end | PHP 8.2+, Laravel 12, Eloquent (ORM) |
+| Authentification | Laravel Breeze |
+| Front-end | Blade, HTML, CSS (`public/css/style.css`), Chart.js |
+| Base de données | SQLite en local, base configurée par variables d'environnement sur Railway |
+| Hébergement | Railway |
 
-## Laravel Sponsors
+## Sécurité
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Mots de passe hachés (bcrypt) et règles de complexité à l'inscription
+- Protection CSRF sur tous les formulaires (`@csrf`)
+- Protection XSS : Blade échappe automatiquement les données affichées avec `{{ }}`
+- Chaque requête filtre sur l'utilisateur connecté (`where('idUtilisateur', auth()->id())`) :
+  un utilisateur ne peut ni voir, ni modifier, ni supprimer les données d'un autre compte
+- Espace admin protégé par le middleware `role:admin` (`app/Http/Middleware/RoleMiddleware.php`)
+- Validation des formulaires côté serveur avec `$request->validate()`
 
-### Premium Partners
+## Organisation du code
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```
+app/Http/Controllers/     Contrôleurs (un par fonctionnalité)
+app/Http/Middleware/      Middleware de vérification du rôle
+app/Models/               Modèles Eloquent (Depense, Revenu, Categorie...)
+database/migrations/      Création des tables
+database/seeders/         Données de démonstration
+resources/views/          Vues Blade (un dossier par fonctionnalité)
+routes/web.php            Toutes les routes de l'application
+public/css/style.css      Feuille de style, découpée en sections par page
+```
 
-## Contributing
+## Base de données
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Table | Contenu |
+|---|---|
+| `users` | Comptes (nom, e-mail, mot de passe, rôle `utilisateur` ou `admin`) |
+| `categorie` | Catégories de dépenses (Courses, Logement, Transport...) |
+| `depense` | Dépenses d'un utilisateur, liées à une catégorie |
+| `revenu` | Revenus d'un utilisateur |
+| `depenserecurrente` | Abonnements et paiements réguliers |
+| `notification` | Alertes affichées à l'utilisateur |
+| `notification_admin` | Notifications pour l'administrateur |
+| `contact_messages` | Messages du formulaire de contact |
 
-## Code of Conduct
+## Installation en local
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Prérequis : PHP 8.2+, Composer, Node.js.
 
-## Security Vulnerabilities
+```bash
+composer install
+npm install
+npm run build
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+cp .env.example .env
+php artisan key:generate
 
-## License
+# Crée la base SQLite, les tables et les données de démonstration
+touch database/database.sqlite
+php artisan migrate --seed
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+php artisan serve
+```
+
+L'application est ensuite disponible sur http://localhost:8000.
+
+## Comptes de démonstration
+
+Créés par `php artisan migrate --seed` :
+
+| Rôle | E-mail | Mot de passe |
+|---|---|---|
+| Utilisateur | demo@budgetflow.fr | Demo123! |
+| Administrateur | admin@budgetflow.fr | Admin123! |
+
+## Auteure
+
+Hatouma Diawara — projet de fin de formation DWWM, 2026.

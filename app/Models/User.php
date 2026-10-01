@@ -8,31 +8,29 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * Modèle User : un compte de l'application.
+ * Le champ "role" vaut "utilisateur" ou "admin".
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Champs que l'on peut remplir avec User::create([...]).
      *
      * @var list<string>
      */
     protected $fillable = [
-
-    'name',
-
-    'email',
-
-    'password',
-
-    'role',
-
-];
- 
+        'name',
+        'email',
+        'password',
+        'role',
+    ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Champs cachés : ils ne sont jamais renvoyés (par exemple en JSON).
      *
      * @var list<string>
      */
@@ -42,7 +40,8 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Conversions automatiques : la date de vérification devient un objet date
+     * et le mot de passe est haché automatiquement à l'enregistrement.
      *
      * @return array<string, string>
      */

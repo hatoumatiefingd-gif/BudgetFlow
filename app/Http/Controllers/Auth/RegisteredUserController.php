@@ -34,6 +34,8 @@ class RegisteredUserController extends Controller
 
 {
 
+    // Vérifie les champs du formulaire d'inscription.
+    // "unique" empêche de créer deux comptes avec le même e-mail.
     $request->validate([
 
         'name' => ['required', 'string', 'max:255'],
@@ -60,6 +62,9 @@ class RegisteredUserController extends Controller
 
             'confirmed',
 
+            // Mot de passe sécurisé : 8 caractères minimum, majuscule + minuscule,
+            // au moins un chiffre et un caractère spécial. "confirmed" vérifie
+            // que les deux mots de passe saisis sont identiques.
             Rules\Password::min(8)
 
                 ->mixedCase()
@@ -72,6 +77,8 @@ class RegisteredUserController extends Controller
 
     ]);
 
+    // Crée le compte. Le mot de passe est haché (jamais stocké en clair).
+    // Le rôle n'est pas indiqué : la base met "utilisateur" par défaut.
     $user = User::create([
 
         'name' => $request->name,
@@ -81,6 +88,7 @@ class RegisteredUserController extends Controller
         'password' => Hash::make($request->password),
 
     ]);
+// Envoie un e-mail de bienvenue au nouvel utilisateur.
 Mail::raw(
    "Bonjour ".$user->name.",\n\n".
    "Bienvenue sur BudgetFlow !\n".
@@ -92,6 +100,7 @@ Mail::raw(
             ->subject('Bienvenue sur BudgetFlow');
    }
 );
+    // Prévient l'administrateur qu'un nouveau compte a été créé.
     NotificationAdmin::create([
 
         'titre' => 'Nouvel utilisateur',
@@ -104,8 +113,10 @@ Mail::raw(
 
     ]);
 
+    // Déclenche l'événement Laravel "Registered" (envoi de l'e-mail de vérification si activé).
     event(new Registered($user));
 
+    // Connecte automatiquement l'utilisateur puis l'envoie vers son tableau de bord.
     Auth::login($user);
 
     return redirect(route('dashboard', absolute: false));

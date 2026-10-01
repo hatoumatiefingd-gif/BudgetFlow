@@ -2,11 +2,13 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin - Utilisateurs</title>
-<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3">
 </head>
 <body>
 <div class="admin-app">
+{{-- Menu latéral de l'espace administrateur --}}
 <aside class="admin-sidebar">
 <div class="admin-logo">
 <strong>BudgetFlow</strong>
@@ -33,6 +35,7 @@
 </div>
 </aside>
 
+{{-- Contenu principal de la page --}}
 <main class="admin-content">
 <div class="admin-top-row">
 <div>
@@ -44,6 +47,7 @@
 </div>
 
        {{-- Statistiques générales sur les comptes --}}
+{{-- Cartes de statistiques : total, utilisateurs, administrateurs --}}
 <section class="admin-stats">
 <div class="admin-stat-card">
 <div class="admin-icon blue">👥</div>
@@ -80,6 +84,7 @@
 </section>
 
        {{-- Permet à l'administrateur de rechercher un utilisateur --}}
+{{-- Recherche en GET : le mot cherché apparaît dans l'URL (?recherche=...) --}}
 <form
            method="GET"
            action="{{ route('admin.utilisateurs') }}"
@@ -97,6 +102,7 @@
 </form>
 
        {{-- Liste des utilisateurs inscrits --}}
+{{-- Tableau de tous les comptes --}}
 <div class="admin-table-card">
 <table class="admin-table">
 <thead>
@@ -109,6 +115,7 @@
 </thead>
 
 <tbody>
+                   {{-- Une ligne par compte, ou le bloc @empty si la recherche ne trouve rien --}}
                    @forelse($utilisateurs as $user)
 <tr>
 <td>

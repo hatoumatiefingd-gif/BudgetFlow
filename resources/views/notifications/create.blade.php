@@ -2,8 +2,9 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter une notification</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3">
 </head>
 <body>
 
@@ -12,7 +13,9 @@
 
         <h1>Ajouter une notification</h1>
 
+        {{-- Formulaire envoyé à NotificationBudgetController@store --}}
         <form action="{{ route('notifications.store') }}" method="POST">
+            {{-- Jeton de sécurité obligatoire pour les formulaires POST (protection CSRF) --}}
             @csrf
 
             <label>Titre</label>

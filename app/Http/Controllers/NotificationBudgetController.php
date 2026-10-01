@@ -24,6 +24,7 @@ class NotificationBudgetController extends Controller
             ->orderByDesc('idNotification')
             ->get();
 
+        // Affiche la page avec la liste des notifications.
         return view(
             'notifications.index',
             compact('notifications')
@@ -39,6 +40,7 @@ class NotificationBudgetController extends Controller
 
     public function create()
     {
+        // Affiche le formulaire d'ajout d'une notification.
         return view('notifications.create');
     }
 

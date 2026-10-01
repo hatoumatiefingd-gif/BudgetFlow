@@ -2,12 +2,14 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Messages de contact - BudgetFlow</title>
-<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3">
 </head>
 <body>
 <div class="admin-app">
    {{-- Menu latéral administrateur --}}
+{{-- Menu latéral de l'espace administrateur --}}
 <aside class="admin-sidebar">
 <div class="admin-logo">
 <strong>BudgetFlow</strong>
@@ -31,11 +33,13 @@
 </form>
 </div>
 </aside>
+{{-- Contenu principal : liste des messages reçus --}}
 <main class="admin-content">
 <div class="admin-top">
 <h1>Messages de contact</h1>
 <p>Messages envoyés par les utilisateurs.</p>
 </div>
+       {{-- Si aucun message n'a été reçu, on affiche un texte à la place du tableau --}}
        @if($messages->isEmpty())
 <div class="message-vide">
                Aucun message reçu pour le moment.
@@ -52,6 +56,7 @@
 </tr>
 </thead>
 <tbody>
+                       {{-- Une ligne du tableau par message --}}
                        @foreach($messages as $message)
 <tr>
 <td>{{ $message->name }}</td>
