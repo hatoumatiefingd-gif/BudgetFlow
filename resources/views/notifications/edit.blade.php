@@ -13,6 +13,9 @@
 
         <h1>Modifier une notification</h1>
 
+        {{-- Messages d'erreur si la saisie est refusée --}}
+        @include('partials.erreurs')
+
         {{-- Le formulaire envoie les modifications à NotificationBudgetController@update --}}
         <form action="{{ route('notifications.update', $notification->idNotification) }}" method="POST">
             @csrf

@@ -13,6 +13,9 @@
 
         <h1>Ajouter une notification</h1>
 
+        {{-- Messages d'erreur si la saisie est refusée --}}
+        @include('partials.erreurs')
+
         {{-- Formulaire envoyé à NotificationBudgetController@store --}}
         <form action="{{ route('notifications.store') }}" method="POST">
             {{-- Jeton de sécurité obligatoire pour les formulaires POST (protection CSRF) --}}

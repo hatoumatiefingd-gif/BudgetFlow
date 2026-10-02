@@ -1940,6 +1940,21 @@ html body .sidebar nav a.active {
     font-size: 15px;
 }
 
+.form-card .message-erreur {
+    margin-top: 15px;
+    padding: 12px 16px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    color: #b91c1c;
+    font-size: 14px;
+}
+
+.form-card .message-erreur ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
 .form-card button {
     margin-top: 25px;
     background: #0647f9;

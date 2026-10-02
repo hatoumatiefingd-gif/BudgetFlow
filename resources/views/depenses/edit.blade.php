@@ -14,6 +14,9 @@
 
         <h1>Modifier une dépense</h1>
 
+        {{-- Messages d'erreur si la saisie est refusée --}}
+        @include('partials.erreurs')
+
         {{-- Formulaire envoyé à DepenseController@update --}}
         <form action="{{ route('depenses.update', $depense->idDepense) }}" method="POST">
 
