@@ -14,6 +14,9 @@
 
         <h1>Ajouter une dépense</h1>
 
+        {{-- Messages d'erreur si la saisie est refusée --}}
+        @include('partials.erreurs')
+
         {{-- Formulaire envoyé à DepenseController@store --}}
         <form action="{{ route('depenses.store') }}" method="POST">
 
@@ -21,8 +24,8 @@
             @csrf
 
             <label>Montant</label>
-            {{-- step="0.01" autorise les centimes --}}
-            <input type="number" step="0.01" name="montant" required>
+            {{-- step="0.01" autorise les centimes, old() remet la valeur saisie après une erreur --}}
+            <input type="number" step="0.01" name="montant" value="{{ old('montant') }}" required>
 
             <label>Catégorie</label>
             <select name="idCategorie" required>
@@ -30,7 +33,8 @@
                 {{-- Une option par catégorie, envoyées par le contrôleur --}}
                 @foreach($categories as $categorie)
 
-                    <option value="{{ $categorie->idCategorie }}">
+                    <option value="{{ $categorie->idCategorie }}"
+                        {{ old('idCategorie') == $categorie->idCategorie ? 'selected' : '' }}>
                         {{ $categorie->nomCategorie }}
                     </option>
 
@@ -39,13 +43,14 @@
             </select>
 
             <label>Description</label>
-            <input type="text" name="description" required>
+            <input type="text" name="description" value="{{ old('description') }}" required>
 
             <label>Date</label>
             {{-- min empêche de choisir une date avant juillet 2026 --}}
             <input
     type="date"
     name="dateDepense"
+    value="{{ old('dateDepense') }}"
     min="2026-07-01"
     required>
             <button type="submit">

@@ -13,6 +13,9 @@
 
         <h1>Modifier une dépense récurrente</h1>
 
+        {{-- Messages d'erreur si la saisie est refusée --}}
+        @include('partials.erreurs')
+
         {{-- Formulaire envoyé à DepenseRecurrenteController@update --}}
         <form action="{{ route('depenses-recurrentes.update', $recurrente->idDepenseRecurrente) }}" method="POST">
 

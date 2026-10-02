@@ -13,6 +13,9 @@
 
         <h1>Ajouter une dépense récurrente</h1>
 
+        {{-- Messages d'erreur si la saisie est refusée --}}
+        @include('partials.erreurs')
+
         {{-- Formulaire envoyé à DepenseRecurrenteController@store --}}
         <form action="{{ route('depenses-recurrentes.store') }}" method="POST">
             {{-- Jeton de sécurité obligatoire pour les formulaires POST (protection CSRF) --}}

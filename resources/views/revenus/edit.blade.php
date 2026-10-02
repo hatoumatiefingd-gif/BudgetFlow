@@ -13,6 +13,9 @@
 
         <h1>Modifier un revenu</h1>
 
+        {{-- Messages d'erreur si la saisie est refusée --}}
+        @include('partials.erreurs')
+
         {{-- Formulaire envoyé à RevenuController@update --}}
         <form action="{{ route('revenus.update', $revenu->idRevenu) }}" method="POST">
             @csrf
