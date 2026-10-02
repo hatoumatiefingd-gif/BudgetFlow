@@ -33,7 +33,7 @@ Un espace administrateur permet de consulter les comptes et les messages de cont
 | Back-end | PHP 8.2+, Laravel 12, Eloquent (ORM) |
 | Authentification | Laravel Breeze |
 | Front-end | Blade, HTML, CSS (`public/css/style.css`), Chart.js |
-| Base de données | SQLite en local, base configurée par variables d'environnement sur Railway |
+| Base de données | MySQL : XAMPP et phpMyAdmin en local, base MySQL sur Railway en ligne |
 | Hébergement | Railway |
 
 ## Sécurité
@@ -74,7 +74,10 @@ public/css/style.css      Feuille de style, découpée en sections par page
 
 ## Installation en local
 
-Prérequis : PHP 8.2+, Composer, Node.js.
+Prérequis : XAMPP (PHP 8.2+, Apache et MySQL), Composer, Node.js.
+
+Avant de commencer : démarrer Apache et MySQL dans XAMPP, puis créer une base vide
+nommée `budget_flow` dans phpMyAdmin.
 
 ```bash
 composer install
@@ -84,8 +87,9 @@ npm run build
 cp .env.example .env
 php artisan key:generate
 
-# Crée la base SQLite, les tables et les données de démonstration
-touch database/database.sqlite
+# Dans le fichier .env, vérifier DB_DATABASE=budget_flow (utilisateur root, sans mot de passe avec XAMPP)
+
+# Crée les tables et les données de démonstration
 php artisan migrate --seed
 
 php artisan serve
