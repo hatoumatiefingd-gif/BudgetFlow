@@ -15,6 +15,9 @@
                Si vous rencontrez un problème avec votre compte,
                vous pouvez envoyer un message à l’administrateur.
 </p>
+{{-- Messages d'erreur si la saisie est refusée --}}
+@include('partials.erreurs')
+
 {{-- Message affiché lorsque l'envoi a réussi --}}
 @if(session('success'))
 <div class="contact-success">
@@ -30,6 +33,7 @@
                        type="text"
                        id="name"
                        name="name"
+                       value="{{ old('name') }}"
                        placeholder="Votre nom"
                        required
 >
@@ -41,6 +45,7 @@
                        type="email"
                        id="email"
                        name="email"
+                       value="{{ old('email') }}"
                        placeholder="Votre adresse e-mail"
                        required
 >
@@ -54,7 +59,7 @@
                        rows="6"
                        placeholder="Expliquez votre problème..."
                        required
-></textarea>
+>{{ old('message') }}</textarea>
 </div>
 
 <button type="submit" class="contact-button">
@@ -62,10 +67,10 @@
 </button>
 </form>
 
-           {{-- Retour à la page de connexion --}}
+           {{-- Retour à la page d'accueil, d'où vient le lien « Nous contacter » --}}
 <div class="contact-retour">
-<a href="{{ route('login') }}">
-                   ← Retour à la connexion
+<a href="{{ url('/') }}">
+                   ← Retour à l’accueil
 </a>
 </div>
 </div>

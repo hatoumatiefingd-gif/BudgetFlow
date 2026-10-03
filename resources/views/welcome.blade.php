@@ -90,10 +90,13 @@
     </div>
 
 </section>
-{{-- Lien vers la politique de confidentialité (obligatoire avec le RGPD) --}}
+{{-- Bas de page : politique de confidentialité (obligatoire avec le RGPD) et formulaire de contact --}}
 <div class="footer-politique">
 <a href="{{ route('politique.confidentialite') }}">
        Politique de confidentialité
+</a>
+<a href="{{ route('contact') }}">
+       Nous contacter
 </a>
 </div>
 </body>
