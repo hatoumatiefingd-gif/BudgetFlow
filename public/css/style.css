@@ -2735,9 +2735,11 @@ header .max-w-7xl {
     color: #1e40af;
 }
 
-/* Espace entre les deux liens du bas de page */
-.footer-politique a + a {
-    margin-left: 30px;
+/* Petit point entre les deux liens du bas de page, avec de l'espace autour */
+.footer-politique .separateur {
+    color: #64748b;
+    font-weight: bold;
+    margin: 0 15px;
 }
 
 /* ==========================================
