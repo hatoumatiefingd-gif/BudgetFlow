@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BudgetFlow</title>
 
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=3">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=4">
 {{-- Feuille de style unique du site ("?v=3" force le navigateur à recharger la nouvelle version) --}}
 </head>
 <body>
@@ -95,6 +95,7 @@
 <a href="{{ route('politique.confidentialite') }}">
        Politique de confidentialité
 </a>
+<span class="separateur">·</span>
 <a href="{{ route('contact') }}">
        Nous contacter
 </a>

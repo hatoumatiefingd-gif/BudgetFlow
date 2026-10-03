@@ -12,7 +12,7 @@
 
     {{-- CSS principal de BudgetFlow --}}
     <link rel="stylesheet"
-          href="{{ asset('css/style.css') }}?v=3">
+          href="{{ asset('css/style.css') }}?v=4">
 
 </head>
 
