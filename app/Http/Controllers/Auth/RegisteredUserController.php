@@ -91,6 +91,8 @@ class RegisteredUserController extends Controller
 
     ]);
 // Envoie un e-mail de bienvenue au nouvel utilisateur.
+// Mail::raw = e-mail en texte simple. L'envoi passe par le serveur SMTP
+// configuré dans .env (lignes MAIL_). En ligne, Railway gratuit bloque SMTP.
 Mail::raw(
    "Bonjour ".$user->name.",\n\n".
    "Bienvenue sur BudgetFlow !\n".
