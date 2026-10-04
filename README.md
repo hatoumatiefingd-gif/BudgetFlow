@@ -97,6 +97,40 @@ php artisan serve
 
 L'application est ensuite disponible sur http://localhost:8000.
 
+## Déploiement sur Railway
+
+Le site est en ligne à l'adresse : https://budgetflow-production-ead6.up.railway.app
+
+Étapes de la mise en ligne :
+
+1. **Relier GitHub à Railway** : sur Railway, créer un projet avec « Deploy from GitHub repo »,
+   autoriser l'accès à GitHub puis choisir le dépôt BudgetFlow.
+2. **Ajouter la base de données** : dans le même projet, ajouter un service **MySQL**.
+   Il est séparé de la base locale de XAMPP et garde ses données dans un volume.
+3. **Remplir les variables d'environnement** dans l'onglet *Variables* du service BudgetFlow
+   (elles remplacent le fichier `.env`, qui n'est jamais envoyé sur GitHub) :
+
+   | Variable | Valeur |
+   |---|---|
+   | `APP_ENV` | `production` |
+   | `APP_DEBUG` | `false` |
+   | `APP_KEY` | clé générée avec `php artisan key:generate --show` |
+   | `APP_URL` | adresse du site en ligne |
+   | `DB_CONNECTION` | `mysql` |
+   | `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | informations de connexion données par le service MySQL de Railway |
+
+4. **Créer les tables** : lancer les migrations sur la base en ligne avec
+   `php artisan migrate --force` (l'option `--force` est obligatoire en production).
+5. **Générer l'adresse du site** : dans *Settings* puis *Networking*, cliquer sur
+   « Generate Domain ». Railway fournit automatiquement le HTTPS.
+
+**Mises à jour** : à chaque fusion sur la branche `main` de GitHub, Railway récupère
+le nouveau code et redéploie le site tout seul. L'historique des déploiements est
+visible dans l'onglet *Deployments*.
+
+**Limite connue** : l'offre gratuite de Railway bloque l'envoi d'e-mails, donc la fonction
+« mot de passe oublié » fonctionne en local mais pas en ligne.
+
 ## Comptes de démonstration
 
 Créés par `php artisan migrate --seed` :
