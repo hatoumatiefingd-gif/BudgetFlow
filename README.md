@@ -131,15 +131,6 @@ visible dans l'onglet *Deployments*.
 **Limite connue** : l'offre gratuite de Railway bloque l'envoi d'e-mails, donc la fonction
 « mot de passe oublié » fonctionne en local mais pas en ligne.
 
-## Comptes de démonstration
-
-Créés par `php artisan migrate --seed` :
-
-| Rôle | E-mail | Mot de passe |
-|---|---|---|
-| Utilisateur | demo@budgetflow.fr | Demo123! |
-| Administrateur | admin@budgetflow.fr | Admin123! |
-
 ## Auteure
 
 Hatouma Diawara — projet de fin de formation DWWM, 2026.
