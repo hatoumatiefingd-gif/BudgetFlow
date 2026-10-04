@@ -120,6 +120,7 @@
 
 
         {{-- Message après suppression --}}
+        {{-- message flash envoyé par le contrôleur avec ->with('success', ...) : il s'affiche une seule fois puis disparaît --}}
         @if(session('success'))
 
             <div class="notif-success-message">
@@ -196,6 +197,7 @@
             <section class="notif-list">
 
 
+                {{-- @forelse = une boucle sur la liste ; si la liste est vide, c'est le bloc @empty plus bas qui s'affiche --}}
                 @forelse($notifications as $notification)
 
 
@@ -272,6 +274,7 @@
 
                             @csrf
 
+                            {{-- un formulaire HTML ne connaît que GET et POST : @method('DELETE') indique à Laravel que c'est une suppression (route Route::delete) --}}
                             @method('DELETE')
 
 

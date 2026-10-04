@@ -66,6 +66,7 @@
             <p>Total des dépenses récurrentes</p>
 
             <h2>
+                {{-- number_format(nombre, 2, '.', ' ') : 2 chiffres après la virgule et un espace pour les milliers (ex : 1 250.00) --}}
                 {{ number_format($recurrentes->sum('montant'), 2, '.', ' ') }} €
             </h2>
 
