@@ -845,7 +845,7 @@
 
 <script>
 
-    // Blade remplace {{ ... }} par les totaux calculés dans DashboardController
+    // Blade remplace les doubles accolades par les totaux calculés dans DashboardController
     // avant d'envoyer la page : le navigateur reçoit par exemple const revenus = 1000;
     const revenus = {{ $totalRevenus }};
     const depenses = {{ $totalDepenses }};
