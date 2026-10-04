@@ -10,7 +10,9 @@ return Application::configure(basePath: dirname(__DIR__))
        health: '/up',
    )
    ->withMiddleware(function (Middleware $middleware): void {
-       // Railway agit comme un proxy HTTPS devant Laravel.
+       // En ligne, Railway reçoit d'abord la connexion HTTPS puis la transmet à
+       // Laravel (c'est un proxy). Sans cette ligne, Laravel croirait que le site
+       // est en HTTP et générerait des liens http:// au lieu de https://.
        $middleware->trustProxies(
            at: '*',
            headers:
@@ -19,7 +21,8 @@ return Application::configure(basePath: dirname(__DIR__))
                Request::HEADER_X_FORWARDED_PORT |
                Request::HEADER_X_FORWARDED_PROTO
        );
-       // Middleware pour les rôles utilisateur / administrateur
+       // Alias : quand j'écris 'role:admin' dans routes/web.php, Laravel sait qu'il
+       // doit utiliser ma classe RoleMiddleware. Le texte après ':' devient $role.
        $middleware->alias([
            'role' => \App\Http\Middleware\RoleMiddleware::class,
        ]);

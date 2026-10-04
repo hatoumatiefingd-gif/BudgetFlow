@@ -52,7 +52,7 @@ class RegisteredUserController extends Controller
 
             'max:255',
 
-            'unique:'.User::class,
+            'unique:'.User::class, // refuse un e-mail déjà utilisé par un autre compte
 
         ],
 
@@ -85,6 +85,8 @@ class RegisteredUserController extends Controller
 
         'email' => $request->email,
 
+        // Hash::make : bcrypt transforme le mot de passe en empreinte illisible
+        // (ex : $2y$12$...). Impossible de revenir au mot de passe d'origine.
         'password' => Hash::make($request->password),
 
     ]);

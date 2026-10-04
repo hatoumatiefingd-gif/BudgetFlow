@@ -19,7 +19,7 @@ class DepenseRecurrenteController extends Controller
         // avec leur catégorie, de la plus proche échéance à la plus lointaine.
         $recurrentes = DepenseRecurrente::with('categorie')
             ->where('idUtilisateur', auth()->id())
-            ->orderBy('prochaineDate', 'asc')
+            ->orderBy('prochaineDate', 'asc') // asc = croissant : le prochain paiement en haut
             ->get();
 
         return view(
@@ -63,7 +63,9 @@ class DepenseRecurrenteController extends Controller
                 'La prochaine date doit être aujourd’hui ou une date future.',
         ]);
 
-        // Enregistre la dépense récurrente pour l'utilisateur connecté.
+        // On enregistre seulement l'abonnement. La vraie dépense n'est pas créée
+        // ici : c'est DashboardController::traiterDepensesRecurrentes() qui l'ajoute
+        // quand la prochaineDate arrive.
         $recurrente = DepenseRecurrente::create([
             'nomDepenseRecurrente' =>
                 $request->nomDepenseRecurrente,
@@ -191,7 +193,8 @@ class DepenseRecurrenteController extends Controller
             )
             ->findOrFail($id);
 
-        // Supprime la dépense récurrente de la base de données.
+        // Supprime seulement l'abonnement : les dépenses déjà ajoutées les mois
+        // précédents restent dans l'historique (ce sont des lignes de la table depense).
         $recurrente->delete();
 
         return redirect()

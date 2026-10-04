@@ -11,7 +11,7 @@ return new class extends Migration
    public function up(): void
    {
        // Crée la table des catégories.
-       if (!Schema::hasTable('categorie')) {
+       if (!Schema::hasTable('categorie')) { // seulement si la table n'existe pas encore (pas d'erreur si on relance)
            Schema::create('categorie', function (Blueprint $table) {
                $table->id('idCategorie');
                $table->string('nomCategorie', 50);
@@ -34,17 +34,17 @@ return new class extends Migration
        // Crée la table des dépenses.
        if (!Schema::hasTable('depense')) {
            Schema::create('depense', function (Blueprint $table) {
-               $table->id('idDepense');
-               $table->decimal('montant', 10, 2);
-               $table->string('description', 255);
-               $table->date('dateDepense');
-               $table->unsignedBigInteger('idUtilisateur');
+               $table->id('idDepense'); // clé primaire : numéro unique, auto-incrémenté
+               $table->decimal('montant', 10, 2); // 10 chiffres dont 2 après la virgule (centimes), sans erreur d'arrondi
+               $table->string('description', 255); // VARCHAR(255)
+               $table->date('dateDepense'); // date seule, sans l'heure
+               $table->unsignedBigInteger('idUtilisateur'); // même type que users.id, obligatoire pour la clé étrangère
                $table->unsignedBigInteger('idCategorie');
-               $table->foreign('idUtilisateur')
+               $table->foreign('idUtilisateur') // clé étrangère : la dépense appartient à un utilisateur
                    ->references('id')
-                   ->on('users')
-                   ->onDelete('cascade');
-               $table->foreign('idCategorie')
+                   ->on('users') // qui doit exister dans la table users
+                   ->onDelete('cascade'); // compte supprimé = ses dépenses supprimées aussi
+               $table->foreign('idCategorie') // clé étrangère vers la table categorie
                    ->references('idCategorie')
                    ->on('categorie')
                    ->onDelete('cascade');
@@ -56,8 +56,8 @@ return new class extends Migration
                $table->id('idDepenseRecurrente');
                $table->string('nomDepenseRecurrente', 255);
                $table->decimal('montant', 10, 2);
-               $table->string('frequence', 50);
-               $table->date('prochaineDate');
+               $table->string('frequence', 50); // Mensuel, Hebdomadaire ou Annuel
+               $table->date('prochaineDate'); // date du prochain paiement, avancée automatiquement
                $table->unsignedBigInteger('idCategorie');
                $table->unsignedBigInteger('idUtilisateur');
                $table->foreign('idCategorie')
@@ -88,6 +88,8 @@ return new class extends Migration
    }
    /**
     * Supprime les tables dans l'ordre inverse.
+    * Lancée par php artisan migrate:rollback. On supprime d'abord les tables qui
+    * ont des clés étrangères, sinon MySQL refuse (une dépense pointe vers une catégorie).
     */
    public function down(): void
    {

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
  * Modèle DepenseRecurrente : une dépense qui revient régulièrement
  * (abonnement, loyer...). Quand la prochaine date est atteinte,
  * une vraie dépense est créée automatiquement (voir DashboardController).
+ * Dans le diagramme de classes, c'est un héritage de Depense ; dans le code,
+ * c'est un modèle à part, avec sa propre table, car Eloquent associe une classe à une table.
  */
 class DepenseRecurrente extends Model
 {

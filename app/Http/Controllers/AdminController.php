@@ -6,6 +6,10 @@ use App\Models\User;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
 
+// Toutes les méthodes de ce contrôleur sont derrière le middleware role:admin
+// (voir routes/web.php) : un utilisateur simple reçoit une erreur 403.
+// L'admin voit les comptes et les messages, mais jamais les dépenses
+// ni les revenus des utilisateurs (données personnelles).
 class AdminController extends Controller
 {
     /*
@@ -16,7 +20,7 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        // Compte tous les comptes enregistrés dans l'application.
+        // Compte tous les comptes enregistrés : SELECT COUNT(*) FROM users
         $totalUtilisateurs = User::count();
 
         // Compte uniquement les comptes utilisateurs simples.
@@ -65,6 +69,8 @@ class AdminController extends Controller
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get()
+            // map() transforme chaque utilisateur en un petit tableau
+            // (type, titre, message, date) que la vue sait afficher.
             ->map(function ($user) {
 
                 return [
@@ -93,7 +99,7 @@ class AdminController extends Controller
             ->get()
             ->map(function ($message) {
 
-                // Récupère le nom de l'expéditeur.
+                // ?? : si name est vide, on essaie nom, sinon on met un texte par défaut.
                 $nomExpediteur =
                     $message->name
                     ?? $message->nom
@@ -118,10 +124,10 @@ class AdminController extends Controller
          * puis garde seulement les 5 activités les plus récentes.
          */
         $activitesRecentes = $activitesUtilisateurs
-            ->concat($activitesMessages)
-            ->sortByDesc('date')
+            ->concat($activitesMessages) // met les deux listes bout à bout
+            ->sortByDesc('date') // trie le tout par date, la plus récente d'abord
             ->take(5)
-            ->values();
+            ->values(); // renumérote la liste de 0 à 4 après le tri
 
 
         /*
@@ -176,8 +182,11 @@ class AdminController extends Controller
         $recherche = $request->recherche;
 
         /*
-         * Recherche un utilisateur
-         * par son nom ou son adresse e-mail.
+         * when($recherche, ...) : la condition n'est ajoutée que si quelque chose
+         * a été tapé dans la barre de recherche. Sinon, on affiche tout le monde.
+         * like '%texte%' = "contient ce texte", n'importe où dans le nom ou l'e-mail.
+         * En SQL : WHERE name LIKE '%texte%' OR email LIKE '%texte%'
+         * Le texte tapé passe par une requête préparée : pas d'injection SQL.
          */
         $utilisateurs = User::when(
             $recherche,

@@ -28,9 +28,11 @@ class ProfileController extends Controller
    */
    public function update(ProfileUpdateRequest $request): RedirectResponse
    {
-       // Met à jour les informations validées de l'utilisateur.
+       // ProfileUpdateRequest valide les données avant d'arriver ici.
+       // fill() remplit le nom et l'e-mail, sans encore enregistrer.
        $request->user()->fill($request->validated());
-       // Si l'adresse e-mail change, elle redevient non vérifiée.
+       // isDirty('email') = "l'e-mail a-t-il été modifié ?". Si oui, il redevient
+       // non vérifié.
        if ($request->user()->isDirty('email')) {
            $request->user()->email_verified_at = null;
        }
@@ -48,7 +50,8 @@ class ProfileController extends Controller
    */
    public function destroy(Request $request): RedirectResponse
    {
-       // Vérifie le mot de passe avant de supprimer le compte.
+       // current_password : il faut taper son mot de passe actuel pour confirmer.
+       // Ça évite qu'une autre personne supprime le compte sur un ordinateur resté connecté.
        $request->validateWithBag('userDeletion', [
            'password' => ['required', 'current_password'],
        ]);
@@ -56,9 +59,11 @@ class ProfileController extends Controller
        $user = $request->user();
        // Déconnecte l'utilisateur.
        Auth::logout();
-       // Supprime son compte.
+       // DELETE FROM users WHERE id = ... Grâce au onDelete('cascade') des clés
+       // étrangères, ses dépenses, revenus, abonnements et notifications sont
+       // supprimés en même temps. C'est le droit à l'effacement du RGPD.
        $user->delete();
-       // Sécurise la session.
+       // invalidate() vide la session, regenerateToken() crée un nouveau jeton CSRF.
        $request->session()->invalidate();
        $request->session()->regenerateToken();
        return Redirect::to('/');

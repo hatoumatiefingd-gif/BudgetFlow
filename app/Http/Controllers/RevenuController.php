@@ -18,13 +18,15 @@ class RevenuController extends Controller
 
     public function index(Request $request)
     {
-        // Utilise le mois actuel si aucun mois n'est sélectionné.
+        // Mois choisi dans le filtre (?mois=9), sinon le mois en cours.
+        // ?: veut dire "si la valeur de gauche est vide, prends celle de droite".
         $mois = $request->mois ?: now()->month;
 
         // Utilise l'année actuelle si aucune année n'est sélectionnée.
         $annee = $request->annee ?: now()->year;
 
-        // Récupère uniquement les revenus de l'utilisateur connecté.
+        // Seulement MES revenus du mois choisi, du plus récent au plus ancien.
+        // En SQL : SELECT * FROM revenu WHERE idUtilisateur = ... AND MONTH(dateRevenu) = ...
         $revenus = Revenu::where('idUtilisateur', auth()->id())
             ->whereMonth('dateRevenu', $mois)
             ->whereYear('dateRevenu', $annee)
@@ -47,6 +49,7 @@ class RevenuController extends Controller
 
     public function create()
     {
+        // Affiche juste le formulaire vide. L'envoi est traité par store().
         return view('revenus.create');
     }
 
@@ -63,7 +66,8 @@ class RevenuController extends Controller
         $debutMois = now()->startOfMonth()->toDateString();
         $finMois = now()->endOfMonth()->toDateString();
 
-        // Vérifie les données saisies.
+        // Mêmes règles que pour les dépenses. Si une règle échoue, retour au
+        // formulaire avec les messages, rien n'est enregistré.
         $request->validate(
             [
                 'montant' => 'required|numeric|min:0',
@@ -86,7 +90,8 @@ class RevenuController extends Controller
             ]
         );
 
-        // Enregistre le revenu.
+        // INSERT INTO revenu. Le propriétaire vient de la session (auth()->id()),
+        // pas du formulaire.
         Revenu::create([
             'montant' => $request->montant,
             'source' => $request->source,
@@ -97,6 +102,8 @@ class RevenuController extends Controller
         // Vérifie la nouvelle situation du budget.
         $this->verifierBudget();
 
+        // with('success', ...) garde le message pour UNE seule page :
+        // il s'affiche sur la liste, puis disparaît (message "flash").
         return redirect()
             ->route('revenus.index')
             ->with('success', 'Revenu ajouté avec succès.');
@@ -111,7 +118,8 @@ class RevenuController extends Controller
 
     public function edit($id)
     {
-        // Récupère uniquement un revenu appartenant à l'utilisateur.
+        // findOrFail cherche le revenu parmi MES revenus seulement.
+        // Si je mets le numéro d'un revenu d'un autre compte : erreur 404.
         $revenu = Revenu::where('idUtilisateur', auth()->id())
             ->findOrFail($id);
 
@@ -138,7 +146,7 @@ class RevenuController extends Controller
             'dateRevenu' => 'required|date',
         ]);
 
-        // Ancienne et nouvelle date.
+        // Carbon transforme les dates texte en objets qu'on peut comparer.
         $ancienneDate = Carbon::parse($revenu->dateRevenu);
         $nouvelleDate = Carbon::parse($request->dateRevenu);
 
@@ -205,10 +213,11 @@ class RevenuController extends Controller
         $revenu = Revenu::where('idUtilisateur', auth()->id())
             ->findOrFail($id);
 
-        // Supprime le revenu.
+        // DELETE FROM revenu WHERE idRevenu = ...
         $revenu->delete();
 
-        // Recalcule le budget après suppression.
+        // Moins de revenus = le pourcentage dépensé augmente, donc on revérifie
+        // s'il faut créer une alerte.
         $this->verifierBudget();
 
         return redirect()
@@ -223,6 +232,8 @@ class RevenuController extends Controller
     |--------------------------------------------------------------------------
     */
 
+    // Même logique que dans DepenseController : alerte à 80 %, alerte si on
+    // dépasse 100 %, au maximum une alerte de chaque type par mois.
     private function verifierBudget()
     {
         $userId = auth()->id();
@@ -241,7 +252,7 @@ class RevenuController extends Controller
             ->whereYear('dateDepense', $annee)
             ->sum('montant');
 
-        // Aucun calcul de pourcentage si aucun revenu.
+        // Sans revenu, pas de pourcentage possible (on ne divise pas par zéro).
         if ($totalRevenus <= 0) {
             return;
         }
