@@ -18,4 +18,7 @@ class Categorie extends Model
 
     // La table n'a pas de colonnes created_at et updated_at.
     public $timestamps = false;
+
+    // Pas de $fillable : les catégories ne sont jamais créées depuis un formulaire,
+    // seulement par la migration add_default_categories.
 }

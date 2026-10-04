@@ -840,11 +840,13 @@
      GRAPHIQUE CHART.JS
 ========================================== --}}
 
+{{-- Chart.js : bibliothèque JavaScript chargée depuis un CDN (serveur externe), elle dessine le graphique --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 
-    // Données venant de Laravel
+    // Blade remplace {{ ... }} par les totaux calculés dans DashboardController
+    // avant d'envoyer la page : le navigateur reçoit par exemple const revenus = 1000;
     const revenus = {{ $totalRevenus }};
     const depenses = {{ $totalDepenses }};
 
@@ -861,13 +863,15 @@
         depenses > 0;
 
 
-    // Budget restant
+    // Budget restant pour la partie grise de l'anneau.
+    // Math.max(..., 0) : jamais négatif, l'anneau ne peut pas dessiner une valeur négative.
     const restant = revenus > 0
         ? Math.max(revenus - depenses, 0)
         : 0;
 
 
-    // Budget utilisé
+    // Budget utilisé pour la partie colorée. Math.min : on ne dépasse pas les revenus,
+    // sinon l'anneau serait faux (le dépassement est montré par la couleur rouge).
     const utilise = depensesSansRevenus
         ? depenses
         : (
@@ -877,6 +881,7 @@
         );
 
 
+    // let (et pas const) car la couleur change selon le pourcentage juste en dessous.
     // Couleur par défaut : bleu BudgetFlow
     let couleurBudget = '#4f46e5';
 
@@ -891,25 +896,26 @@
     // Revenus présents
     else if (revenus > 0) {
 
+        // Exemple : 850 / 1000 * 100 = 85 %, donc orange.
         const pourcentage =
             (depenses / revenus) * 100;
 
 
-        // Budget atteint ou dépassé
+        // 100 % ou plus : budget atteint ou dépassé -> rouge
         if (pourcentage >= 100) {
 
             couleurBudget = '#ef4444';
 
         }
 
-        // Budget presque atteint
+        // Entre 80 et 100 % : presque tout dépensé -> orange
         else if (pourcentage >= 80) {
 
             couleurBudget = '#f59e0b';
 
         }
 
-        // Budget normal
+        // Moins de 80 % : tout va bien -> bleu
         else {
 
             couleurBudget = '#4f46e5';
@@ -919,10 +925,12 @@
     }
 
 
+    // On récupère dans la page (le DOM) la balise <canvas id="budgetChart"> où dessiner.
     const graphique =
         document.getElementById('budgetChart');
 
 
+    // On crée le graphique : type doughnut = anneau, data = les valeurs, labels = la légende.
     new Chart(graphique, {
 
         type: 'doughnut',

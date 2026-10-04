@@ -12,6 +12,8 @@ use Illuminate\Notifications\Notifiable;
  * Modèle User : un compte de l'application.
  * Le champ "role" vaut "utilisateur" ou "admin".
  */
+// User hérite de Authenticatable (et pas de Model directement) : c'est la classe
+// de Laravel qui sait gérer la connexion, la session et le mot de passe.
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -26,7 +28,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
+        'role', // utilisé par le seeder pour créer l'admin ; l'inscription ne le remplit jamais
     ];
 
     /**

@@ -11,6 +11,19 @@ use App\Http\Controllers\NotificationBudgetController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ContactController;
 
+/*
+ * Comment lire ce fichier :
+ * Route::get('/adresse', [Controleur::class, 'methode'])->name('nom');
+ * - get / post / put / patch / delete = la méthode HTTP :
+ *   get pour afficher, post pour créer, put ou patch pour modifier, delete pour supprimer.
+ *   Un formulaire HTML ne connaît que GET et POST : pour put et delete, la vue
+ *   ajoute @method('PUT') ou @method('DELETE') dans le formulaire.
+ * - {id} dans l'adresse = le numéro de la ligne, envoyé à la méthode ($id).
+ * - name() = un surnom : dans les vues j'écris route('depenses.index')
+ *   au lieu de l'adresse, donc si l'adresse change, les liens suivent.
+ * Commande utile : php artisan route:list affiche toutes les routes.
+ */
+
 
 /*
 |--------------------------------------------------------------------------
@@ -54,7 +67,8 @@ Route::post(
 |--------------------------------------------------------------------------
 | ESPACE UTILISATEUR
 |--------------------------------------------------------------------------
-| Toutes les routes de ce groupe nécessitent une connexion.
+| Toutes les routes de ce groupe nécessitent une connexion :
+| le middleware auth renvoie vers /login si personne n'est connecté.
 |--------------------------------------------------------------------------
 */
 
@@ -298,6 +312,10 @@ Route::middleware(['auth'])->group(function () {
 | ESPACE ADMINISTRATEUR
 |--------------------------------------------------------------------------
 | Ces routes sont accessibles uniquement au compte administrateur.
+| auth vérifie la connexion, puis role:admin appelle RoleMiddleware avec
+| $role = 'admin' (alias déclaré dans bootstrap/app.php).
+| prefix('admin') : toutes les adresses commencent par /admin.
+| name('admin.') : tous les noms commencent par admin. (ex : admin.dashboard).
 |--------------------------------------------------------------------------
 */
 
@@ -352,5 +370,6 @@ Route::middleware(['auth', 'role:admin'])
 |--------------------------------------------------------------------------
 */
 
-// Charge les routes de connexion, inscription et mot de passe.
+// Charge les routes de connexion, inscription et mot de passe oublié,
+// fournies par Laravel Breeze (fichier routes/auth.php).
 require __DIR__ . '/auth.php';

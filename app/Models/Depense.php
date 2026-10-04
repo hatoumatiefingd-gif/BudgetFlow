@@ -19,7 +19,7 @@ class Depense extends Model
     // La table n'a pas de colonnes created_at et updated_at.
     public $timestamps = false;
 
-    // Champs que l'on peut remplir avec Depense::create([...]).
+    // Liste blanche : seuls ces champs peuvent être remplis par create() ou update(). Un champ en plus envoyé par un pirate est ignoré.
     protected $fillable = [
         'montant',
         'description',
@@ -30,7 +30,7 @@ class Depense extends Model
 
     /**
      * Une dépense appartient à une catégorie.
-     * Permet d'écrire $depense->categorie->nomCategorie.
+     * Permet d'écrire $depense->categorie->nomCategorie (Laravel fait la jointure pour moi).
      */
     public function categorie()
     {

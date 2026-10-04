@@ -2,6 +2,9 @@
 namespace App\Http\Controllers;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
+// Formulaire "Nous contacter" (lien en bas de la page d'accueil).
+// Les routes /contact sont publiques : pas besoin d'être connecté pour écrire.
+// L'admin lit les messages dans AdminController::messagesContact().
 class ContactController extends Controller
 {
    /**
@@ -16,7 +19,8 @@ class ContactController extends Controller
     */
    public function store(Request $request)
    {
-       // Vérifie les informations saisies dans le formulaire.
+       // email : vérifie le format (quelque chose@domaine). max:2000 évite
+       // qu'on envoie un texte énorme dans la base.
        $request->validate([
            'name' => 'required|string|max:255',
            'email' => 'required|email|max:255',
@@ -27,8 +31,9 @@ class ContactController extends Controller
            'name' => $request->name,
            'email' => $request->email,
            'message' => $request->message,
-           'lu' => false,
+           'lu' => false, // nouveau message = pas encore lu par l'admin
        ]);
+       // Retour sur le formulaire avec un message de confirmation (affiché une seule fois).
        return redirect()
            ->route('contact')
            ->with('success', 'Votre message a bien été envoyé.');

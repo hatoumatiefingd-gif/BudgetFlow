@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\NotificationBudget;
 use Illuminate\Http\Request;
 
+// Page "Notifications" de l'utilisateur.
+// La plupart des notifications sont créées automatiquement par les autres
+// contrôleurs (dépense ajoutée, budget presque atteint, paiement récurrent...).
+// Ici, on les affiche, et l'utilisateur peut aussi en ajouter, modifier ou supprimer.
 class NotificationBudgetController extends Controller
 {
     /*
@@ -21,7 +25,7 @@ class NotificationBudgetController extends Controller
                 auth()->id()
             )
             ->orderBy('dateNotification', 'desc')
-            ->orderByDesc('idNotification')
+            ->orderByDesc('idNotification') // à date égale, la dernière créée en premier
             ->get();
 
         // Affiche la page avec la liste des notifications.

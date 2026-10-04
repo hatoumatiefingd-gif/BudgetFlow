@@ -26,11 +26,14 @@ class DashboardController extends Controller
          * Récupère le mois et l'année choisis dans le filtre.
          * Si rien n'est choisi, le mois actuel est utilisé.
          */
+        // request('mois', valeur) : lit ?mois= dans l'adresse, sinon prend la valeur par défaut.
         $mois = request('mois', now()->month);
         $annee = request('annee', now()->year);
 
         /*
-         * Traite les dépenses récurrentes arrivées à échéance.
+         * Avant de calculer les totaux, on ajoute les abonnements dont la date
+         * est arrivée : sinon ils n'apparaîtraient pas dans les chiffres du mois.
+         * $this = ce contrôleur, on appelle sa propre méthode (plus bas).
          */
         $this->traiterDepensesRecurrentes();
 
@@ -46,11 +49,11 @@ class DashboardController extends Controller
             ->whereMonth('dateDepense', $mois)
             ->whereYear('dateDepense', $annee)
             ->orderBy('dateDepense', 'desc')
-            ->take(5)
+            ->take(5) // LIMIT 5 : seulement les 5 dernières pour le bloc "Dernières dépenses"
             ->get();
 
 
-        // Calcule le total des dépenses du mois sélectionné.
+        // Total des dépenses du mois : SELECT SUM(montant) FROM depense WHERE ...
         $totalDepenses = Depense::where(
                 'idUtilisateur',
                 $userId
@@ -81,9 +84,12 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
+        // Ce qu'il reste à dépenser. Peut être négatif si on a dépensé plus que gagné.
         $budgetRestant = $totalRevenus - $totalDepenses;
 
 
+        // Part des revenus déjà dépensée, en %. min(..., 100) bloque à 100 %
+        // pour que la barre ne dépasse pas. Sans revenu : 0 (pas de division par zéro).
         $depensesPourcentage = $totalRevenus > 0
             ? min(
                 ($totalDepenses / $totalRevenus) * 100,
@@ -92,6 +98,8 @@ class DashboardController extends Controller
             : 0;
 
 
+        // Part des revenus qui reste (épargne). max(..., 0) : jamais en dessous de 0 %.
+        // Exemple : 1 000 € gagnés, 700 € dépensés -> 300 € restants -> 30 %.
         $tauxEpargne = $totalRevenus > 0
             ? max(
                 ($budgetRestant / $totalRevenus) * 100,
@@ -107,8 +115,9 @@ class DashboardController extends Controller
         */
 
         /*
-         * Les notifications budgétaires sont générées
-         * seulement pour le véritable mois actuel.
+         * Les alertes sont créées seulement quand on regarde le mois en cours.
+         * Si on filtre sur un ancien mois, on ne crée pas d'alerte "budget dépassé"
+         * pour un mois déjà terminé.
          */
         if (
             $mois == now()->month &&
@@ -135,8 +144,8 @@ class DashboardController extends Controller
                 $userId
             )
             ->orderBy('dateNotification', 'desc')
-            ->orderByDesc('idNotification')
-            ->take(3)
+            ->orderByDesc('idNotification') // même date : la plus récemment créée d'abord
+            ->take(3) // les 3 dernières seulement, pour le tableau de bord
             ->get();
 
 
@@ -146,6 +155,12 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
+        /*
+         * La catégorie où l'on a le plus dépensé ce mois-ci. En SQL :
+         * SELECT idCategorie, SUM(montant) AS total FROM depense
+         * WHERE idUtilisateur = ... GROUP BY idCategorie ORDER BY total DESC LIMIT 1
+         * DB::raw permet d'écrire le SUM(montant) tel quel dans la requête.
+         */
         $categoriePrincipale = Depense::select(
                 'idCategorie',
                 DB::raw('SUM(montant) as total')
@@ -156,7 +171,7 @@ class DashboardController extends Controller
             ->whereYear('dateDepense', $annee)
             ->groupBy('idCategorie')
             ->orderByDesc('total')
-            ->first();
+            ->first(); // first() = seulement la première ligne (la plus grosse catégorie)
 
 
         /*
@@ -191,8 +206,10 @@ class DashboardController extends Controller
         $userId = auth()->id();
 
         /*
-         * Transaction pour empêcher deux traitements
-         * simultanés de générer la même dépense.
+         * Transaction = tout ou rien. Créer la dépense, la notification et
+         * avancer la date se font ensemble : si une étape plante, MySQL annule
+         * tout (rollback). On n'a donc jamais une dépense créée sans que la date
+         * ait avancé, ce qui la recréerait à la prochaine visite.
          */
         DB::transaction(function () use ($userId) {
 
@@ -205,10 +222,11 @@ class DashboardController extends Controller
                     '<=',
                     now()->toDateString()
                 )
-                ->lockForUpdate()
+                ->lockForUpdate() // verrouille ces lignes : si la page est ouverte deux fois en même temps, le 2e traitement attend
                 ->get();
 
 
+            // Une boucle pour chaque abonnement dont la date est aujourd'hui ou passée.
             foreach ($recurrentes as $recurrente) {
 
                 $dateEcheance = Carbon::parse(
@@ -217,8 +235,9 @@ class DashboardController extends Controller
 
 
                 /*
-                 * Vérifie que la même dépense n'existe pas déjà
-                 * pour cette échéance.
+                 * firstOrCreate = "trouve ou crée" : cherche une dépense avec exactement
+                 * ces valeurs ; si elle existe déjà, on la récupère au lieu d'en créer
+                 * une deuxième. Protection supplémentaire contre les doublons.
                  */
                 $depense = Depense::firstOrCreate(
                     [
@@ -267,7 +286,9 @@ class DashboardController extends Controller
 
 
                 /*
-                 * Calcule la prochaine échéance.
+                 * Calcule la prochaine échéance selon la fréquence choisie
+                 * à la création (Mensuel, Hebdomadaire ou Annuel).
+                 * addMonth / addWeek / addYear viennent de Carbon.
                  */
                 if ($recurrente->frequence === 'Mensuel') {
 
@@ -334,9 +355,9 @@ class DashboardController extends Controller
                 $recurrente->prochaineDate =
                     $dateEcheance->toDateString();
 
-                $recurrente->save();
+                $recurrente->save(); // UPDATE depenserecurrente SET prochaineDate = ...
             }
-        });
+        }); // fin de la transaction : tout est validé (commit) ici
     }
 
 
@@ -346,6 +367,8 @@ class DashboardController extends Controller
     |--------------------------------------------------------------------------
     */
 
+    // Crée les alertes du mois selon les chiffres calculés dans index().
+    // Mêmes seuils que le graphique : 80 % (orange) et 100 % (rouge).
     private function genererNotificationsBudget(
         $userId,
         $totalRevenus,
@@ -353,7 +376,7 @@ class DashboardController extends Controller
         $budgetRestant,
         $depensesPourcentage
     ) {
-        $moisActuel = now()->format('Y-m');
+        $moisActuel = now()->format('Y-m'); // ex : "2026-10"
 
 
         /*
@@ -443,6 +466,9 @@ class DashboardController extends Controller
     |--------------------------------------------------------------------------
     */
 
+    // Crée une notification seulement si elle n'existe pas déjà ce mois-ci.
+    // Le paramètre $cle (ex : "budget-proche-2026-10") n'est pas utilisé pour
+    // l'instant : la vérification se fait avec le titre et le mois.
     private function creerNotificationSiAbsente(
         $userId,
         $cle,

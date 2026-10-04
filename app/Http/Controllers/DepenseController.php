@@ -16,31 +16,31 @@ class DepenseController extends Controller
      */
     public function index(Request $request)
     {
-        // Utilise le mois actuel si aucun mois n'est sélectionné.
+        // Mois choisi dans le filtre (?mois=9 dans l'adresse), sinon le mois en cours.
         $mois = $request->mois ?: now()->month;
 
-        // Utilise l'année actuelle si aucune année n'est sélectionnée.
+        // Même principe pour l'année : ?annee=2026, sinon l'année en cours.
         $annee = $request->annee ?: now()->year;
 
-        $query = Depense::with('categorie')
-            ->where('idUtilisateur', auth()->id())
+        $query = Depense::with('categorie') // charge la catégorie avec la dépense, pour afficher son nom
+            ->where('idUtilisateur', auth()->id()) // seulement les dépenses de la personne connectée
 
             // Affiche uniquement les dépenses du mois choisi.
             ->whereMonth('dateDepense', $mois)
             ->whereYear('dateDepense', $annee);
 
-        // Filtre facultatif par catégorie.
+        // Si une catégorie est choisie dans le filtre, on ajoute la condition.
         if ($request->categorie) {
             $query->where('idCategorie', $request->categorie);
         }
 
         $depenses = $query
-            ->orderBy('dateDepense', 'desc')
-            ->get();
+            ->orderBy('dateDepense', 'desc') // la plus récente en premier
+            ->get(); // exécute la requête SQL et renvoie la liste
 
         $categories = Categorie::all();
 
-        return view('depenses.index', compact(
+        return view('depenses.index', compact( // compact() envoie ces variables à la vue
             'depenses',
             'categories',
             'mois',
@@ -69,19 +69,19 @@ class DepenseController extends Controller
         $debutMois = now()->startOfMonth()->toDateString();
         $finMois = now()->endOfMonth()->toDateString();
 
-        // Empêche l'utilisateur d'enregistrer une dépense
-        // dans un ancien mois ou dans un mois futur.
+        // Si une règle n'est pas respectée, Laravel revient au formulaire avec
+        // les erreurs et la suite de la méthode n'est pas exécutée.
         $request->validate([
-            'montant' => 'required|numeric|min:0',
-            'description' => 'required|string|max:255',
+            'montant' => 'required|numeric|min:0', // obligatoire, un nombre, pas négatif
+            'description' => 'required|string|max:255', // obligatoire, 255 caractères max (taille de la colonne)
             'dateDepense' => [
                 'required',
                 'date',
-                'after_or_equal:' . $debutMois,
-                'before_or_equal:' . $finMois,
+                'after_or_equal:' . $debutMois, // pas avant le 1er du mois
+                'before_or_equal:' . $finMois, // pas après le dernier jour du mois
             ],
             'idCategorie' => 'required',
-        ], [
+        ], [ // messages personnalisés pour les deux règles de date
             'dateDepense.after_or_equal' =>
                 'Vous ne pouvez pas ajouter une dépense dans un mois déjà passé.',
 
@@ -90,17 +90,17 @@ class DepenseController extends Controller
         ]);
 
 
-        // Création réelle de la dépense.
+        // INSERT INTO depense (...) : seuls les champs du $fillable sont acceptés.
         Depense::create([
             'montant' => $request->montant,
             'description' => $request->description,
             'dateDepense' => $request->dateDepense,
-            'idUtilisateur' => auth()->id(),
+            'idUtilisateur' => auth()->id(), // vient de la session, jamais du formulaire
             'idCategorie' => $request->idCategorie,
         ]);
 
 
-        // Notification après l'ajout.
+        // Message visible dans la page Notifications.
         NotificationBudget::create([
             'titre' => 'Dépense ajoutée',
             'message' =>
@@ -113,7 +113,7 @@ class DepenseController extends Controller
         ]);
 
 
-        // Vérifie ensuite l'état réel du budget.
+        // Crée une alerte si on approche ou dépasse le budget du mois.
         $this->verifierBudget();
 
 
@@ -141,10 +141,12 @@ class DepenseController extends Controller
 
 
     /**
-     * Modifie une dépense.
+     * Modifie une dépense (formulaire envoyé en PUT sur /depenses/{id}).
      */
     public function update(Request $request, $id)
     {
+        // Même protection que edit() : on cherche seulement parmi MES dépenses,
+        // sinon erreur 404.
         $depense = Depense::where(
             'idUtilisateur',
             auth()->id()
@@ -159,6 +161,8 @@ class DepenseController extends Controller
         ]);
 
 
+        // Carbon transforme le texte "2026-10-04" en objet date,
+        // pour pouvoir comparer les dates facilement (lt = avant, gt = après).
         $ancienneDate = Carbon::parse($depense->dateDepense);
         $nouvelleDate = Carbon::parse($request->dateDepense);
 
@@ -171,6 +175,7 @@ class DepenseController extends Controller
             $ancienneDate->lt(now()->startOfMonth()) &&
             !$nouvelleDate->isSameDay($ancienneDate)
         ) {
+            // back() = retour au formulaire, withInput() = on garde ce qui a été tapé.
             return back()
                 ->withErrors([
                     'dateDepense' =>
@@ -200,7 +205,8 @@ class DepenseController extends Controller
         }
 
 
-        // Mise à jour de la dépense.
+        // UPDATE depense SET ... WHERE idDepense = $id
+        // (idUtilisateur n'est pas modifiable : la dépense reste à son propriétaire).
         $depense->update([
             'montant' => $request->montant,
             'description' => $request->description,
@@ -218,16 +224,17 @@ class DepenseController extends Controller
 
 
     /**
-     * Supprime une dépense.
+     * Supprime une dépense (formulaire envoyé en DELETE sur /depenses/{id}).
      */
     public function destroy($id)
     {
+        // On vérifie d'abord que la dépense est bien à la personne connectée.
         $depense = Depense::where(
             'idUtilisateur',
             auth()->id()
         )->findOrFail($id);
 
-        $depense->delete();
+        $depense->delete(); // DELETE FROM depense WHERE idDepense = $id
 
         return redirect()->route('depenses.index');
     }
@@ -235,6 +242,10 @@ class DepenseController extends Controller
 
     /**
      * Vérifie automatiquement l'état du budget mensuel.
+     *
+     * private : cette méthode n'a pas de route, elle est appelée
+     * seulement depuis ce contrôleur (après store et update).
+     * Elle crée au maximum une alerte de chaque type par mois.
      */
     private function verifierBudget()
     {
@@ -250,7 +261,7 @@ class DepenseController extends Controller
         )
             ->whereMonth('dateDepense', $mois)
             ->whereYear('dateDepense', $annee)
-            ->sum('montant');
+            ->sum('montant'); // SELECT SUM(montant) ... : le total en une seule requête
 
 
         // Total réel des revenus du mois.
@@ -263,12 +274,13 @@ class DepenseController extends Controller
             ->sum('montant');
 
 
-        // Pas de calcul de pourcentage si aucun revenu.
+        // Sans revenu, on ne peut pas calculer de pourcentage (division par zéro).
         if ($totalRevenus <= 0) {
             return;
         }
 
 
+        // Exemple : 850 € dépensés sur 1 000 € de revenus = 85 %.
         $pourcentage = ($totalDepenses / $totalRevenus) * 100;
         $solde = $totalRevenus - $totalDepenses;
 
@@ -278,6 +290,8 @@ class DepenseController extends Controller
          */
         if ($pourcentage >= 80 && $pourcentage < 100) {
 
+            // exists() renvoie vrai ou faux : on ne crée pas la même alerte
+            // deux fois dans le même mois.
             $existe = NotificationBudget::where(
                 'idUtilisateur',
                 $userId
@@ -349,7 +363,7 @@ class DepenseController extends Controller
                     'titre' => 'Solde négatif',
                     'message' =>
                         'Votre solde du mois est négatif de ' .
-                        number_format(abs($solde), 2, ',', ' ') .
+                        number_format(abs($solde), 2, ',', ' ') . // ex : 150,00 (abs enlève le signe moins)
                         ' €.',
                     'type' => 'Alerte',
                     'dateNotification' => now()->toDateString(),
