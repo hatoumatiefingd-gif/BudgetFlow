@@ -116,6 +116,7 @@
 
 <tbody>
                    {{-- Une ligne par compte, ou le bloc @empty si la recherche ne trouve rien --}}
+                   {{-- @forelse = une boucle sur la liste ; si la liste est vide, c'est le bloc @empty plus bas qui s'affiche --}}
                    @forelse($utilisateurs as $user)
 <tr>
 <td>
@@ -131,6 +132,7 @@
 </td>
 <td>
                                {{ $user->created_at
+                                   {{-- format('d/m/Y') affiche la date à la française, ex : 04/10/2026 --}}
                                    ? $user->created_at->format('d/m/Y')
                                    : '-' }}
 </td>

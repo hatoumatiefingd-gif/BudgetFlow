@@ -113,6 +113,7 @@
              FILTRE MOIS / ANNÉE
         ========================================== --}}
 
+        {{-- formulaire en GET : les filtres partent dans l'adresse (ex : ?mois=9&annee=2026), le contrôleur les lit avec $request --}}
         <form method="GET"
               action="{{ route('revenus.index') }}"
               class="dep-filter-modern">
@@ -124,6 +125,7 @@
 
             {{-- Sélection du mois --}}
             <select name="mois"
+                    {{-- dès qu'on choisit une valeur, le formulaire est envoyé tout seul (JavaScript), pas besoin de bouton --}}
                     onchange="this.form.submit()">
 
                 <option value="1" {{ $mois == 1 ? 'selected' : '' }}>
@@ -208,6 +210,7 @@
 
             <h2>
 
+                {{-- number_format(nombre, 2, '.', ' ') : 2 chiffres après la virgule et un espace pour les milliers (ex : 1 250.00) --}}
                 +{{ number_format(
                     $revenus->sum('montant'),
                     2,
@@ -229,6 +232,7 @@
         <section class="revenu-grid">
 
 
+            {{-- @forelse = une boucle sur la liste ; si la liste est vide, c'est le bloc @empty plus bas qui s'affiche --}}
             @forelse($revenus as $revenu)
 
 
@@ -269,10 +273,12 @@
                           method="POST">
 
                         @csrf
+                        {{-- un formulaire HTML ne connaît que GET et POST : @method('DELETE') indique à Laravel que c'est une suppression (route Route::delete) --}}
                         @method('DELETE')
 
                         <button type="submit"
                                 class="delete-icon"
+                                {{-- confirm() ouvre une fenêtre de confirmation en JavaScript : si on clique sur Annuler, le formulaire n'est pas envoyé --}}
                                 onclick="return confirm('Voulez-vous vraiment supprimer ce revenu ?')">
 
                             ×

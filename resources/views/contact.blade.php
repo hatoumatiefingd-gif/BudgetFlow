@@ -19,6 +19,7 @@
 @include('partials.erreurs')
 
 {{-- Message affiché lorsque l'envoi a réussi --}}
+{{-- message flash envoyé par le contrôleur avec ->with('success', ...) : il s'affiche une seule fois puis disparaît --}}
 @if(session('success'))
 <div class="contact-success">
        {{ session('success') }}

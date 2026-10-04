@@ -10,7 +10,7 @@
 
 <body>
 
-@php
+@php // @php = un peu de PHP dans la vue : ici pour trouver la catégorie principale à afficher
 
     /*
     |--------------------------------------------------------------------------
@@ -167,7 +167,7 @@
 
                     <strong class="budget-stat-red">
 
-                        -{{ number_format(
+                        -{{ number_format( /* number_format(nombre, 2, '.', ' ') : 2 chiffres après la virgule et un espace pour les milliers (ex : 1 250.00) */
                             $depenses->sum('montant'),
                             2,
                             '.',
@@ -266,7 +266,7 @@
             </div>
 
 
-            <form method="GET"
+            <form method="GET"  {{-- formulaire en GET : les filtres partent dans l'adresse (ex : ?mois=9&annee=2026), le contrôleur les lit avec $request --}}
                   action="{{ route('depenses.index') }}"
                   class="budget-filter-form">
 
@@ -279,7 +279,7 @@
                     </label>
 
                     <select name="annee"
-                            onchange="this.form.submit()">
+                            onchange="this.form.submit()">  {{-- dès qu'on choisit une valeur, le formulaire est envoyé tout seul (JavaScript), pas besoin de bouton --}}
 
                         @for($a = 2026; $a <= now()->year + 5; $a++)
 
@@ -343,10 +343,10 @@
                             Toutes les catégories
                         </option>
 
-                        @foreach($categories as $categorie)
+                        @foreach($categories as $categorie)  {{-- une option par catégorie de la table categorie, envoyées par le contrôleur avec compact() --}}
 
                             <option value="{{ $categorie->idCategorie }}"
-                                {{ request('categorie') == $categorie->idCategorie ? 'selected' : '' }}>
+                                {{ request('categorie') == $categorie->idCategorie ? 'selected' : '' }}>  {{-- request(...) relit la valeur du filtre dans l'adresse, pour garder l'option choisie sélectionnée après l'envoi --}}
 
                                 {{ ucfirst($categorie->nomCategorie) }}
 
@@ -432,7 +432,7 @@
 
 
             {{-- Liste --}}
-            @forelse($depenses as $depense)
+            @forelse($depenses as $depense)  {{-- @forelse = une boucle sur la liste ; si la liste est vide, c'est le bloc @empty plus bas qui s'affiche --}}
 
                 @php
 
@@ -575,12 +575,12 @@
                               method="POST">
 
                             @csrf
-                            @method('DELETE')
+                            @method('DELETE')  {{-- un formulaire HTML ne connaît que GET et POST : @method('DELETE') indique à Laravel que c'est une suppression (route Route::delete) --}}
 
                             <button type="submit"
                                     class="budget-delete-btn"
                                     title="Supprimer"
-                                    onclick="return confirm('Voulez-vous vraiment supprimer cette dépense ?')">
+                                    onclick="return confirm('Voulez-vous vraiment supprimer cette dépense ?')">  {{-- confirm() ouvre une fenêtre de confirmation en JavaScript : si on clique sur Annuler, le formulaire n'est pas envoyé --}}
 
                                 ♧
 

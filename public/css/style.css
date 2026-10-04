@@ -34,7 +34,7 @@
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    box-sizing: border-box; /* la largeur d'un bloc inclut son padding et sa bordure : les tailles restent simples à calculer */
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -111,7 +111,7 @@ nav a {
     padding: 60px;
     border-radius: 30px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-    display: flex;
+    display: flex; /* flexbox : le texte et l'image de l'accueil se placent côte à côte */
     align-items: center;
     justify-content: space-between;
     gap: 40px;
@@ -210,11 +210,11 @@ nav a {
     text-align: center;
     vertical-align: top;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-    transition: 0.3s;
+    transition: 0.3s; /* l'effet au survol se fait en douceur, sur 0,3 seconde */
 }
 
 .carte:hover {
-    transform: translateY(-8px);
+    transform: translateY(-8px); /* au survol, la carte remonte de 8 px */
     border-color: #2563eb;
 }
 
@@ -325,7 +325,7 @@ nav a {
 
 .connexion-form form {
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* les champs du formulaire s'empilent les uns sous les autres */
 }
 
 .connexion-form label {
@@ -511,12 +511,12 @@ nav a {
 ========================================== */
 
 .app {
-    display: flex;
-    min-height: 100vh;
+    display: flex; /* le menu à gauche et le contenu à droite, sur la même ligne */
+    min-height: 100vh; /* 100vh = toute la hauteur de l'écran */
 }
 
 .sidebar {
-    width: 280px;
+    width: 280px; /* largeur fixe du menu latéral sur ordinateur */
     min-height: 100vh;
     background: white;
     padding: 30px 25px;
@@ -620,7 +620,7 @@ html body .sidebar nav a.active {
     border-radius: 24px;
     padding: 20px 28px;
     display: grid;
-    grid-template-columns: 1fr auto 1fr auto 1fr;
+    grid-template-columns: 1fr auto 1fr auto 1fr; /* 3 blocs de même largeur (1fr) séparés par 2 traits verticaux (auto) */
     align-items: center;
     gap: 24px;
     margin-bottom: 28px;
@@ -774,7 +774,7 @@ html body .sidebar nav a.active {
 
 .bf-analysis-grid {
     display: grid;
-    grid-template-columns: 270px 320px 1fr;
+    grid-template-columns: 270px 320px 1fr; /* 3 colonnes : graphique, indicateurs, puis le reste de la place (1fr) */
     align-items: center;
     gap: 28px;
     position: relative;
@@ -796,7 +796,7 @@ html body .sidebar nav a.active {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); /* centre le texte exactement au milieu de l'anneau */
     text-align: center;
 }
 
@@ -980,7 +980,7 @@ html body .sidebar nav a.active {
 /* Bas du tableau */
 .dash-bottom {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 2fr 1fr; /* 2 colonnes : celle de gauche deux fois plus large que celle de droite */
     gap: 24px;
 }
 
@@ -1387,7 +1387,7 @@ html body .sidebar nav a.active {
 
 .budget-history-table-head {
     display: grid;
-    grid-template-columns: 1.45fr 1fr 1fr .75fr 110px;
+    grid-template-columns: 1.45fr 1fr 1fr .75fr 110px; /* mêmes colonnes que les lignes du tableau, pour que les titres soient bien alignés */
     align-items: center;
     gap: 16px;
     padding: 10px 24px;
@@ -1647,7 +1647,7 @@ html body .sidebar nav a.active {
 .revenu-grid {
     width: 86%;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr); /* 3 cartes de revenus par ligne, de même largeur */
     gap: 35px;
 }
 
@@ -1800,7 +1800,7 @@ html body .sidebar nav a.active {
 .rec-grid {
     width: 86%;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr); /* 2 cartes par ligne */
     gap: 28px;
 }
 
@@ -3085,7 +3085,7 @@ header .max-w-7xl {
    RESPONSIVE : ÉCRANS DE MOINS DE 1200px
 ========================================== */
 
-@media (max-width: 1200px) {
+@media (max-width: 1200px) { /* ces règles s'appliquent seulement si l'écran fait 1200 px de large ou moins */
 
     /* ---------- TABLEAU DE BORD ---------- */
 
@@ -3094,7 +3094,7 @@ header .max-w-7xl {
     }
 
     .bf-analysis-grid {
-        grid-template-columns: 250px 1fr;
+        grid-template-columns: 250px 1fr; /* on passe de 3 colonnes à 2 pour que le graphique garde sa place */
     }
 
     .bf-budget-message {
@@ -3102,7 +3102,7 @@ header .max-w-7xl {
     }
 
     .dash-bottom {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* 1fr seul = une seule colonne : les blocs passent les uns sous les autres */
     }
 
 }
@@ -3111,7 +3111,7 @@ header .max-w-7xl {
    RESPONSIVE : ÉCRANS DE MOINS DE 1100px
 ========================================== */
 
-@media (max-width: 1100px) {
+@media (max-width: 1100px) { /* 1100 px ou moins */
 
     /* ---------- PAGE DÉPENSES ---------- */
 
@@ -3121,11 +3121,11 @@ header .max-w-7xl {
 
     .budget-filter-bar {
         align-items: flex-start;
-        flex-direction: column;
+        flex-direction: column; /* le titre et les filtres passent l'un sous l'autre */
     }
 
     .budget-filter-form {
-        flex-wrap: wrap;
+        flex-wrap: wrap; /* les filtres vont à la ligne quand il n'y a plus de place */
     }
 
 }
@@ -3134,7 +3134,7 @@ header .max-w-7xl {
    RESPONSIVE : ÉCRANS DE MOINS DE 992px
 ========================================== */
 
-@media (max-width: 992px) {
+@media (max-width: 992px) { /* 992 px ou moins (tablettes) */
 
     /* ---------- PAGE D'ACCUEIL ---------- */
 
@@ -3191,7 +3191,7 @@ header .max-w-7xl {
    RESPONSIVE : ÉCRANS DE MOINS DE 950px
 ========================================== */
 
-@media (max-width: 950px) {
+@media (max-width: 950px) { /* 950 px ou moins */
 
     /* ---------- PROFIL ---------- */
 
@@ -3224,7 +3224,7 @@ header .max-w-7xl {
    RESPONSIVE : ÉCRANS DE MOINS DE 900px
 ========================================== */
 
-@media (max-width: 900px) {
+@media (max-width: 900px) { /* 900 px ou moins */
 
     /* ---------- TABLEAU DE BORD ---------- */
 
@@ -3254,7 +3254,7 @@ header .max-w-7xl {
    RESPONSIVE : ÉCRANS DE MOINS DE 800px
 ========================================== */
 
-@media (max-width: 800px) {
+@media (max-width: 800px) { /* 800 px ou moins */
 
     /* ---------- PAGE DÉPENSES ---------- */
 
@@ -3294,7 +3294,7 @@ header .max-w-7xl {
    RESPONSIVE : ÉCRANS DE MOINS DE 768px
 ========================================== */
 
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* 768 px ou moins : tablettes en portrait et téléphones */
 
     /* ---------- BASE COMMUNE À TOUTES LES PAGES ---------- */
 
@@ -3304,7 +3304,7 @@ header .max-w-7xl {
         max-width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
-        overflow-x: hidden !important;
+        overflow-x: hidden !important; /* empêche de faire défiler la page sur le côté sur téléphone */
     }
 
     /* ---------- PAGE D'ACCUEIL ---------- */
@@ -3567,13 +3567,13 @@ header .max-w-7xl {
     /* STRUCTURE GÉNÉRALE */
     .app {
         width: 100%;
-        display: block;
+        display: block; /* on enlève le flex : le menu n'est plus à côté du contenu mais au-dessus */
         min-height: 100vh;
     }
 
     /* MENU */
     .sidebar {
-        width: 100%;
+        width: 100%; /* le menu prend toute la largeur de l'écran */
         min-height: auto;
         padding: 18px;
         border-right: none;
@@ -3593,7 +3593,7 @@ header .max-w-7xl {
     .sidebar nav {
         width: 100%;
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr; /* 2 liens par ligne pour tenir sur un petit écran */
         gap: 8px;
     }
 
@@ -3633,7 +3633,7 @@ header .max-w-7xl {
     }
 
     .dash-bottom {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* une seule colonne sur téléphone */
     }
 
     .dash-panel {
@@ -3645,17 +3645,17 @@ header .max-w-7xl {
     }
 
     .bf-summary-strip {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* les 3 chiffres du résumé passent les uns sous les autres */
         gap: 15px;
         padding: 18px;
     }
 
     .bf-summary-divider {
-        display: none;
+        display: none; /* les traits de séparation sont cachés, inutiles en une colonne */
     }
 
     .bf-analysis-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* graphique et indicateurs les uns sous les autres */
     }
 
     .bf-analysis-card {
@@ -3731,11 +3731,11 @@ header .max-w-7xl {
     }
 
     .budget-history-table-head {
-        display: none;
+        display: none; /* on cache la ligne des titres du tableau, trop large pour un téléphone */
     }
 
     .budget-history-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* chaque dépense devient une carte, avec ses infos les unes sous les autres */
         gap: 12px;
         padding: 18px;
     }
@@ -3939,14 +3939,14 @@ header .max-w-7xl {
    RESPONSIVE : ÉCRANS DE MOINS DE 700px
 ========================================== */
 
-@media (max-width: 700px) {
+@media (max-width: 700px) { /* 700 px ou moins : téléphones */
 
     /* ---------- MENU LATÉRAL DE L'ESPACE UTILISATEUR ---------- */
 
     /* Sur téléphone uniquement,
       la sidebar passe au-dessus du contenu */
     .app {
-        flex-direction: column;
+        flex-direction: column; /* le menu passe au-dessus du contenu */
     }
 
     /* ---------- PROFIL ---------- */

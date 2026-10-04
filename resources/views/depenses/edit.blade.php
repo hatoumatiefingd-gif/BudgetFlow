@@ -35,6 +35,7 @@
             <label>Catégorie</label>
             <select name="idCategorie">
 
+                {{-- une option par catégorie de la table categorie, envoyées par le contrôleur avec compact() --}}
                 @foreach($categories as $categorie)
 
                     <option value="{{ $categorie->idCategorie }}"

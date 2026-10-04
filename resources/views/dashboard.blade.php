@@ -3,14 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  {{-- dit au téléphone d'utiliser sa vraie largeur d'écran : sans cette ligne, les media queries du CSS ne marchent pas --}}
     <title>Tableau de bord - BudgetFlow</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=4">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=4">  {{-- asset() donne l'adresse du fichier dans public/. ?v=4 = numéro de version : on le change quand le CSS change, pour que le navigateur ne garde pas l'ancien en cache --}}
 </head>
 
 <body>
 
-@php
+@php // @php = un peu de PHP dans la vue : ici les calculs d'affichage (pourcentage, épargne, couleur)
     /*
     |--------------------------------------------------------------------------
     | CALCULS DU TABLEAU DE BORD
@@ -122,7 +122,7 @@
         <div class="dash-header">
 
             <span class="dash-date">
-                {{ now()->format('d/m/Y') }}
+                {{ now()->format('d/m/Y') }}  {{-- format('d/m/Y') affiche la date à la française, ex : 04/10/2026 --}}
             </span>
 
             <h1>
@@ -143,7 +143,7 @@
 
                 <select
                     name="mois"
-                    onchange="this.form.submit()"
+                    onchange="this.form.submit()"  {{-- dès qu'on choisit une valeur, le formulaire est envoyé tout seul (JavaScript), pas besoin de bouton --}}
                 >
 
                     <option value="1" {{ $mois == 1 ? 'selected' : '' }}>
@@ -241,7 +241,7 @@
                     </span>
 
                     <strong>
-                        {{ number_format(
+                        {{ number_format( /* number_format(nombre, 2, '.', ' ') : 2 chiffres après la virgule et un espace pour les milliers (ex : 1 250.00) */
                             $totalDepenses,
                             2,
                             '.',
@@ -348,7 +348,7 @@
 
 
                 {{-- État dynamique --}}
-                <div class="bf-status {{ $etatClass }}">
+                <div class="bf-status {{ $etatClass }}">  {{-- la classe CSS change selon l'état (good, neutral, danger) : c'est ce qui change la couleur du message --}}
 
                     @if($etatClass === 'danger')
 
@@ -388,7 +388,7 @@
 
                     <div class="bf-donut-wrapper">
 
-                        <canvas id="budgetChart"></canvas>
+                        <canvas id="budgetChart"></canvas>  {{-- zone vide où Chart.js dessine l'anneau (voir le script en bas de la page) --}}
 
 
                         <div class="bf-donut-center">
@@ -649,7 +649,7 @@
                 </div>
 
 
-                @forelse($depenses as $depense)
+                @forelse($depenses as $depense)  {{-- @forelse = une boucle sur la liste ; si la liste est vide, c'est le bloc @empty plus bas qui s'affiche --}}
 
                     <div class="dash-row">
 
@@ -765,14 +765,14 @@
                 </div>
 
 
-                @forelse($notifications as $notification)
+                @forelse($notifications as $notification)  {{-- les 3 dernières notifications envoyées par DashboardController --}}
 
                     <div class="alert-line">
 
 
                         <div class="alert-icon">
 
-                            @if($notification->type == 'Alerte')
+                            @if($notification->type == 'Alerte')  {{-- une icône différente selon le type : Alerte, Paiement, Réussite... --}}
 
                                 ⚠
 
@@ -845,7 +845,7 @@
 
 <script>
 
-    // Blade remplace {{ ... }} par les totaux calculés dans DashboardController
+    // Blade remplace les doubles accolades par les totaux calculés dans DashboardController
     // avant d'envoyer la page : le navigateur reçoit par exemple const revenus = 1000;
     const revenus = {{ $totalRevenus }};
     const depenses = {{ $totalDepenses }};

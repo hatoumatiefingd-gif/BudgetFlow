@@ -2,9 +2,11 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    {{-- dit au téléphone d'utiliser sa vraie largeur d'écran : sans cette ligne, les media queries du CSS ne marchent pas --}}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BudgetFlow</title>
 
+    {{-- asset() donne l'adresse du fichier dans public/. ?v=4 = numéro de version : on le change quand le CSS change, pour que le navigateur ne garde pas l'ancien en cache --}}
     <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=4">
 {{-- Feuille de style unique du site ("?v=3" force le navigateur à recharger la nouvelle version) --}}
 </head>

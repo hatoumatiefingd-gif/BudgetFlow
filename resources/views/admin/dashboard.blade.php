@@ -251,6 +251,7 @@
 
 
 
+                {{-- @forelse = une boucle sur la liste ; si la liste est vide, c'est le bloc @empty plus bas qui s'affiche --}}
                 @forelse($derniersUtilisateurs as $user)
 
                     <div class="admin-line">
@@ -279,6 +280,7 @@
                         <span>
 
                             {{ $user->created_at
+                                {{-- format('d/m/Y') affiche la date à la française, ex : 04/10/2026 --}}
                                 ? $user->created_at->format('d/m/Y')
                                 : '-' }}
 

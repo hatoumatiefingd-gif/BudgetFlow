@@ -63,6 +63,7 @@
 <td>{{ $message->email }}</td>
 <td>{{ $message->message }}</td>
 <td>
+                                   {{-- format('d/m/Y') affiche la date à la française, ex : 04/10/2026 --}}
                                    {{ $message->created_at->format('d/m/Y H:i') }}
 </td>
 </tr>
