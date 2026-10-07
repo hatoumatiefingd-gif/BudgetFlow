@@ -1,0 +1,10 @@
+Mets tes photos dans ce dossier.
+
+Noms à utiliser pour l'accueil (facultatif) :
+- banniere.jpg          -> ta propre bannière d'accueil (remplace l'accueil rose rayé)
+- accueil-1.jpg, accueil-2.jpg, accueil-3.jpg -> les 3 photos en arche
+- questions.jpg         -> la photo au-dessus des Questions fréquentes
+- categorie-robes.jpg, categorie-ensembles.jpg, categorie-hauts.jpg, categorie-bas.jpg
+
+Pour les articles : mets la photo ici (ex. robe-rose-1.jpg), puis dans config.js :
+images: ["images/robe-rose-1.jpg"]
