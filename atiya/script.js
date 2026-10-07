@@ -1,25 +1,27 @@
 // ===================== RÉGLAGES DE LA BOUTIQUE =====================
 const CONFIG = {
-  whatsapp: "213000000000",   // ⚠️ ton numéro WhatsApp, format international sans + (ex. 213555123456)
-  devise: "DA",               // DA, €, MAD, TND, FCFA...
-  livraison: 600,             // frais de livraison (0 = offerte)
+  whatsapp: "22300000000",    // ⚠️ ton numéro WhatsApp avec l'indicatif du Mali, sans + (ex. 22376123456)
+  devise: "FCFA",
+  livraisonBamako: 1000,      // frais de livraison à Bamako (0 = offerte)
+  livraisonRegions: 2500,     // frais de livraison dans les autres villes
 };
 
 // Catalogue : pour mettre une vraie photo, ajoute  img: "images/nom-photo.jpg"
 const products = [
-  { id: 1, name: "Robe Satin Rosé",      price: 6900, old: 8500, cat: "robes",     icon: "👗", bg: "#f3c9d0", tag: "Nouveau",     sizes: ["S","M","L","XL"], colors: ["Rose","Noir","Champagne"] },
-  { id: 2, name: "Robe Longue Plissée",  price: 7900,             cat: "robes",     icon: "👗", bg: "#efe4f2",                     sizes: ["S","M","L"],      colors: ["Lilas","Beige"] },
-  { id: 3, name: "Ensemble Lin Crème",   price: 8500,             cat: "ensembles", icon: "🥻", bg: "#f7e9d7", tag: "Best-seller", sizes: ["S","M","L","XL"], colors: ["Crème","Rose poudré"] },
-  { id: 4, name: "Ensemble Tailleur Or", price: 9900,             cat: "ensembles", icon: "🧥", bg: "#f7e3c4",                     sizes: ["M","L","XL"],     colors: ["Camel","Noir"] },
-  { id: 5, name: "Chemise Soie Blush",   price: 4500,             cat: "hauts",     icon: "👚", bg: "#fde2e4",                     sizes: ["S","M","L"],      colors: ["Blush","Blanc"] },
-  { id: 6, name: "Top Dentelle",         price: 3200, old: 3900,  cat: "hauts",     icon: "👚", bg: "#f6dfe3", tag: "Promo",       sizes: ["S","M","L"],      colors: ["Noir","Ivoire"] },
-  { id: 7, name: "Jupe Midi Satinée",    price: 4900,             cat: "bas",       icon: "🩳", bg: "#e9c4d0",                     sizes: ["S","M","L","XL"], colors: ["Prune","Rose"] },
-  { id: 8, name: "Pantalon Palazzo",     price: 5500,             cat: "bas",       icon: "👖", bg: "#f8ecd9", tag: "Nouveau",     sizes: ["S","M","L","XL"], colors: ["Beige","Noir"] },
+  { id: 1, name: "Robe Satin Rosé",      price: 15000, old: 18000, cat: "robes",     icon: "👗", bg: "#f3c9d0", tag: "Nouveau",     sizes: ["S","M","L","XL"], colors: ["Rose","Noir","Champagne"] },
+  { id: 2, name: "Robe Longue Plissée",  price: 17500,             cat: "robes",     icon: "👗", bg: "#efe4f2",                     sizes: ["S","M","L"],      colors: ["Lilas","Beige"] },
+  { id: 3, name: "Ensemble Lin Crème",   price: 19000,             cat: "ensembles", icon: "🥻", bg: "#f7e9d7", tag: "Best-seller", sizes: ["S","M","L","XL"], colors: ["Crème","Rose poudré"] },
+  { id: 4, name: "Ensemble Tailleur Or", price: 22500,             cat: "ensembles", icon: "🧥", bg: "#f7e3c4",                     sizes: ["M","L","XL"],     colors: ["Camel","Noir"] },
+  { id: 5, name: "Chemise Soie Blush",   price: 10000,             cat: "hauts",     icon: "👚", bg: "#fde2e4",                     sizes: ["S","M","L"],      colors: ["Blush","Blanc"] },
+  { id: 6, name: "Top Dentelle",         price: 7500, old: 9000,  cat: "hauts",     icon: "👚", bg: "#f6dfe3", tag: "Promo",       sizes: ["S","M","L"],      colors: ["Noir","Ivoire"] },
+  { id: 7, name: "Jupe Midi Satinée",    price: 11000,             cat: "bas",       icon: "🩳", bg: "#e9c4d0",                     sizes: ["S","M","L","XL"], colors: ["Prune","Rose"] },
+  { id: 8, name: "Pantalon Palazzo",     price: 12500,             cat: "bas",       icon: "👖", bg: "#f8ecd9", tag: "Nouveau",     sizes: ["S","M","L","XL"], colors: ["Beige","Noir"] },
 ];
 // ===================================================================
 
 const $ = id => document.getElementById(id);
 const fmt = n => n.toLocaleString("fr-FR") + " " + CONFIG.devise;
+const fraisLivraison = ville => !ville ? 0 : ville.startsWith("Bamako") ? CONFIG.livraisonBamako : CONFIG.livraisonRegions;
 const pic = p => p.img ? `background:url(${p.img}) center/cover` : `background:linear-gradient(160deg,${p.bg},#fffafb)`;
 let cart = [];
 try { cart = JSON.parse(localStorage.getItem("atiya-cart")) || []; } catch {}
@@ -101,7 +103,11 @@ function drawCart() {
       <button class="rm" data-k="${k}" aria-label="Retirer">✕</button></div>`;
   }).join("") : `<p class="empty">Votre panier est vide</p>`;
   $("subtotal").textContent = fmt(total());
+  const v = $("orderForm").ville.value, fl = fraisLivraison(v);
+  $("shipping").textContent = !v ? "selon la ville" : fl ? fmt(fl) : "offerte";
+  $("grandTotal").textContent = fmt(total() + fl);
 }
+$("orderForm").ville.addEventListener("change", drawCart);
 $("cartItems").addEventListener("click", e => {
   if (e.target.dataset.k !== undefined) { cart.splice(+e.target.dataset.k, 1); saveCart(); }
 });
@@ -113,7 +119,7 @@ $("orderForm").addEventListener("submit", e => {
   e.preventDefault();
   const f = Object.fromEntries(new FormData(e.target));
   const lignes = cart.map(i => `• ${i.name} — Taille ${i.size}, ${i.color} — ${i.qty} × ${fmt(i.price)}`).join("\n");
-  const msg = `🛍️ *Nouvelle commande ATIYA*\n\n${lignes}\n\nSous-total : ${fmt(total())}\nLivraison : ${CONFIG.livraison ? fmt(CONFIG.livraison) : "offerte"}\n*Total : ${fmt(total() + CONFIG.livraison)}*\n\n👤 ${f.nom}\n📞 ${f.tel}\n📍 ${f.ville} — ${f.adresse}\n🚚 ${f.livraison}${f.note ? "\n📝 " + f.note : ""}\n\n💵 Paiement à la livraison`;
+  const msg = `🛍️ *Nouvelle commande ATIYA*\n\n${lignes}\n\nSous-total : ${fmt(total())}\nLivraison : ${fraisLivraison(f.ville) ? fmt(fraisLivraison(f.ville)) : "offerte"}\n*Total : ${fmt(total() + fraisLivraison(f.ville))}*\n\n👤 ${f.nom}\n📞 ${f.tel}\n📍 ${f.ville} — ${f.adresse}${f.quartier ? " (" + f.quartier + ")" : ""}\n🚚 ${f.livraison}${f.note ? "\n📝 " + f.note : ""}\n\n💵 Paiement à la livraison`;
   window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`, "_blank");
   cart = []; saveCart();
   $("cartItems").innerHTML = `<div class="done"><h4>Merci ${f.nom} ! ✦</h4><p>Votre commande a été envoyée. Nous vous appelons très vite pour la confirmer.</p></div>`;
