@@ -3,134 +3,70 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ATIYA — Élégance Féminine</title>
-<meta name="description" content="ATIYA, la maison de mode féminine : vêtements, accessoires et beauté au style glam, luxueux et moderne.">
+<title>ATIYA — Mode féminine à Bamako</title>
+<meta name="description" content="ATIYA, boutique de mode féminine à Bamako : robes, ensembles, hauts, jupes et pantalons. Paiement à la livraison.">
+<meta name="theme-color" content="#d4467f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23d4467f'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='38' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&family=Lobster&family=Playfair+Display:wght@500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
-
-<div class="topbar">Paiement à la livraison · Livraison à Bamako · Échange possible</div>
-
-<header class="header" id="header">
-  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu-open')"><span></span><span></span></button>
-  <nav class="nav nav-left">
-    <a href="#nouveautes">Nouveautés</a>
-    <a href="#collections">Collections</a>
-    <a href="#boutique">Boutique</a>
-  </nav>
-  <a href="#" class="logo">ATIYA<small>Maison de mode</small></a>
-  <nav class="nav nav-right">
-    <a href="#maison">La Maison</a>
-    <a href="#contact">Contact</a>
-    <a href="#" class="cart" onclick="openCart();return false">Panier (<span id="cartCount">0</span>)</a>
-  </nav>
-</header>
-
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-content">
-    <p class="eyebrow">Collection Automne · Hiver 2026</p>
-    <h1>L'élégance<br><em>au féminin</em></h1>
-    <p class="hero-text">Des pièces raffinées pensées pour sublimer chaque femme, du jour au soir.</p>
-    <div class="btns">
-      <a href="#boutique" class="btn btn-gold">Découvrir la collection</a>
-      <a href="#maison" class="btn btn-outline">Notre histoire</a>
+<body data-page="accueil">
+<main>
+  <!-- Bannière : pour mettre ta propre bannière (faite sur Canva par ex.), ajoute images/banniere.jpg -->
+  <section class="hero">
+    <img class="hero-banniere" src="images/banniere.jpg" alt="ATIYA — Bienvenue" onload="this.parentNode.classList.add('a-banniere')" onerror="this.remove()">
+    <span class="deco d1">🎀</span><span class="deco d2">🌸</span><span class="deco d3">🌸</span><span class="deco d4">🎀</span>
+    <div class="hero-contenu">
+      <p class="hero-marque">Atiya<small>BOUTIQUE</small></p>
+      <h1>Bienvenue</h1>
+      <p class="hero-script">chez Atiya</p>
+      <p class="hero-sep"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-8-4.9-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 6.1-8 11-8 11z"/></svg></p>
+      <p class="hero-accroche">La mode qui te ressemble,<br>l'élégance qui te sublime.</p>
+      <a class="hero-pilule" href="boutique.html"><span>✦</span> Sois belle, sois toi <span>✦</span></a>
+      <div class="hero-photos">
+        <div class="arche ph"><img src="images/accueil-1.jpg" alt="" onerror="this.remove()"></div>
+        <div class="arche milieu ph"><img src="images/accueil-2.jpg" alt="" onerror="this.remove()"></div>
+        <div class="arche ph"><img src="images/accueil-3.jpg" alt="" onerror="this.remove()"></div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="marquee"><div>ROBES · ENSEMBLES · HAUTS · JUPES · PANTALONS · ABAYAS · ROBES · ENSEMBLES · HAUTS · JUPES · PANTALONS · ABAYAS ·</div></section>
+  <section class="bande" aria-label="Nos engagements">
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.6 4.6 2.4 6.4 7 7-4.6.6-6.4 2.4-7 7-.6-4.6-2.4-6.4-7-7 4.6-.6 6.4-2.4 7-7z"/></svg><span>Pièces<br>sélectionnées</span></div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 6.5a2 2 0 1 1 2 2V10l-8.5 5.6a1.2 1.2 0 0 0 .7 2.2h15.6a1.2 1.2 0 0 0 .7-2.2L12 10"/></svg><span>Nouveautés<br>chaque semaine</span></div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/></svg><span>Qualité<br>premium</span></div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.5h11v10h-11zM13.5 10h4l3 3.2v3.3h-7"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg><span>Livraison<br>à Bamako</span></div>
+    <div><span class="script">Rayonne.</span></div>
+  </section>
 
-<section class="section" id="collections">
-  <p class="eyebrow center">Nos univers</p>
-  <h2 class="title">Collections</h2>
-  <div class="cats">
-    <a class="cat c1" href="#boutique" data-go="robes"><span>Robes</span></a>
-    <a class="cat c2" href="#boutique" data-go="ensembles"><span>Ensembles</span></a>
-    <a class="cat c3" href="#boutique" data-go="hauts"><span>Hauts</span></a>
-    <a class="cat c4" href="#boutique" data-go="bas"><span>Jupes & Pantalons</span></a>
-  </div>
-</section>
+  <section class="valeurs" aria-hidden="true">
+    <span class="v1">CHIC</span><span class="v2">GLAM</span><span class="v3">belle</span><span class="v4">STYLE</span>
+  </section>
 
-<section class="section soft" id="boutique">
-  <p class="eyebrow center" id="nouveautes">Nouveautés</p>
-  <h2 class="title">Les incontournables</h2>
-  <div class="filters" id="filters">
-    <button class="active" data-f="all">Tout</button>
-    <button data-f="robes">Robes</button>
-    <button data-f="ensembles">Ensembles</button>
-    <button data-f="hauts">Hauts</button>
-    <button data-f="bas">Jupes & Pantalons</button>
-  </div>
-  <div class="products" id="products"></div>
-</section>
+  <section class="section-rose">
+    <h2 class="titre">Nos Nouveautés</h2>
+    <div class="carrousel" id="nouveautes"></div>
+    <p class="voir-tout"><a class="btn-noir" href="boutique.html">VOIR TOUT</a></p>
 
-<section class="banner" id="maison">
-  <div class="banner-img"></div>
-  <div class="banner-text">
-    <p class="eyebrow">La Maison ATIYA</p>
-    <h2>Le luxe d'être <em>soi</em></h2>
-    <p>ATIYA — « le don » — est née d'une conviction : chaque femme mérite des pièces qui la font se sentir précieuse. Nous sélectionnons des matières nobles, des coupes flatteuses et des détails dorés pour un style glamour, intemporel et moderne.</p>
-    <a href="#boutique" class="btn btn-gold">Explorer</a>
-  </div>
-</section>
+    <div class="collections" id="collections"></div>
 
-<section class="section perks">
-  <div><b>✦</b><h4>Paiement à la livraison</h4><p>Vous payez en recevant votre colis</p></div>
-  <div><b>✦</b><h4>Livraison rapide</h4><p>Partout dans Bamako</p></div>
-  <div><b>✦</b><h4>Échange facile</h4><p>Taille pas adaptée ? On échange</p></div>
-  <div><b>✦</b><h4>Commande WhatsApp</h4><p>Une question ? Écrivez-nous</p></div>
-</section>
+    <div class="panneau">
+      <div class="panneau-grille">
+        <!-- Photo : ajoute images/questions.jpg -->
+        <div class="panneau-img ph"><img src="images/questions.jpg" alt="" onerror="this.remove()"></div>
+        <div>
+          <h2 class="titre faq-titre">Questions Fréquentes !?</h2>
+          <div class="faq" id="faq"></div>
+        </div>
+      </div>
+    </div>
+    <div class="garanties" id="garanties"></div>
+  </section>
+</main>
 
-<section class="newsletter" id="contact">
-  <h2>Rejoignez le cercle <em>ATIYA</em></h2>
-  <p>Nouveautés et offres privées en avant-première.</p>
-  <form onsubmit="event.preventDefault();this.innerHTML='<p class=thanks>Merci ! Bienvenue dans le cercle ATIYA ✦</p>'">
-    <input type="email" required placeholder="Votre adresse e-mail">
-    <button class="btn btn-gold">S'inscrire</button>
-  </form>
-</section>
-
-<footer class="footer">
-  <div class="logo">ATIYA<small>Maison de mode</small></div>
-  <div class="cols">
-    <div><h5>Boutique</h5><a href="#boutique">Robes</a><a href="#boutique">Ensembles</a><a href="#boutique">Hauts</a><a href="#boutique">Jupes & Pantalons</a></div>
-    <div><h5>Aide</h5><a href="#">Livraison</a><a href="#">Échanges</a><a href="#">Guide des tailles</a><a href="#" class="wa-link">WhatsApp</a></div>
-    <div><h5>Suivez-nous</h5><a href="#">Instagram</a><a href="#">TikTok</a><a href="#">Pinterest</a></div>
-  </div>
-  <p class="copy">© 2026 ATIYA. Tous droits réservés.</p>
-</footer>
-
-<!-- Fiche produit -->
-<div class="overlay" id="overlay" onclick="closeAll()"></div>
-<div class="modal" id="modal"></div>
-
-<!-- Panier + commande -->
-<aside class="drawer" id="drawer">
-  <div class="drawer-head"><h3>Mon panier</h3><button onclick="closeAll()" aria-label="Fermer">✕</button></div>
-  <div id="cartItems"></div>
-  <div class="drawer-foot" id="cartFoot">
-    <div class="line"><span>Sous-total</span><b id="subtotal"></b></div>
-    <div class="line"><span>Livraison (Bamako)</span><b id="shipping"></b></div>
-    <div class="line"><span>Total</span><b id="grandTotal"></b></div>
-    <h4>Finaliser ma commande</h4>
-    <p class="cod">💵 Paiement à la livraison — aucune carte bancaire</p>
-    <form id="orderForm">
-      <input name="nom" required placeholder="Nom et prénom">
-      <input name="tel" required type="tel" placeholder="Numéro de téléphone">
-      <input name="quartier" required placeholder="Quartier (Bamako)">
-      <input name="adresse" required placeholder="Adresse ou point de repère">
-      <select name="livraison"><option>Livraison à domicile</option><option>Retrait en boutique / point de rencontre</option></select>
-      <textarea name="note" placeholder="Remarque (facultatif)"></textarea>
-      <button class="btn btn-gold full">Confirmer la commande</button>
-    </form>
-  </div>
-</aside>
-
-<a class="wa-float wa-link" href="#" aria-label="WhatsApp">💬</a>
-<div class="toast" id="toast">Ajouté au panier ✦</div>
+<script src="config.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

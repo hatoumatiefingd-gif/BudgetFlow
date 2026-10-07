@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boutique — ATIYA</title>
+<meta name="description" content="Toute la collection ATIYA : robes, ensembles, hauts, jupes et pantalons. Livraison à Bamako, paiement à la livraison.">
+<meta name="theme-color" content="#d4467f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23d4467f'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='38' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&family=Lobster&family=Playfair+Display:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="boutique">
+<main>
+  <div class="page-entete">
+    <h1 class="titre" id="titrePage">Boutique</h1>
+    <p class="nb" id="nbArticles"></p>
+  </div>
+  <div class="puces" id="puces"></div>
+  <div class="barre-filtres">
+    <div class="barre-filtres-in">
+      <button type="button" class="btn-filtrer" id="btnFiltrer">Filtrer <span id="nbFiltres"></span></button>
+      <div class="vues">
+        <button type="button" data-vue="1" aria-label="Afficher 1 article par ligne"></button>
+        <button type="button" data-vue="2" aria-label="Afficher 2 articles par ligne"></button>
+      </div>
+    </div>
+  </div>
+  <div class="zone-grille"><div class="grille vue-2" id="grille"></div></div>
+
+  <aside class="feuille" id="feuilleFiltres" aria-label="Filtres">
+    <div class="feuille-tete">
+      <h3>Filtrer</h3>
+      <button type="button" class="icone" data-fermer aria-label="Fermer les filtres"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <h4>Trier par</h4>
+    <div class="options">
+      <button type="button" data-tri="">Nouveautés</button>
+      <button type="button" data-tri="asc">Prix croissant</button>
+      <button type="button" data-tri="desc">Prix décroissant</button>
+    </div>
+    <h4>Taille</h4>
+    <div class="options" id="filtreTailles"></div>
+    <h4>Disponibilité</h4>
+    <label class="case"><input type="checkbox" id="filtreDispo"> En stock uniquement</label>
+    <div class="feuille-actions">
+      <button type="button" class="btn-contour" id="effacerFiltres">Effacer</button>
+      <button type="button" class="btn-noir" data-fermer>Voir les articles</button>
+    </div>
+  </aside>
+</main>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
