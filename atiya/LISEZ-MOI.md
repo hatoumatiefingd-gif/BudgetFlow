@@ -1,4 +1,4 @@
-# Site ATIYA — guide
+# Site Atiya Concept — guide
 
 Ton site est fait de fichiers simples : pas besoin d'abonnement ni de serveur.
 Les commandes arrivent **sur ton WhatsApp**, et le paiement se fait **uniquement à la livraison**.

@@ -128,7 +128,7 @@ function rendreStructure() {
     // Page de commande : en-tête simple, comme une vraie caisse
     document.body.insertAdjacentHTML("afterbegin", `
       <header class="co-entete"><div class="co-entete-in">
-        <a class="logo" href="index.html" aria-label="Accueil ${esc(CONFIG.nom)}"><span class="logo-nom">Atiya</span><span class="logo-sous">Boutique</span></a>
+        <a class="logo" href="index.html" aria-label="Accueil ${esc(CONFIG.nom)}"><span class="logo-nom">Atiya</span><span class="logo-sous">Concept</span></a>
         <a class="co-retour" href="panier.html">Retour au panier</a>
       </div></header>`);
     return;
@@ -147,7 +147,7 @@ function rendreStructure() {
           <button class="icone" id="btnMenu" aria-label="Ouvrir le menu">${ICON.menu}</button>
           <button class="icone" id="btnRecherche" aria-label="Rechercher">${ICON.search}</button>
         </div>
-        <a class="logo" href="index.html" aria-label="Accueil ${esc(CONFIG.nom)}"><span class="logo-nom">Atiya</span><span class="logo-sous">Boutique</span></a>
+        <a class="logo" href="index.html" aria-label="Accueil ${esc(CONFIG.nom)}"><span class="logo-nom">Atiya</span><span class="logo-sous">Concept</span></a>
         <div class="entete-d">
           <a class="icone" href="contact.html" aria-label="Contact">${ICON.user}</a>
           <a class="icone" href="panier.html" aria-label="Mon panier">${ICON.bag}<span class="pastille" id="pastille" hidden></span></a>
@@ -181,7 +181,7 @@ function rendreStructure() {
     <footer class="pied">
       <div class="pied-in">
         <div>
-          <a class="logo" href="index.html"><span class="logo-nom">Atiya</span><span class="logo-sous">Boutique</span></a>
+          <a class="logo" href="index.html"><span class="logo-nom">Atiya</span><span class="logo-sous">Concept</span></a>
           <p class="pied-texte">Mode féminine glamour à Bamako. Paiement uniquement à la livraison.</p>
         </div>
         <div class="pied-cols">

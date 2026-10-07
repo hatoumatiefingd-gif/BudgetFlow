@@ -1,11 +1,11 @@
 /* ==========================================================
-   ATIYA — RÉGLAGES DE TA BOUTIQUE
+   ATIYA CONCEPT — RÉGLAGES DE TA BOUTIQUE
    C'est le seul fichier à modifier : tes infos, tes catégories,
    tes articles et les questions fréquentes.
    ========================================================== */
 
 const CONFIG = {
-  nom: "ATIYA",
+  nom: "Atiya Concept", // nom affiché dans les titres et les messages WhatsApp
 
   // ⚠️ IMPORTANT : ton numéro WhatsApp = 223 + tes 8 chiffres, sans « + » ni espaces.
   // C'est sur ce numéro que tu reçois les commandes.
