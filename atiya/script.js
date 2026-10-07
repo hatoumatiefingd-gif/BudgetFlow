@@ -2,8 +2,7 @@
 const CONFIG = {
   whatsapp: "22300000000",    // ⚠️ ton numéro WhatsApp avec l'indicatif du Mali, sans + (ex. 22376123456)
   devise: "FCFA",
-  livraisonBamako: 1000,      // frais de livraison à Bamako (0 = offerte)
-  livraisonRegions: 2500,     // frais de livraison dans les autres villes
+  livraison: 1000,            // frais de livraison à Bamako (0 = offerte)
 };
 
 // Catalogue : pour mettre une vraie photo, ajoute  img: "images/nom-photo.jpg"
@@ -21,7 +20,6 @@ const products = [
 
 const $ = id => document.getElementById(id);
 const fmt = n => n.toLocaleString("fr-FR") + " " + CONFIG.devise;
-const fraisLivraison = ville => !ville ? 0 : ville.startsWith("Bamako") ? CONFIG.livraisonBamako : CONFIG.livraisonRegions;
 const pic = p => p.img ? `background:url(${p.img}) center/cover` : `background:linear-gradient(160deg,${p.bg},#fffafb)`;
 let cart = [];
 try { cart = JSON.parse(localStorage.getItem("atiya-cart")) || []; } catch {}
@@ -103,11 +101,9 @@ function drawCart() {
       <button class="rm" data-k="${k}" aria-label="Retirer">✕</button></div>`;
   }).join("") : `<p class="empty">Votre panier est vide</p>`;
   $("subtotal").textContent = fmt(total());
-  const v = $("orderForm").ville.value, fl = fraisLivraison(v);
-  $("shipping").textContent = !v ? "selon la ville" : fl ? fmt(fl) : "offerte";
-  $("grandTotal").textContent = fmt(total() + fl);
+  $("shipping").textContent = CONFIG.livraison ? fmt(CONFIG.livraison) : "offerte";
+  $("grandTotal").textContent = fmt(total() + CONFIG.livraison);
 }
-$("orderForm").ville.addEventListener("change", drawCart);
 $("cartItems").addEventListener("click", e => {
   if (e.target.dataset.k !== undefined) { cart.splice(+e.target.dataset.k, 1); saveCart(); }
 });
@@ -119,7 +115,7 @@ $("orderForm").addEventListener("submit", e => {
   e.preventDefault();
   const f = Object.fromEntries(new FormData(e.target));
   const lignes = cart.map(i => `• ${i.name} — Taille ${i.size}, ${i.color} — ${i.qty} × ${fmt(i.price)}`).join("\n");
-  const msg = `🛍️ *Nouvelle commande ATIYA*\n\n${lignes}\n\nSous-total : ${fmt(total())}\nLivraison : ${fraisLivraison(f.ville) ? fmt(fraisLivraison(f.ville)) : "offerte"}\n*Total : ${fmt(total() + fraisLivraison(f.ville))}*\n\n👤 ${f.nom}\n📞 ${f.tel}\n📍 ${f.ville} — ${f.adresse}${f.quartier ? " (" + f.quartier + ")" : ""}\n🚚 ${f.livraison}${f.note ? "\n📝 " + f.note : ""}\n\n💵 Paiement à la livraison`;
+  const msg = `🛍️ *Nouvelle commande ATIYA*\n\n${lignes}\n\nSous-total : ${fmt(total())}\nLivraison : ${CONFIG.livraison ? fmt(CONFIG.livraison) : "offerte"}\n*Total : ${fmt(total() + CONFIG.livraison)}*\n\n👤 ${f.nom}\n📞 ${f.tel}\n📍 Bamako — ${f.quartier}, ${f.adresse}\n🚚 ${f.livraison}${f.note ? "\n📝 " + f.note : ""}\n\n💵 Paiement à la livraison`;
   window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`, "_blank");
   cart = []; saveCart();
   $("cartItems").innerHTML = `<div class="done"><h4>Merci ${f.nom} ! ✦</h4><p>Votre commande a été envoyée. Nous vous appelons très vite pour la confirmer.</p></div>`;

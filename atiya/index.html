@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<div class="topbar">Paiement à la livraison · Livraison partout au Mali · Échange possible</div>
+<div class="topbar">Paiement à la livraison · Livraison à Bamako · Échange possible</div>
 
 <header class="header" id="header">
   <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu-open')"><span></span><span></span></button>
@@ -79,7 +79,7 @@
 
 <section class="section perks">
   <div><b>✦</b><h4>Paiement à la livraison</h4><p>Vous payez en recevant votre colis</p></div>
-  <div><b>✦</b><h4>Livraison rapide</h4><p>Bamako et partout au Mali</p></div>
+  <div><b>✦</b><h4>Livraison rapide</h4><p>Partout dans Bamako</p></div>
   <div><b>✦</b><h4>Échange facile</h4><p>Taille pas adaptée ? On échange</p></div>
   <div><b>✦</b><h4>Commande WhatsApp</h4><p>Une question ? Écrivez-nous</p></div>
 </section>
@@ -113,15 +113,14 @@
   <div id="cartItems"></div>
   <div class="drawer-foot" id="cartFoot">
     <div class="line"><span>Sous-total</span><b id="subtotal"></b></div>
-    <div class="line"><span>Livraison</span><b id="shipping"></b></div>
+    <div class="line"><span>Livraison (Bamako)</span><b id="shipping"></b></div>
     <div class="line"><span>Total</span><b id="grandTotal"></b></div>
     <h4>Finaliser ma commande</h4>
     <p class="cod">💵 Paiement à la livraison — aucune carte bancaire</p>
     <form id="orderForm">
       <input name="nom" required placeholder="Nom et prénom">
       <input name="tel" required type="tel" placeholder="Numéro de téléphone">
-      <select name="ville" required><option value="">Ville / Commune</option><option>Bamako — Commune I</option><option>Bamako — Commune II</option><option>Bamako — Commune III</option><option>Bamako — Commune IV</option><option>Bamako — Commune V</option><option>Bamako — Commune VI</option><option>Kati</option><option>Koulikoro</option><option>Kayes</option><option>Sikasso</option><option>Koutiala</option><option>Bougouni</option><option>Ségou</option><option>San</option><option>Mopti</option><option>Sévaré</option><option>Tombouctou</option><option>Gao</option><option>Kita</option><option>Nioro du Sahel</option><option>Autre ville</option></select>
-      <input name="quartier" placeholder="Quartier">
+      <input name="quartier" required placeholder="Quartier (Bamako)">
       <input name="adresse" required placeholder="Adresse ou point de repère">
       <select name="livraison"><option>Livraison à domicile</option><option>Retrait en boutique / point de rencontre</option></select>
       <textarea name="note" placeholder="Remarque (facultatif)"></textarea>
