@@ -9,13 +9,14 @@ const CONFIG = {
 
   // ⚠️ IMPORTANT : ton numéro WhatsApp = 223 + tes 8 chiffres, sans « + » ni espaces.
   // C'est sur ce numéro que tu reçois les commandes.
-  whatsapp: "22300000000",
+  whatsapp: "22375883468",
 
-  telephone: "+223 00 00 00 00", // numéro affiché sur la page Contact
+  telephone: "+223 75 88 34 68", // numéro affiché sur la page Contact
+  quartier: "Kalaban Coura",     // ton quartier, affiché sur la page Contact et en bas du site
   devise: "FCFA",
 
   // Frais de livraison à Bamako :
-  //   null → « selon la distance » (tu confirmes le prix au téléphone)
+  //   null → « selon le livreur » (le prix dépend du livreur, tu le confirmes au téléphone)
   //   1000 → prix fixe de 1 000 FCFA ajouté au total
   //   0    → livraison gratuite
   livraison: null,

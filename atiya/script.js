@@ -21,7 +21,7 @@ const lienCategorie = id => `boutique.html?cat=${encodeURIComponent(id)}`;
 const img = (src, alt = "") => (src ? `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" onerror="this.remove()">` : "");
 const prixHTML = p => (p.ancienPrix ? `<s>${fmt(p.ancienPrix)}</s> ` : "") + fmt(p.prix);
 const fraisLivraison = () => (typeof CONFIG.livraison === "number" ? CONFIG.livraison : null);
-const texteLivraison = () => { const f = fraisLivraison(); return f === null ? "Selon la distance" : f === 0 ? "Gratuite" : fmt(f); };
+const texteLivraison = () => { const f = fraisLivraison(); return f === null ? "Selon le livreur" : f === 0 ? "Gratuite" : fmt(f); };
 const variante = a => [a.couleur && `Couleur : ${a.couleur}`, a.taille && `Taille : ${a.taille}`].filter(Boolean).map(esc).join(" · ");
 const lire = (stock, cle) => { try { return JSON.parse(stock.getItem(cle)); } catch { return null; } };
 const ecrire = (stock, cle, val) => { try { stock.setItem(cle, JSON.stringify(val)); return true; } catch { return false; } };
@@ -189,7 +189,7 @@ function rendreStructure() {
           <div><h5>Aide</h5><a href="contact.html">Contact</a><a href="contact.html#faq">Questions fréquentes</a><a href="panier.html">Mon panier</a></div>
           <div><h5>Suivez-nous</h5>${reseaux}</div>
         </div>
-        <p class="pied-bas">© ${annee} ${esc(CONFIG.nom)} · Bamako, Mali</p>
+        <p class="pied-bas">© ${annee} ${esc(CONFIG.nom)} · ${esc(CONFIG.quartier ? CONFIG.quartier + ", " : "")}Bamako, Mali</p>
       </div>
     </footer>
     <a class="wa-flottant" href="${waLink()}" target="_blank" rel="noopener" aria-label="Nous écrire sur WhatsApp">${ICON.whatsapp}</a>
@@ -288,7 +288,7 @@ function rendreGaranties(el) {
   if (!el) return;
   const f = fraisLivraison();
   const items = [
-    [ICON.truck, "Livraison à Bamako", f === null ? "Livraison payante, le prix dépend de la distance." : f === 0 ? "Livraison gratuite partout à Bamako." : `Livraison partout à Bamako pour ${fmt(f)}.`],
+    [ICON.truck, "Livraison à Bamako", f === null ? "Livraison payante : le prix dépend du livreur." : f === 0 ? "Livraison gratuite partout à Bamako." : `Livraison partout à Bamako pour ${fmt(f)}.`],
     [ICON.retour, "Satisfaction Garantie", `Vous avez ${CONFIG.joursEchange} jours pour échanger vos articles.`],
     [ICON.cash, "Paiement à la livraison", "Vous payez en espèces à la réception de votre colis."],
     [ICON.support, "Support 7j/7", "Toujours disponibles sur WhatsApp pour vous conseiller."],
@@ -439,7 +439,7 @@ function initProduit() {
         <div class="accordeons">
           ${p.description ? `<details open><summary>Description</summary><div><p>${esc(p.description)}</p></div></details>` : ""}
           <details><summary>Politique d'échange</summary><div><p>Vous avez ${CONFIG.joursEchange} jours après la livraison pour échanger un article (taille ou couleur), s'il n'a pas été porté et a encore son étiquette.</p></div></details>
-          <details><summary>Livraison rapide</summary><div><p>Livraison partout à Bamako en 24 à 48 h. ${fraisLivraison() === null ? "Livraison payante : le prix dépend de la distance, nous vous le confirmons par téléphone." : `Frais de livraison : ${texteLivraison()}.`} Vous payez uniquement à la livraison, en espèces.</p></div></details>
+          <details><summary>Livraison rapide</summary><div><p>Livraison partout à Bamako en 24 à 48 h. ${fraisLivraison() === null ? "Livraison payante : le prix dépend du livreur, nous vous le confirmons par téléphone." : `Frais de livraison : ${texteLivraison()}.`} Vous payez uniquement à la livraison, en espèces.</p></div></details>
           ${p.tailles?.length ? `<details><summary>Guide des tailles</summary><div>${guide}</div></details>` : ""}
         </div>
       </div>
@@ -718,7 +718,7 @@ function initContact() {
   const infos = [
     { icone: ICON.whatsapp, titre: "WhatsApp", texte: "Réponse rapide, 7j/7", href: waLink() },
     { icone: ICON.phone, titre: "Téléphone", texte: CONFIG.telephone, href: "tel:" + CONFIG.telephone.replace(/[^\d+]/g, "") },
-    { icone: ICON.pin, titre: "Bamako, Mali", texte: "Livraison dans tout Bamako" },
+    { icone: ICON.pin, titre: CONFIG.quartier ? `${CONFIG.quartier}, Bamako` : "Bamako, Mali", texte: "Livraison dans tout Bamako" },
     { icone: ICON.clock, titre: "Horaires", texte: CONFIG.horaires },
     ...reseaux,
   ];

@@ -18,10 +18,10 @@ Les commandes arrivent **sur ton WhatsApp**, et le paiement se fait **uniquement
 
 Ouvre `config.js` avec un éditeur de texte (Bloc-notes, VS Code…).
 
-1. **Ton numéro WhatsApp** (le plus important) : `whatsapp: "22376123456"`,
+1. **Ton numéro WhatsApp** (déjà rempli : 22375883468) : `whatsapp: "22375883468"`,
    c'est-à-dire 223 suivi de tes 8 chiffres, sans « + » ni espaces.
 2. **Les frais de livraison** :
-   - `livraison: null` : « selon la distance », tu donnes le prix au téléphone.
+   - `livraison: null` : « selon le livreur », tu donnes le prix au téléphone.
    - `livraison: 1000` : 1 000 FCFA ajoutés au total.
    - `livraison: 0` : livraison gratuite.
 3. **Tes articles** : dans `PRODUITS`, copie un bloc `{ ... },` et change :
