@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<div class="topbar">Livraison offerte dès 80 € · Retours gratuits sous 30 jours</div>
+<div class="topbar">Paiement à la livraison · Livraison partout · Échange possible</div>
 
 <header class="header" id="header">
   <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu-open')"><span></span><span></span></button>
@@ -24,7 +24,7 @@
   <nav class="nav nav-right">
     <a href="#maison">La Maison</a>
     <a href="#contact">Contact</a>
-    <a href="#" class="cart" onclick="return false">Panier (<span id="cartCount">0</span>)</a>
+    <a href="#" class="cart" onclick="openCart();return false">Panier (<span id="cartCount">0</span>)</a>
   </nav>
 </header>
 
@@ -41,16 +41,16 @@
   </div>
 </section>
 
-<section class="marquee"><div>ROBES · ENSEMBLES · SACS · BIJOUX · BEAUTÉ · LINGERIE · ROBES · ENSEMBLES · SACS · BIJOUX · BEAUTÉ · LINGERIE ·</div></section>
+<section class="marquee"><div>ROBES · ENSEMBLES · HAUTS · JUPES · PANTALONS · ABAYAS · ROBES · ENSEMBLES · HAUTS · JUPES · PANTALONS · ABAYAS ·</div></section>
 
 <section class="section" id="collections">
   <p class="eyebrow center">Nos univers</p>
   <h2 class="title">Collections</h2>
   <div class="cats">
-    <a class="cat c1" href="#boutique"><span>Prêt-à-porter</span></a>
-    <a class="cat c2" href="#boutique"><span>Accessoires</span></a>
-    <a class="cat c3" href="#boutique"><span>Bijoux</span></a>
-    <a class="cat c4" href="#boutique"><span>Beauté</span></a>
+    <a class="cat c1" href="#boutique" data-go="robes"><span>Robes</span></a>
+    <a class="cat c2" href="#boutique" data-go="ensembles"><span>Ensembles</span></a>
+    <a class="cat c3" href="#boutique" data-go="hauts"><span>Hauts</span></a>
+    <a class="cat c4" href="#boutique" data-go="bas"><span>Jupes & Pantalons</span></a>
   </div>
 </section>
 
@@ -59,10 +59,10 @@
   <h2 class="title">Les incontournables</h2>
   <div class="filters" id="filters">
     <button class="active" data-f="all">Tout</button>
-    <button data-f="vetements">Vêtements</button>
-    <button data-f="accessoires">Accessoires</button>
-    <button data-f="bijoux">Bijoux</button>
-    <button data-f="beaute">Beauté</button>
+    <button data-f="robes">Robes</button>
+    <button data-f="ensembles">Ensembles</button>
+    <button data-f="hauts">Hauts</button>
+    <button data-f="bas">Jupes & Pantalons</button>
   </div>
   <div class="products" id="products"></div>
 </section>
@@ -78,10 +78,10 @@
 </section>
 
 <section class="section perks">
-  <div><b>✦</b><h4>Livraison offerte</h4><p>Dès 80 € d'achat</p></div>
-  <div><b>✦</b><h4>Retours gratuits</h4><p>Sous 30 jours</p></div>
-  <div><b>✦</b><h4>Paiement sécurisé</h4><p>Carte, PayPal</p></div>
-  <div><b>✦</b><h4>Emballage cadeau</h4><p>Signature ATIYA</p></div>
+  <div><b>✦</b><h4>Paiement à la livraison</h4><p>Vous payez en recevant votre colis</p></div>
+  <div><b>✦</b><h4>Livraison rapide</h4><p>À domicile ou au bureau</p></div>
+  <div><b>✦</b><h4>Échange facile</h4><p>Taille pas adaptée ? On échange</p></div>
+  <div><b>✦</b><h4>Commande WhatsApp</h4><p>Une question ? Écrivez-nous</p></div>
 </section>
 
 <section class="newsletter" id="contact">
@@ -96,13 +96,38 @@
 <footer class="footer">
   <div class="logo">ATIYA<small>Maison de mode</small></div>
   <div class="cols">
-    <div><h5>Boutique</h5><a href="#">Vêtements</a><a href="#">Accessoires</a><a href="#">Bijoux</a><a href="#">Beauté</a></div>
-    <div><h5>Aide</h5><a href="#">Livraison</a><a href="#">Retours</a><a href="#">Guide des tailles</a><a href="#">FAQ</a></div>
+    <div><h5>Boutique</h5><a href="#boutique">Robes</a><a href="#boutique">Ensembles</a><a href="#boutique">Hauts</a><a href="#boutique">Jupes & Pantalons</a></div>
+    <div><h5>Aide</h5><a href="#">Livraison</a><a href="#">Échanges</a><a href="#">Guide des tailles</a><a href="#" class="wa-link">WhatsApp</a></div>
     <div><h5>Suivez-nous</h5><a href="#">Instagram</a><a href="#">TikTok</a><a href="#">Pinterest</a></div>
   </div>
   <p class="copy">© 2026 ATIYA. Tous droits réservés.</p>
 </footer>
 
+<!-- Fiche produit -->
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+<div class="modal" id="modal"></div>
+
+<!-- Panier + commande -->
+<aside class="drawer" id="drawer">
+  <div class="drawer-head"><h3>Mon panier</h3><button onclick="closeAll()" aria-label="Fermer">✕</button></div>
+  <div id="cartItems"></div>
+  <div class="drawer-foot" id="cartFoot">
+    <div class="line"><span>Sous-total</span><b id="subtotal"></b></div>
+    <h4>Finaliser ma commande</h4>
+    <p class="cod">💵 Paiement à la livraison — aucune carte bancaire</p>
+    <form id="orderForm">
+      <input name="nom" required placeholder="Nom et prénom">
+      <input name="tel" required type="tel" placeholder="Numéro de téléphone">
+      <input name="ville" required placeholder="Wilaya / Ville">
+      <input name="adresse" required placeholder="Adresse complète">
+      <select name="livraison"><option>Livraison à domicile</option><option>Livraison au bureau / point relais</option></select>
+      <textarea name="note" placeholder="Remarque (facultatif)"></textarea>
+      <button class="btn btn-gold full">Confirmer la commande</button>
+    </form>
+  </div>
+</aside>
+
+<a class="wa-float wa-link" href="#" aria-label="WhatsApp">💬</a>
 <div class="toast" id="toast">Ajouté au panier ✦</div>
 <script src="script.js"></script>
 </body>

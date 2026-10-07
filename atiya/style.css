@@ -126,3 +126,46 @@ h1 em{color:var(--gold-light)}
   .footer .cols{grid-template-columns:1fr 1fr}
 }
 @media (max-width:480px){.newsletter form{flex-direction:column;gap:.6rem}}
+
+/* ---------- Fiche produit, panier, commande ---------- */
+.card{cursor:pointer}
+.card .old{text-decoration:line-through;opacity:.5;margin-right:.5rem;color:var(--ink)}
+.overlay{position:fixed;inset:0;background:rgba(42,22,32,.55);opacity:0;pointer-events:none;transition:.3s;z-index:80}
+.overlay.on{opacity:1;pointer-events:auto}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-45%);opacity:0;pointer-events:none;transition:.35s;z-index:90;background:var(--white);width:min(900px,calc(100vw - 32px));max-height:90vh;overflow:auto;display:grid;grid-template-columns:1fr 1fr}
+.modal.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+.modal .pic{min-height:420px;display:flex;align-items:center;justify-content:center;font-size:7rem}
+.modal .body{padding:2.5rem;display:flex;flex-direction:column;gap:1rem;position:relative}
+.modal .x{position:absolute;top:1rem;right:1rem;background:none;border:0;font-size:1.2rem;cursor:pointer;color:var(--plum)}
+.modal h3{font-family:var(--serif);font-weight:500;font-size:2rem;color:var(--plum)}
+.modal .price{color:var(--gold);font-size:1.3rem;font-weight:500}
+.modal label{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-weight:500}
+.opts{display:flex;gap:.5rem;flex-wrap:wrap}
+.opts button{min-width:46px;padding:.6rem .8rem;border:1px solid var(--rose);background:none;cursor:pointer;font-family:var(--sans);color:var(--plum)}
+.opts button.sel{background:var(--plum);color:var(--gold-light);border-color:var(--plum)}
+.qty{display:flex;align-items:center;border:1px solid var(--rose);width:max-content}
+.qty button{width:38px;height:38px;border:0;background:none;cursor:pointer;font-size:1rem}
+.qty span{width:30px;text-align:center}
+.btn.full{width:100%}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,100vw);background:var(--white);z-index:90;transform:translateX(100%);transition:.4s;display:flex;flex-direction:column;overflow:auto}
+.drawer.on{transform:none}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;padding:1.5rem;border-bottom:1px solid var(--blush)}
+.drawer-head h3{font-family:var(--serif);font-weight:500;font-size:1.6rem;color:var(--plum)}
+.drawer-head button{background:none;border:0;font-size:1.2rem;cursor:pointer}
+#cartItems{padding:1rem 1.5rem}
+.ci{display:grid;grid-template-columns:60px 1fr auto;gap:1rem;align-items:center;padding:.8rem 0;border-bottom:1px solid var(--blush);font-size:.85rem}
+.ci .th{height:75px;display:flex;align-items:center;justify-content:center;font-size:1.8rem}
+.ci b{font-family:var(--serif);font-size:1.1rem;color:var(--plum);font-weight:500}
+.ci .rm{background:none;border:0;cursor:pointer;opacity:.5}
+.empty{text-align:center;padding:3rem 0;font-family:var(--serif);font-size:1.3rem;color:var(--plum)}
+.drawer-foot{padding:1.5rem;background:var(--rose-pale);margin-top:auto}
+.drawer-foot .line{display:flex;justify-content:space-between;margin-bottom:1rem}
+.drawer-foot h4{font-family:var(--serif);font-size:1.4rem;font-weight:500;color:var(--plum)}
+.cod{font-size:.8rem;margin:.4rem 0 1rem;color:var(--wine);font-weight:500}
+#orderForm{display:flex;flex-direction:column;gap:.6rem}
+#orderForm input,#orderForm select,#orderForm textarea{padding:.85rem;border:1px solid var(--rose);background:var(--white);font-family:var(--sans);font-size:.85rem}
+#orderForm textarea{min-height:60px;resize:vertical}
+.done{text-align:center;padding:2rem 1rem}
+.done h4{margin-bottom:.8rem}
+.wa-float{position:fixed;right:20px;bottom:20px;width:56px;height:56px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:0 8px 20px rgba(0,0,0,.2);z-index:70}
+@media (max-width:900px){.modal{grid-template-columns:1fr}.modal .pic{min-height:260px}.modal .body{padding:1.5rem}}
