@@ -11,29 +11,30 @@ const CONFIG = {
   // C'est sur ce numéro que tu reçois les commandes.
   whatsapp: "22375883468",
 
-  telephone: "+223 75 88 34 68", // numéro affiché sur la page Contact
+  telephone: "+223 75 88 34 68", // numéro affiché sur la page Contact (mets "" pour le cacher)
   quartier: "Kalaban Coura",     // ton quartier, affiché sur la page Contact et en bas du site
   devise: "FCFA",
 
-  // Frais de livraison à Bamako :
+  // Frais de livraison à Bamako (écris le nombre sans guillemets ni espace) :
   //   null → « selon le livreur » (le prix dépend du livreur, tu le confirmes au téléphone)
   //   1000 → prix fixe de 1 000 FCFA ajouté au total
   //   0    → livraison gratuite
   livraison: null,
+  delaiLivraison: "24 à 48 h", // délai annoncé aux clientes
 
   joursEchange: 3, // nombre de jours pour échanger un article
   horaires: "Tous les jours, de 8 h à 21 h",
 
-  // Tes réseaux (laisse "" si tu n'en as pas)
-  instagram: "", // ex. "https://www.instagram.com/atiya"
-  tiktok: "",
-  facebook: "",
+  // Tes réseaux : le nom du compte suffit (laisse "" si tu n'en as pas)
+  instagram: "", // ex. "atiyaconcept" ou "https://www.instagram.com/atiyaconcept"
+  tiktok: "",    // ex. "atiyaconcept"
+  facebook: "",  // ex. "atiyaconcept"
 
   // Messages qui défilent dans le bandeau rose tout en haut
   annonces: [
     "Paiement à la livraison partout à Bamako",
     "Nouvelle collection disponible ✨",
-    "Une question ? Écris-nous sur WhatsApp",
+    "Une question ? Écrivez-nous sur WhatsApp",
   ],
 };
 
@@ -46,13 +47,19 @@ const CATEGORIES = [
   { id: "bas", nom: "Jupes & Pantalons", image: "images/categorie-bas.jpg" },
 ];
 
-/* ARTICLES
-   - id : un nom unique, sans espaces ni accents (il apparaît dans le lien de l'article)
-   - Les premiers articles de la liste s'affichent dans « Nos nouveautés » sur l'accueil.
-   - images : tes photos, ex. ["images/robe-satin-1.jpg", "images/robe-satin-2.jpg"]
-   - indisponible : tailles ou couleurs épuisées (elles apparaissent barrées), ex. ["XL", "Noir"]
-   - stock: false → tout l'article est « Épuisé »
-   - badge : petit texte sur la photo ("Nouveau", "Promo"…), ou supprime la ligne */
+/* ARTICLES — pour en ajouter un, copie un bloc { ... }, colle-le et change :
+   - id : un nom UNIQUE, sans espaces ni accents (ex. "robe-wax-bleue"). Deux articles ne doivent jamais avoir le même id.
+   - nom : le nom affiché.
+   - prix : le nombre sans espace, sans point et sans guillemets (ex. prix: 15000,).
+   - ancienPrix : ancien prix barré pour une promo (facultatif : supprime la ligne sinon).
+   - categorie : exactement l'id d'une catégorie ci-dessus : "robes", "ensembles", "hauts" ou "bas" (= Jupes & Pantalons).
+   - badge : petit texte sur la photo ("Nouveau", "Promo"…), ou supprime la ligne.
+   - images : tes photos, ex. ["images/robe-satin-1.jpg", "images/robe-satin-2.jpg"] (la 1re est la photo principale).
+   - tailles / couleurs : ex. ["S", "M", "L"] et ["Rose", "Noir"]. Pour une couleur rare, tu peux écrire son code, ex. "#1f2a4d".
+   - indisponible : tailles ou couleurs épuisées (elles apparaissent barrées), ex. ["XL", "Noir"].
+   - stock: false → tout l'article est « Épuisé ».
+   - description : une seule ligne de texte entre guillemets.
+   Les premiers articles de la liste s'affichent dans « Nos nouveautés » sur l'accueil. */
 const PRODUITS = [
   {
     id: "robe-satin-rose",
@@ -155,7 +162,7 @@ const PRODUITS = [
 const FAQ = [
   {
     question: "Quels sont les délais de livraison ?",
-    reponse: "Nous livrons partout à Bamako en 24 à 48 h. Après votre commande, nous vous appelons pour confirmer l'adresse et l'heure de livraison.",
+    reponse: `Nous livrons partout à Bamako en ${CONFIG.delaiLivraison}. Après votre commande, nous vous appelons pour confirmer l'adresse et l'heure de livraison.`,
   },
   {
     question: "Comment se passe le paiement ?",
@@ -177,9 +184,9 @@ const FAQ = [
 
 /* GUIDE DES TAILLES (affiché sur chaque article) */
 const GUIDE_TAILLES = [
-  ["Taille", "Équivalence", "Poitrine", "Tour de taille", "Hanches"],
-  ["S", "36 – 38", "84 – 88 cm", "66 – 70 cm", "92 – 96 cm"],
-  ["M", "38 – 40", "88 – 94 cm", "70 – 76 cm", "96 – 102 cm"],
-  ["L", "40 – 42", "94 – 100 cm", "76 – 82 cm", "102 – 108 cm"],
-  ["XL", "42 – 44", "100 – 106 cm", "82 – 88 cm", "108 – 114 cm"],
+  ["Taille", "Équiv.", "Poitrine (cm)", "Taille (cm)", "Hanches (cm)"],
+  ["S", "36–38", "84–88", "66–70", "92–96"],
+  ["M", "38–40", "88–94", "70–76", "96–102"],
+  ["L", "40–42", "94–100", "76–82", "102–108"],
+  ["XL", "42–44", "100–106", "82–88", "108–114"],
 ];

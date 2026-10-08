@@ -18,19 +18,20 @@ Les commandes arrivent **sur ton WhatsApp**, et le paiement se fait **uniquement
 
 Ouvre `config.js` avec un éditeur de texte (Bloc-notes, VS Code…).
 
-1. **Ton numéro WhatsApp** (déjà rempli : 22375883468) : `whatsapp: "22375883468"`,
-   c'est-à-dire 223 suivi de tes 8 chiffres, sans « + » ni espaces.
+1. **Ton numéro WhatsApp** (déjà rempli) : `whatsapp: "22375883468"`.
 2. **Les frais de livraison** :
    - `livraison: null` : « selon le livreur », tu donnes le prix au téléphone.
    - `livraison: 1000` : 1 000 FCFA ajoutés au total.
    - `livraison: 0` : livraison gratuite.
 3. **Tes articles** : dans `PRODUITS`, copie un bloc `{ ... },` et change :
-   - le nom, le prix et la catégorie ;
+   - **l'id** en premier : un nom unique sans espaces ni accents (ex. `robe-wax-bleue`), sinon le nouvel article ouvre l'ancien ;
+   - le nom, le prix (**sans espace ni guillemets**, ex. `prix: 15000,`) et la catégorie (`"robes"`, `"ensembles"`, `"hauts"` ou `"bas"`) ;
    - les tailles et les couleurs ;
-   - la description.
+   - la description (sur une seule ligne).
 4. **Tes réseaux** : Instagram, TikTok et Facebook (laisse `""` si tu n'en as pas).
 
-⚠️ Garde bien les guillemets `"..."` et les virgules à la fin des lignes.
+⚠️ Garde bien les guillemets `"..."` autour des textes et les virgules à la fin des lignes. Les nombres (prix, livraison) s'écrivent **sans** guillemets.
+Si tu fais une erreur, le site affiche un message (rouge ou jaune) qui t'explique quoi corriger. Le message jaune n'apparaît que sur ton ordinateur, jamais chez les clientes.
 
 ## 2. Ajouter tes photos
 

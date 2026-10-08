@@ -1,42 +1,140 @@
 /* ==========================================================
-   ATIYA — fonctionnement du site
+   ATIYA CONCEPT — fonctionnement du site
    Rien à modifier ici : tout se règle dans config.js
    ========================================================== */
+
+/* ---------- Vérification de config.js ----------
+   Si config.js contient une faute (guillemet ou virgule oubliés…), on affiche
+   un message clair au lieu d'une page cassée. */
+const CONFIG_OK = (() => {
+  try { return typeof CONFIG === "object" && CONFIG !== null && Array.isArray(CATEGORIES) && Array.isArray(PRODUITS); }
+  catch { return false; }
+})();
+if (!CONFIG_OK) {
+  document.body.insertAdjacentHTML("afterbegin", `<p style="background:#b3261e;color:#fff;padding:1rem 1.25rem;margin:0;font:16px/1.5 system-ui,sans-serif">
+    <b>Erreur dans config.js.</b> Vérifie ta dernière modification : les guillemets " ", les virgules en fin de ligne,
+    les prix écrits sans espace (ex. <code>prix: 15000,</code>) et une description sur une seule ligne.</p>`);
+  throw new Error("config.js invalide");
+}
 
 /* ---------- Outils ---------- */
 const $ = (sel, el = document) => el.querySelector(sel);
 const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0") + "\u00a0" + CONFIG.devise; // espaces insécables : le prix ne se coupe jamais
-const typo = s => String(s).replace(/ ([?!:;»])/g, "\u00a0$1").replace(/« /g, "«\u00a0"); // espaces insécables à la française
+const typo = s => String(s ?? "").replace(/ ([?!:;»])/g, " $1").replace(/« /g, "« "); // espaces insécables à la française
 const params = new URLSearchParams(location.search);
-const waLink = texte => `https://wa.me/${String(CONFIG.whatsapp).replace(/\D/g, "")}` + (texte ? `?text=${encodeURIComponent(texte)}` : "");
-const produit = id => PRODUITS.find(p => String(p.id) === String(id));
-const categorie = id => CATEGORIES.find(c => c.id === id);
-const enStock = p => p.stock !== false;
-const dispo = (p, v) => !(p.indisponible || []).map(norm).includes(norm(v));
+const page = document.body.dataset.page;
+const enLocal = location.protocol === "file:" || /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+
+// Stockage du navigateur : tout accès est protégé (navigation privée, stockage bloqué…)
+const lire = (nom, cle) => { try { return JSON.parse(window[nom].getItem(cle)); } catch { return null; } };
+const ecrire = (nom, cle, val) => { try { window[nom].setItem(cle, JSON.stringify(val)); return true; } catch { return false; } };
+const effacer = (nom, cle) => { try { window[nom].removeItem(cle); } catch {} };
+
+/* ---------- Lecture tolérante de config.js ---------- */
+// Une liste peut être écrite ["Rose", "Noir"] ou "Rose, Noir"
+const enListe = v => (Array.isArray(v) ? v : v == null || v === "" ? [] : String(v).split(",")).map(x => String(x).trim()).filter(Boolean);
+// Un prix peut être écrit 15000, "15000", "15 000" ou 15.000
+const enNombre = v => {
+  if (v == null || v === "") return null;
+  let n = typeof v === "number" ? v : Number(String(v).replace(/[\s  .]/g, "").replace(",", "."));
+  if (!Number.isFinite(n) || n < 0) return null;
+  if (n > 0 && (!Number.isInteger(n) || n < 100)) n = Math.round(n * 1000); // 15.000 écrit à la française = 15 000
+  return n;
+};
+
+CONFIG.nom ??= "Atiya Concept";
+CONFIG.devise ??= "FCFA";
+CONFIG.joursEchange ??= 3;
+CONFIG.delaiLivraison ??= "24 à 48 h";
+CONFIG.telephone ??= "";
+CONFIG.horaires ??= "";
+const LISTE_FAQ = (() => { try { return Array.isArray(FAQ) ? FAQ : []; } catch { return []; } })();
+const GUIDE = (() => { try { return Array.isArray(GUIDE_TAILLES) ? GUIDE_TAILLES : []; } catch { return []; } })();
+
+CATEGORIES.forEach(c => { c.id = String(c.id); c.nom = String(c.nom ?? c.id); });
+const categorie = id => CATEGORIES.find(c => norm(c.id) === norm(id) || norm(c.nom) === norm(id));
+
+const avertissements = [];
+const idsVus = new Set();
+for (let i = PRODUITS.length - 1; i >= 0; i--) {
+  const p = PRODUITS[i];
+  if (!p || typeof p !== "object") { PRODUITS.splice(i, 1); continue; }
+  p.id = String(p.id ?? "").trim() || `article-${i + 1}`;
+  p.nom = String(p.nom ?? "Article");
+  for (const k of ["images", "tailles", "couleurs", "indisponible"]) p[k] = enListe(p[k]);
+  p.prix = enNombre(p.prix);
+  p.ancienPrix = enNombre(p.ancienPrix);
+  if (typeof p.stock === "string") p.stock = !/^(false|non|0|epuise)$/.test(norm(p.stock));
+  if (p.prix === null) { avertissements.push(`« ${p.nom} » n'a pas de prix valide (écris par ex. prix: 15000,) : il est caché.`); PRODUITS.splice(i, 1); continue; }
+  const c = categorie(p.categorie);
+  if (c) p.categorie = c.id;
+  else avertissements.push(`« ${p.nom} » : la catégorie « ${p.categorie ?? ""} » n'existe pas (choisis : ${CATEGORIES.map(x => x.id).join(", ")}).`);
+}
+PRODUITS.forEach(p => {
+  if (idsVus.has(p.id)) avertissements.push(`Deux articles ont le même id « ${p.id} » : change l'id du deuxième.`);
+  idsVus.add(p.id);
+});
+
+/* ---------- Petits outils boutique ---------- */
+const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " " + CONFIG.devise; // le prix ne se coupe jamais
+const numeroWa = () => {
+  let n = String(CONFIG.whatsapp ?? "").replace(/\D/g, "").replace(/^00/, "");
+  if (n.length === 8) n = "223" + n; // numéro malien écrit sans l'indicatif
+  return n;
+};
+const waLink = texte => `https://wa.me/${numeroWa()}` + (texte ? `?text=${encodeURIComponent(texte)}` : "");
+const lienReseau = (v, base) => {
+  v = String(v ?? "").trim();
+  if (!v) return "";
+  if (/^https?:\/\//i.test(v)) return v;
+  if (/^(www\.)?(instagram|tiktok|facebook|fb)\.com\//i.test(v)) return "https://" + v;
+  return base + v.replace(/^@/, "");
+};
+const produit = id => PRODUITS.find(p => p.id === String(id));
+const dispo = (p, v) => !p.indisponible.map(norm).includes(norm(v));
+const enStock = p => p.stock !== false
+  && (!p.tailles.length || p.tailles.some(t => dispo(p, t)))
+  && (!p.couleurs.length || p.couleurs.some(c => dispo(p, c)));
 const lienProduit = p => `produit.html?id=${encodeURIComponent(p.id)}`;
 const lienCategorie = id => `boutique.html?cat=${encodeURIComponent(id)}`;
 const img = (src, alt = "") => (src ? `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" onerror="this.remove()">` : "");
 const prixHTML = p => (p.ancienPrix ? `<s>${fmt(p.ancienPrix)}</s> ` : "") + fmt(p.prix);
-const fraisLivraison = () => (typeof CONFIG.livraison === "number" ? CONFIG.livraison : null);
+const fraisLivraison = () => enNombre(CONFIG.livraison);
 const texteLivraison = () => { const f = fraisLivraison(); return f === null ? "Selon le livreur" : f === 0 ? "Gratuite" : fmt(f); };
-const variante = a => [a.couleur && `Couleur : ${a.couleur}`, a.taille && `Taille : ${a.taille}`].filter(Boolean).map(esc).join(" · ");
-const lire = (stock, cle) => { try { return JSON.parse(stock.getItem(cle)); } catch { return null; } };
-const ecrire = (stock, cle, val) => { try { stock.setItem(cle, JSON.stringify(val)); return true; } catch { return false; } };
+const jours = n => `${n} jour${n > 1 ? "s" : ""}`;
+const variante = a => [a.couleur && `Couleur : ${a.couleur}`, a.taille && `Taille : ${a.taille}`].filter(Boolean).map(esc).join(" · ");
+const correspond = (p, q) => norm([p.nom, categorie(p.categorie)?.nom, p.description, ...p.couleurs].join(" ")).includes(norm(q));
 
-/* Couleurs des pastilles (nom de couleur → teinte) */
+/* Couleurs des pastilles (nom de couleur → teinte). Un code comme "#1f2a4d" marche aussi. */
 const TEINTES = {
-  rose: "#f4a7b9", "rose poudre": "#f1c6cf", "vieux rose": "#c99a9e", blush: "#f5cdd4", fuchsia: "#d6337a",
-  rouge: "#c8102e", bordeaux: "#6d1a36", prune: "#5e2a4a", lilas: "#c8a8d8", violet: "#7b4fa0", mauve: "#b28dbb",
-  bleu: "#2f5fa8", "bleu ciel": "#a6cdea", marine: "#1f2a4d", turquoise: "#3cb6b0", vert: "#2f7d4f", kaki: "#7a7a4a",
-  "vert olive": "#6b6b3a", jaune: "#f2c94c", moutarde: "#d4a017", orange: "#f08a3c", corail: "#f47a6b",
-  beige: "#e5d3b8", creme: "#f4ead5", ivoire: "#fbf6e9", champagne: "#ecd5ae", camel: "#c19a6b", nude: "#e3bfa5",
-  marron: "#7b4b2a", chocolat: "#4e2c1c", taupe: "#8b7d73", blanc: "#ffffff", noir: "#111111", gris: "#9a9a9a",
+  rose: "#f4a7b9", "rose poudre": "#f1c6cf", "rose pale": "#f7d3dc", "vieux rose": "#c99a9e", blush: "#f5cdd4",
+  fuchsia: "#d6337a", framboise: "#c0265a", cerise: "#b0103a", rouge: "#c8102e", bordeaux: "#6d1a36", prune: "#5e2a4a",
+  lilas: "#c8a8d8", lila: "#c8a8d8", lavande: "#b9a7d8", violet: "#7b4fa0", mauve: "#b28dbb",
+  bleu: "#2f5fa8", "bleu ciel": "#a6cdea", "bleu roi": "#2440a8", "bleu nuit": "#16213e", marine: "#1f2a4d", "bleu marine": "#1f2a4d",
+  turquoise: "#3cb6b0", vert: "#2f7d4f", emeraude: "#1f7a5a", menthe: "#a8dcc4", kaki: "#7a7a4a", olive: "#6b6b3a",
+  jaune: "#f2c94c", moutarde: "#d4a017", orange: "#f08a3c", corail: "#f47a6b", saumon: "#f4a38c", peche: "#f8c3a6",
+  beige: "#e5d3b8", sable: "#d8c3a0", creme: "#f4ead5", ivoire: "#fbf6e9", "blanc casse": "#f3efe6", champagne: "#ecd5ae",
+  camel: "#c19a6b", nude: "#e3bfa5", cognac: "#9a5b2c", marron: "#7b4b2a", chocolat: "#4e2c1c", taupe: "#8b7d73",
+  blanc: "#ffffff", noir: "#111111", gris: "#9a9a9a", "gris clair": "#cfcfcf", "gris fonce": "#555555",
   argent: "#c9c9c9", dore: "#cfa64a", or: "#cfa64a",
 };
-const couleurCSS = nom => TEINTES[norm(nom)] || "conic-gradient(#f4a7b9,#f2c94c,#a6cdea,#c8a8d8,#f4a7b9)";
+const ARC_EN_CIEL = "conic-gradient(#f4a7b9,#f2c94c,#a6cdea,#c8a8d8,#f4a7b9)";
+const couleurCSS = nom => {
+  const brut = String(nom).trim();
+  if (/^#[0-9a-f]{3,8}$/i.test(brut)) return brut;
+  const n = norm(brut);
+  if (TEINTES[n]) return TEINTES[n];
+  const mots = n.split(/\s+/); // « Rouge bordeaux foncé » → cherche « rouge bordeaux », puis « bordeaux »…
+  for (let l = mots.length - 1; l > 0; l--) {
+    for (let i = 0; i + l <= mots.length; i++) {
+      const k = mots.slice(i, i + l).join(" ");
+      if (TEINTES[k]) return TEINTES[k];
+    }
+  }
+  return ARC_EN_CIEL;
+};
 const pastille = (nom, classe = "") => `<span class="teinte ${classe}" style="--c:${couleurCSS(nom)}" title="${esc(nom)}"></span>`;
 
 /* ---------- Icônes ---------- */
@@ -62,7 +160,6 @@ const ICON = {
   sparkle: svg('<path d="M12 3c.6 4.6 2.4 6.4 7 7-4.6.6-6.4 2.4-7 7-.6-4.6-2.4-6.4-7-7 4.6-.6 6.4-2.4 7-7z"/>'),
   heart: svg('<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>'),
   hanger: svg('<path d="M10 6.5a2 2 0 1 1 2 2V10l-8.5 5.6a1.2 1.2 0 0 0 .7 2.2h15.6a1.2 1.2 0 0 0 .7-2.2L12 10"/>'),
-  flower: svg('<circle cx="12" cy="7" r="3"/><circle cx="17" cy="12" r="3"/><circle cx="12" cy="17" r="3"/><circle cx="7" cy="12" r="3"/><circle cx="12" cy="12" r="1.5"/>'),
   phone: svg('<path d="M5 3.5h3.5l1.5 4-2 1.5a11 11 0 0 0 5 5l1.5-2 4 1.5V17a2.5 2.5 0 0 1-2.5 2.5A15 15 0 0 1 2.5 6 2.5 2.5 0 0 1 5 3.5z"/>'),
   pin: svg('<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>'),
   clock: svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),
@@ -71,25 +168,49 @@ const ICON = {
 };
 
 /* ---------- Panier (gardé dans le téléphone de la cliente) ---------- */
+// Une ligne de panier est valable si l'article existe encore, est en stock,
+// et si la taille / couleur choisies existent et ne sont pas épuisées.
+function ligneValide(a) {
+  const p = a && produit(a.id);
+  if (!p || !enStock(p)) return false;
+  const q = Math.floor(Number(a.qte));
+  if (!(q >= 1)) return false;
+  a.id = p.id;
+  a.qte = Math.min(20, q);
+  a.taille = a.taille == null ? "" : String(a.taille);
+  a.couleur = a.couleur == null ? "" : String(a.couleur);
+  if (p.tailles.length ? !(p.tailles.includes(a.taille) && dispo(p, a.taille)) : a.taille) return false;
+  if (p.couleurs.length ? !(p.couleurs.includes(a.couleur) && dispo(p, a.couleur)) : a.couleur) return false;
+  return true;
+}
+
 const Panier = {
   cle: "atiya-panier",
   articles: [],
+  retires: 0, // articles retirés car plus disponibles
   charger() {
-    const a = lire(localStorage, this.cle);
-    this.articles = (Array.isArray(a) ? a : []).filter(x => x && produit(x.id) && x.qte > 0);
+    const brut = lire("localStorage", this.cle);
+    const liste = Array.isArray(brut) ? brut : [];
+    this.articles = liste.filter(ligneValide);
+    this.retires = liste.length - this.articles.length;
+    if (this.retires) ecrire("localStorage", this.cle, this.articles);
   },
-  sauver() { ecrire(localStorage, this.cle, this.articles); majPastille(); },
+  sauver() { const ok = ecrire("localStorage", this.cle, this.articles); majPastille(); return ok; },
   ajouter(id, taille, couleur, qte) {
-    id = String(id);
+    this.charger(); // repartir du panier le plus récent (autre onglet…)
+    effacer("sessionStorage", "atiya-derniere-commande");
     const a = this.articles.find(x => x.id === id && x.taille === taille && x.couleur === couleur);
     if (a) a.qte = Math.min(20, a.qte + qte);
     else this.articles.push({ id, taille, couleur, qte });
-    this.sauver();
+    return this.sauver();
   },
   quantite() { return this.articles.reduce((n, a) => n + a.qte, 0); },
   vider() { this.articles = []; this.sauver(); },
 };
 const sousTotal = liste => liste.reduce((n, a) => n + produit(a.id).prix * a.qte, 0);
+const noteRetires = () => !Panier.retires ? "" : Panier.retires > 1
+  ? `<p class="avis">Des articles de votre panier ne sont plus disponibles : ils ont été retirés.</p>`
+  : `<p class="avis">Un article de votre panier n'est plus disponible : il a été retiré.</p>`;
 
 function majPastille() {
   const b = $("#pastille");
@@ -109,45 +230,60 @@ function liensNav() {
 }
 
 function cleActive() {
-  const page = document.body.dataset.page;
-  if (page === "boutique") return categorie(params.get("cat")) ? "cat:" + params.get("cat") : "";
+  if (page === "boutique") { const c = categorie(params.get("cat")); return c ? "cat:" + c.id : ""; }
   if (page === "produit") { const p = produit(params.get("id")); return p ? "cat:" + p.categorie : ""; }
   return page;
 }
 
 function activerNav(cle) {
   $$("[data-nav]").forEach(a => a.classList.toggle("actif", a.dataset.nav === cle));
+  // Sur téléphone, la barre défile : on amène la rubrique active au milieu
+  const nav = $(".nav"), a = $(".nav a.actif");
+  if (nav && a && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = a.offsetLeft - (nav.clientWidth - a.offsetWidth) / 2;
+}
+
+const logoHTML = `<span class="logo-nom">Atiya</span><span class="logo-sous">Concept</span>`;
+
+function montrerAvertissements() {
+  avertissements.forEach(m => console.warn("config.js :", m));
+  if (!enLocal || !avertissements.length) return;
+  // Visible seulement sur ton ordinateur, jamais par les clientes une fois le site en ligne
+  document.body.insertAdjacentHTML("afterbegin", `<div class="avertissement-config" style="background:#fff4d6;color:#5c4400;padding:.8rem 1.25rem;font:14px/1.5 system-ui,sans-serif;border-bottom:1px solid #e8d48a">
+    <b>À corriger dans config.js :</b><br>${avertissements.map(esc).join("<br>")}</div>`);
 }
 
 function rendreStructure() {
-  const page = document.body.dataset.page;
   const nav = liensNav().map(l => `<a href="${l.href}" data-nav="${l.cle}">${esc(l.label)}</a>`).join("");
   const annee = new Date().getFullYear();
+
 
   if (page === "commande") {
     // Page de commande : en-tête simple, comme une vraie caisse
     document.body.insertAdjacentHTML("afterbegin", `
       <header class="co-entete"><div class="co-entete-in">
-        <a class="logo" href="index.html" aria-label="Accueil ${esc(CONFIG.nom)}"><span class="logo-nom">Atiya</span><span class="logo-sous">Concept</span></a>
+        <a class="logo" href="index.html" aria-label="Accueil ${esc(CONFIG.nom)}">${logoHTML}</a>
         <a class="co-retour" href="panier.html">Retour au panier</a>
       </div></header>`);
+    document.body.insertAdjacentHTML("beforeend", `<div class="toast" id="toast" role="status"></div>`);
     return;
   }
 
-  const annonces = CONFIG.annonces || [];
-  document.body.insertAdjacentHTML("afterbegin", `
+  const annonces = [].concat(CONFIG.annonces ?? []).map(s => String(s).trim()).filter(Boolean);
+  const bandeau = !annonces.length ? "" : `
     <div class="annonce" aria-label="Annonces">
-      <button class="ann-btn" data-ann="-1" aria-label="Annonce précédente">${ICON.chevL}</button>
-      <p id="annTexte" aria-live="polite">${esc(annonces[0] || "")}</p>
-      <button class="ann-btn" data-ann="1" aria-label="Annonce suivante">${ICON.chevR}</button>
-    </div>
+      ${annonces.length > 1 ? `<button class="ann-btn" data-ann="-1" aria-label="Annonce précédente">${ICON.chevL}</button>` : ""}
+      <p id="annTexte" aria-live="polite">${esc(typo(annonces[0]))}</p>
+      ${annonces.length > 1 ? `<button class="ann-btn" data-ann="1" aria-label="Annonce suivante">${ICON.chevR}</button>` : ""}
+    </div>`;
+
+  document.body.insertAdjacentHTML("afterbegin", `${bandeau}
     <header class="entete" id="entete">
       <div class="entete-haut">
         <div class="entete-g">
           <button class="icone" id="btnMenu" aria-label="Ouvrir le menu">${ICON.menu}</button>
           <button class="icone" id="btnRecherche" aria-label="Rechercher">${ICON.search}</button>
         </div>
-        <a class="logo" href="index.html" aria-label="Accueil ${esc(CONFIG.nom)}"><span class="logo-nom">Atiya</span><span class="logo-sous">Concept</span></a>
+        <a class="logo" href="index.html" aria-label="Accueil ${esc(CONFIG.nom)}">${logoHTML}</a>
         <div class="entete-d">
           <a class="icone" href="contact.html" aria-label="Contact">${ICON.user}</a>
           <a class="icone" href="panier.html" aria-label="Mon panier">${ICON.bag}<span class="pastille" id="pastille" hidden></span></a>
@@ -159,7 +295,8 @@ function rendreStructure() {
     <aside class="menu-lateral" id="menuLateral" aria-label="Menu">
       <button class="icone" data-fermer aria-label="Fermer le menu">${ICON.close}</button>
       <nav class="menu-liens">${nav}</nav>
-      <div class="menu-produits">${PRODUITS.slice(0, 8).map(p => `<a href="${lienProduit(p)}"><span>${esc(p.nom)}</span><b>${fmt(p.prix)}</b></a>`).join("")}</div>
+      <div class="menu-produits">${PRODUITS.slice(0, 8).map(p => `
+        <a href="${lienProduit(p)}"><span class="ph menu-ph">${img(p.images[0], p.nom)}</span><span>${esc(p.nom)}</span><b>${fmt(p.prix)}</b></a>`).join("")}</div>
     </aside>
     <div class="recherche" id="recherche">
       <form class="recherche-barre" id="formRecherche" role="search">
@@ -171,22 +308,22 @@ function rendreStructure() {
     </div>`);
 
   const reseaux = [
-    CONFIG.instagram && `<a href="${esc(CONFIG.instagram)}" target="_blank" rel="noopener">Instagram</a>`,
-    CONFIG.tiktok && `<a href="${esc(CONFIG.tiktok)}" target="_blank" rel="noopener">TikTok</a>`,
-    CONFIG.facebook && `<a href="${esc(CONFIG.facebook)}" target="_blank" rel="noopener">Facebook</a>`,
-    `<a href="${waLink()}" target="_blank" rel="noopener">WhatsApp</a>`,
-  ].filter(Boolean).join("");
+    [lienReseau(CONFIG.instagram, "https://www.instagram.com/"), "Instagram"],
+    [lienReseau(CONFIG.tiktok, "https://www.tiktok.com/@"), "TikTok"],
+    [lienReseau(CONFIG.facebook, "https://www.facebook.com/"), "Facebook"],
+    [waLink(), "WhatsApp"],
+  ].filter(([href]) => href).map(([href, nom]) => `<a href="${esc(href)}" target="_blank" rel="noopener">${nom}</a>`).join("");
 
   document.body.insertAdjacentHTML("beforeend", `
     <footer class="pied">
       <div class="pied-in">
         <div>
-          <a class="logo" href="index.html"><span class="logo-nom">Atiya</span><span class="logo-sous">Concept</span></a>
-          <p class="pied-texte">Mode féminine glamour à Bamako. Paiement uniquement à la livraison.</p>
+          <a class="logo" href="index.html">${logoHTML}</a>
+          <p class="pied-texte">Mode féminine à Bamako. Paiement uniquement à la livraison.</p>
         </div>
         <div class="pied-cols">
           <div><h5>Boutique</h5>${CATEGORIES.map(c => `<a href="${lienCategorie(c.id)}">${esc(c.nom)}</a>`).join("")}<a href="boutique.html">Tout voir</a></div>
-          <div><h5>Aide</h5><a href="contact.html">Contact</a><a href="contact.html#faq">Questions fréquentes</a><a href="panier.html">Mon panier</a></div>
+          <div><h5>Aide</h5><a href="contact.html">Contact</a><a href="contact.html#questions">Questions fréquentes</a><a href="panier.html">Mon panier</a></div>
           <div><h5>Suivez-nous</h5>${reseaux}</div>
         </div>
         <p class="pied-bas">© ${annee} ${esc(CONFIG.nom)} · ${esc(CONFIG.quartier ? CONFIG.quartier + ", " : "")}Bamako, Mali</p>
@@ -198,17 +335,18 @@ function rendreStructure() {
   activerNav(cleActive());
 
   // Bandeau d'annonces
-  let ai = 0, minuteur;
-  const montrer = d => {
-    if (annonces.length < 2) return;
-    ai = (ai + d + annonces.length) % annonces.length;
-    const p = $("#annTexte");
-    p.style.opacity = 0;
-    setTimeout(() => { p.textContent = annonces[ai]; p.style.opacity = 1; }, 220);
-  };
-  const relancer = () => { clearInterval(minuteur); minuteur = setInterval(() => montrer(1), 5000); };
-  $$("[data-ann]").forEach(b => b.addEventListener("click", () => { montrer(+b.dataset.ann); relancer(); }));
-  relancer();
+  if (annonces.length > 1) {
+    let ai = 0, minuteur;
+    const montrer = d => {
+      ai = (ai + d + annonces.length) % annonces.length;
+      const p = $("#annTexte");
+      p.style.opacity = 0;
+      setTimeout(() => { p.textContent = typo(annonces[ai]); p.style.opacity = 1; }, 220);
+    };
+    const relancer = () => { clearInterval(minuteur); minuteur = setInterval(() => montrer(1), 5000); };
+    $$("[data-ann]").forEach(b => b.addEventListener("click", () => { montrer(+b.dataset.ann); relancer(); }));
+    relancer();
+  }
 
   // Menu et recherche
   $("#btnMenu").addEventListener("click", () => ouvrir("menuLateral"));
@@ -219,10 +357,10 @@ function rendreStructure() {
 
   const champ = $("#formRecherche input");
   champ.addEventListener("input", () => {
-    const q = norm(champ.value);
-    const res = q ? PRODUITS.filter(p => norm(`${p.nom} ${categorie(p.categorie)?.nom || ""} ${(p.couleurs || []).join(" ")}`).includes(q)).slice(0, 6) : [];
+    const q = champ.value.trim();
+    const res = q ? PRODUITS.filter(p => correspond(p, q)).slice(0, 6) : [];
     $("#resultats").innerHTML = res.map(p => `
-      <a class="resultat" href="${lienProduit(p)}"><span class="ph">${img(p.images?.[0], p.nom)}</span><span><b>${esc(p.nom)}</b><small>${fmt(p.prix)}</small></span></a>`).join("")
+      <a class="resultat" href="${lienProduit(p)}"><span class="ph">${img(p.images[0], p.nom)}</span><span><b>${esc(p.nom)}</b><small>${fmt(p.prix)}</small></span></a>`).join("")
       || (q ? `<p class="sans-resultat">Aucun article trouvé.</p>` : "");
   });
   $("#formRecherche").addEventListener("submit", e => {
@@ -230,9 +368,9 @@ function rendreStructure() {
     if (champ.value.trim()) location.href = "boutique.html?q=" + encodeURIComponent(champ.value.trim());
   });
 
-  // Ombre sous l'en-tête quand on descend
+  // Ombre sous l'en-tête quand on descend (la hauteur ne change pas, sinon la page « saute »)
   const entete = $("#entete");
-  addEventListener("scroll", () => entete.classList.toggle("ombre", scrollY > 80), { passive: true });
+  addEventListener("scroll", () => entete.classList.toggle("ombre", scrollY > 40), { passive: true });
 }
 
 function ouvrir(id) {
@@ -260,7 +398,7 @@ function toast(html) {
 /* ---------- Morceaux réutilisés ---------- */
 const carteAccueil = p => `
   <a class="carte" href="${lienProduit(p)}">
-    <div class="carte-img ph">${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ""}${img(p.images?.[0], p.nom)}</div>
+    <div class="carte-img ph">${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ""}${img(p.images[0], p.nom)}</div>
     <h3 class="carte-nom">${esc(p.nom)}</h3>
     <p class="stock${enStock(p) ? "" : " epuise"}">${enStock(p) ? "En stock" : "Épuisé"}</p>
     <p class="carte-prix">${prixHTML(p)}</p>
@@ -270,30 +408,34 @@ const carteGrille = p => `
   <a class="article" href="${lienProduit(p)}">
     <div class="article-img ph">
       ${!enStock(p) ? `<span class="pill-epuise">Épuisé</span>` : p.badge ? `<span class="pill">${esc(p.badge)}</span>` : ""}
-      ${img(p.images?.[0], p.nom)}
+      ${img(p.images[0], p.nom)}
     </div>
     <div class="article-txt">
       <h3>${esc(p.nom)}</h3>
       <p class="article-prix">${prixHTML(p)}</p>
-      ${p.couleurs?.length ? `<div class="mini-teintes">${p.couleurs.map(c => pastille(c, "mini")).join("")}</div>` : ""}
+      ${p.couleurs.length ? `<div class="mini-teintes">${p.couleurs.map(c => pastille(c, "mini")).join("")}</div>` : ""}
     </div>
   </a>`;
 
 function rendreFAQ(el) {
   if (!el) return;
-  el.innerHTML = FAQ.map(f => `<details><summary>${esc(typo(f.question))}</summary><p>${esc(typo(f.reponse))}</p></details>`).join("");
+  el.innerHTML = LISTE_FAQ.map(f => `<details><summary>${esc(typo(f.question))}</summary><p>${esc(typo(f.reponse))}</p></details>`).join("");
 }
+
+const texteSupport = () => CONFIG.horaires
+  ? `Disponibles sur WhatsApp : ${CONFIG.horaires.charAt(0).toLowerCase() + CONFIG.horaires.slice(1)}.`
+  : "Écrivez-nous sur WhatsApp, nous vous répondons rapidement.";
 
 function rendreGaranties(el) {
   if (!el) return;
   const f = fraisLivraison();
   const items = [
     [ICON.truck, "Livraison à Bamako", f === null ? "Livraison payante : le prix dépend du livreur." : f === 0 ? "Livraison gratuite partout à Bamako." : `Livraison partout à Bamako pour ${fmt(f)}.`],
-    [ICON.retour, "Satisfaction Garantie", `Vous avez ${CONFIG.joursEchange} jours pour échanger vos articles.`],
+    [ICON.retour, "Satisfaction garantie", `Vous avez ${jours(CONFIG.joursEchange)} pour échanger vos articles.`],
     [ICON.cash, "Paiement à la livraison", "Vous payez en espèces à la réception de votre colis."],
-    [ICON.support, "Support 7j/7", "Toujours disponibles sur WhatsApp pour vous conseiller."],
+    [ICON.support, "Conseil WhatsApp", texteSupport()],
   ];
-  el.innerHTML = items.map(([i, t, d]) => `<div class="garantie">${i}<h4>${t}</h4><p>${d}</p></div>`).join("");
+  el.innerHTML = items.map(([i, t, d]) => `<div class="garantie">${i}<h4>${t}</h4><p>${esc(typo(d))}</p></div>`).join("");
 }
 
 /* ---------- Page : Accueil ---------- */
@@ -311,17 +453,18 @@ function initAccueil() {
 
 /* ---------- Page : Boutique / catégorie ---------- */
 function initBoutique() {
+  const c0 = categorie(params.get("cat"));
   const etat = {
-    cat: categorie(params.get("cat")) ? params.get("cat") : "",
+    cat: c0 ? c0.id : "",
     q: params.get("q") || "",
     tri: "",
     taille: "",
     dispo: false,
-    vue: lire(localStorage, "atiya-vue") === 1 ? 1 : 2,
+    vue: lire("localStorage", "atiya-vue") === 1 ? 1 : 2,
   };
 
   $("#puces").innerHTML = [{ id: "", nom: "Tout" }, ...CATEGORIES].map(c => `<button type="button" data-cat="${esc(c.id)}">${esc(c.nom)}</button>`).join("");
-  const tailles = [...new Set(PRODUITS.flatMap(p => p.tailles || []))];
+  const tailles = [...new Set(PRODUITS.flatMap(p => p.tailles))];
   $("#filtreTailles").innerHTML = tailles.map(t => `<button type="button" data-taille="${esc(t)}">${esc(t)}</button>`).join("");
   $("#btnFiltrer").insertAdjacentHTML("afterbegin", ICON.filter);
   $("[data-vue='1']").innerHTML = ICON.vue1;
@@ -329,24 +472,24 @@ function initBoutique() {
 
   function afficher() {
     let liste = PRODUITS.filter(p => !etat.cat || p.categorie === etat.cat);
-    if (etat.q) {
-      const q = norm(etat.q);
-      liste = liste.filter(p => norm([p.nom, categorie(p.categorie)?.nom, p.description, ...(p.couleurs || [])].join(" ")).includes(q));
-    }
-    if (etat.taille) liste = liste.filter(p => (p.tailles || []).includes(etat.taille) && dispo(p, etat.taille));
+    if (etat.q) liste = liste.filter(p => correspond(p, etat.q));
+    if (etat.taille) liste = liste.filter(p => p.tailles.includes(etat.taille) && dispo(p, etat.taille));
     if (etat.dispo) liste = liste.filter(enStock);
     if (etat.tri === "asc") liste = [...liste].sort((a, b) => a.prix - b.prix);
     if (etat.tri === "desc") liste = [...liste].sort((a, b) => b.prix - a.prix);
 
     const titre = etat.q ? `« ${etat.q} »` : etat.cat ? categorie(etat.cat).nom : "Boutique";
-    $("#titrePage").textContent = titre;
+    $("#titrePage").textContent = typo(titre);
     document.title = `${etat.q ? "Recherche" : titre} — ${CONFIG.nom}`;
     $("#nbArticles").textContent = `${liste.length} article${liste.length > 1 ? "s" : ""}`;
+    const vide = etat.q ? "Aucun article ne correspond à votre recherche."
+      : etat.taille || etat.dispo ? "Aucun article ne correspond à ces filtres."
+      : "Bientôt de nouveaux articles ici !";
     const grille = $("#grille");
     grille.className = "grille vue-" + etat.vue;
     grille.innerHTML = liste.length
       ? liste.map(carteGrille).join("")
-      : `<div class="vide"><p>Aucun article ne correspond à votre recherche.</p><a class="btn-noir" href="boutique.html">Voir toute la boutique</a></div>`;
+      : `<div class="vide"><p>${typo(vide)}</p><a class="btn-noir" href="boutique.html">Voir toute la boutique</a></div>`;
 
     $$("#puces button").forEach(b => b.classList.toggle("actif", b.dataset.cat === etat.cat && !etat.q));
     $$("[data-vue]").forEach(b => b.classList.toggle("actif", +b.dataset.vue === etat.vue));
@@ -369,7 +512,7 @@ function initBoutique() {
   $("#btnFiltrer").addEventListener("click", () => ouvrir("feuilleFiltres"));
   $$("[data-vue]").forEach(b => b.addEventListener("click", () => {
     etat.vue = +b.dataset.vue;
-    ecrire(localStorage, "atiya-vue", etat.vue);
+    ecrire("localStorage", "atiya-vue", etat.vue);
     afficher();
   }));
   $("#feuilleFiltres").addEventListener("click", e => {
@@ -397,12 +540,12 @@ function initProduit() {
   }
   document.title = `${p.nom} — ${CONFIG.nom}`;
 
-  const photos = p.images?.length ? p.images : [""];
-  const premier = liste => (liste || []).find(v => dispo(p, v)) || "";
+  const photos = p.images.length ? p.images : [""];
+  const premier = liste => liste.find(v => dispo(p, v)) || "";
   const choix = { taille: premier(p.tailles), couleur: premier(p.couleurs), qte: 1 };
-  const disponible = enStock(p) && (!p.tailles?.length || choix.taille) && (!p.couleurs?.length || choix.couleur);
+  const disponible = enStock(p);
 
-  const choixHTML = (k, label, liste) => !liste?.length ? "" : `
+  const choixHTML = (k, label, liste) => !liste.length ? "" : `
     <div class="choix" data-k="${k}">
       <p class="choix-label">${label}<span data-val>${esc(choix[k])}</span></p>
       <div class="choix-liste">${liste.map(v => {
@@ -414,12 +557,13 @@ function initProduit() {
       }).join("")}</div>
     </div>`;
 
-  const guide = `<table class="guide">${GUIDE_TAILLES.map((r, i) => `<tr>${r.map(c => i ? `<td>${esc(c)}</td>` : `<th>${esc(c)}</th>`).join("")}</tr>`).join("")}</table>`;
+  const guide = GUIDE.length
+    ? `<table class="guide">${GUIDE.map((r, i) => `<tr>${[].concat(r).map(c => i ? `<td>${esc(c)}</td>` : `<th>${esc(c)}</th>`).join("")}</tr>`).join("")}</table>` : "";
 
   zone.innerHTML = `
     <div class="fiche">
       <div class="galerie">
-        <div class="galerie-piste" id="piste">${photos.map((s, i) => `<div class="galerie-photo ph">${i === 0 && p.badge ? `<span class="pill">${esc(p.badge)}</span>` : ""}${img(s, p.nom)}</div>`).join("")}</div>
+        <div class="galerie-piste" id="piste">${photos.map((s, i) => `<div class="galerie-photo ph">${i === 0 ? (!disponible ? `<span class="pill-epuise">Épuisé</span>` : p.badge ? `<span class="pill">${esc(p.badge)}</span>` : "") : ""}${img(s, p.nom)}</div>`).join("")}</div>
         ${photos.length > 1 ? `<div class="points" id="points">${photos.map((_, i) => `<button type="button" class="${i ? "" : "actif"}" data-i="${i}" aria-label="Photo ${i + 1}"></button>`).join("")}</div>` : ""}
       </div>
       <div class="fiche-infos">
@@ -437,10 +581,10 @@ function initProduit() {
         ${disponible ? `<button type="button" class="btn-noir large" id="btnAcheter">Acheter maintenant</button>` : ""}
         <a class="btn-wa" id="btnWa" target="_blank" rel="noopener">${ICON.whatsapp} ${disponible ? "Commander sur WhatsApp" : "Demander la disponibilité"}</a>
         <div class="accordeons">
-          ${p.description ? `<details open><summary>Description</summary><div><p>${esc(p.description)}</p></div></details>` : ""}
-          <details><summary>Politique d'échange</summary><div><p>Vous avez ${CONFIG.joursEchange} jours après la livraison pour échanger un article (taille ou couleur), s'il n'a pas été porté et a encore son étiquette.</p></div></details>
-          <details><summary>Livraison rapide</summary><div><p>Livraison partout à Bamako en 24 à 48 h. ${fraisLivraison() === null ? "Livraison payante : le prix dépend du livreur, nous vous le confirmons par téléphone." : `Frais de livraison : ${texteLivraison()}.`} Vous payez uniquement à la livraison, en espèces.</p></div></details>
-          ${p.tailles?.length ? `<details><summary>Guide des tailles</summary><div>${guide}</div></details>` : ""}
+          ${p.description ? `<details open><summary>Description</summary><div><p>${esc(typo(p.description))}</p></div></details>` : ""}
+          <details><summary>Politique d'échange</summary><div><p>Vous avez ${jours(CONFIG.joursEchange)} après la livraison pour échanger un article (taille ou couleur), s'il n'a pas été porté et a encore son étiquette.</p></div></details>
+          <details><summary>Livraison rapide</summary><div><p>Livraison partout à Bamako en ${esc(CONFIG.delaiLivraison)}. ${fraisLivraison() === null ? "Livraison payante : le prix dépend du livreur, nous vous le confirmons par téléphone." : `Frais de livraison : ${texteLivraison().toLowerCase()}.`} Vous payez uniquement à la livraison, en espèces.</p></div></details>
+          ${p.tailles.length && guide ? `<details><summary>Guide des tailles</summary><div>${guide}</div></details>` : ""}
         </div>
       </div>
     </div>`;
@@ -462,8 +606,9 @@ function initProduit() {
     choix[k] = b.dataset.v;
     $$("button", bloc).forEach(x => x.classList.toggle("sel", x === b));
     $("[data-val]", bloc).textContent = choix[k];
-    if (k === "couleur" && p.photosCouleurs?.[choix.couleur]) {
-      const i = photos.indexOf(p.photosCouleurs[choix.couleur]);
+    const photoCouleur = p.photosCouleurs && p.photosCouleurs[choix.couleur];
+    if (k === "couleur" && photoCouleur) {
+      const i = photos.indexOf(photoCouleur);
       if (i >= 0) $("#piste").scrollTo({ left: i * $("#piste").clientWidth, behavior: "smooth" });
     }
     majWa();
@@ -491,20 +636,15 @@ function initProduit() {
     });
   }
 
-  // Panier / achat direct
+  // Panier / achat direct (l'article voyage dans le lien : marche même si le navigateur bloque le stockage)
   $("#btnAjouter").addEventListener("click", () => {
     if (!disponible) return;
-    Panier.ajouter(p.id, choix.taille, choix.couleur, choix.qte);
-    toast(`Ajouté au panier ✓ <a href="panier.html">Voir le panier</a>`);
+    if (Panier.ajouter(p.id, choix.taille, choix.couleur, choix.qte)) toast(`Ajouté au panier ✓ <a href="panier.html">Voir le panier</a>`);
+    else toast(`Ce navigateur ne peut pas garder votre panier. Utilisez « Acheter maintenant » ou WhatsApp.`);
   });
   $("#btnAcheter")?.addEventListener("click", () => {
-    const article = { id: String(p.id), taille: choix.taille, couleur: choix.couleur, qte: choix.qte };
-    if (ecrire(sessionStorage, "atiya-achat-direct", article)) {
-      location.href = "commande.html?direct=1";
-    } else {
-      Panier.ajouter(p.id, choix.taille, choix.couleur, choix.qte);
-      location.href = "commande.html";
-    }
+    effacer("sessionStorage", "atiya-derniere-commande");
+    location.href = "commande.html?" + new URLSearchParams({ id: p.id, taille: choix.taille, couleur: choix.couleur, qte: choix.qte });
   });
 
   // Recommandations
@@ -519,20 +659,20 @@ function initPanier() {
   const zone = $("#panier");
   function afficher() {
     if (!Panier.articles.length) {
-      zone.innerHTML = `<div class="vide"><p>Votre panier est vide.</p><a class="btn-noir" href="boutique.html">Découvrir la boutique</a></div>`;
+      zone.innerHTML = `${noteRetires()}<div class="vide"><p>Votre panier est vide.</p><a class="btn-noir" href="boutique.html">Découvrir la boutique</a></div>`;
       return;
     }
-    zone.innerHTML = `
+    zone.innerHTML = `${noteRetires()}
       <div class="panier-grille">
         <div class="panier-liste">${Panier.articles.map((a, k) => {
           const p = produit(a.id);
           return `
           <div class="ligne">
-            <a class="ligne-img ph" href="${lienProduit(p)}">${img(p.images?.[0], p.nom)}</a>
+            <a class="ligne-img ph" href="${lienProduit(p)}">${img(p.images[0], p.nom)}</a>
             <div class="ligne-infos">
               <a class="ligne-nom" href="${lienProduit(p)}">${esc(p.nom)}</a>
               <p class="ligne-var">${variante(a)}</p>
-              <p class="ligne-prix">${fmt(p.prix)}</p>
+              <p class="ligne-prix">${fmt(p.prix * a.qte)}${a.qte > 1 ? ` <small>(${a.qte} × ${fmt(p.prix)})</small>` : ""}</p>
               <div class="qte petit"><button type="button" data-k="${k}" data-d="-1" aria-label="Diminuer">−</button><span>${a.qte}</span><button type="button" data-k="${k}" data-d="1" aria-label="Augmenter">+</button></div>
             </div>
             <button type="button" class="icone suppr" data-suppr="${k}" aria-label="Retirer ${esc(p.nom)}">${ICON.trash}</button>
@@ -553,8 +693,10 @@ function initPanier() {
     if (b.dataset.suppr !== undefined) Panier.articles.splice(+b.dataset.suppr, 1);
     else if (b.dataset.d) {
       const a = Panier.articles[+b.dataset.k];
+      if (!a) return;
       a.qte = Math.max(1, Math.min(20, a.qte + +b.dataset.d));
     } else return;
+    Panier.retires = 0;
     Panier.sauver();
     afficher();
   });
@@ -562,16 +704,43 @@ function initPanier() {
 }
 
 /* ---------- Page : Commande (paiement à la livraison uniquement) ---------- */
+function afficherMerci(zone, c) {
+  zone.innerHTML = `
+    <div class="merci">
+      <div class="merci-icone">${ICON.heart}</div>
+      <h1 class="titre">Merci ${esc(c.prenom)} !</h1>
+      <p>Votre commande n° <b>${esc(c.ref)}</b> est prête.</p>
+      <p class="important">Dernière étape : envoyez-la-nous sur WhatsApp pour la confirmer.</p>
+      <a class="btn-wa plein" href="${esc(c.url)}" target="_blank" rel="noopener">${ICON.whatsapp} Envoyer ma commande sur WhatsApp</a>
+      <p>Nous vous appelons ensuite pour confirmer la livraison. Vous payez en espèces à la réception.</p>
+      <a class="lien" href="index.html" id="finCommande">Retour à l'accueil</a>
+    </div>`;
+  $("#finCommande").addEventListener("click", () => effacer("sessionStorage", "atiya-derniere-commande"));
+  scrollTo(0, 0);
+}
+
 function initCommande() {
   const zone = $("#commande");
-  let direct = null;
-  if (params.get("direct")) {
-    direct = lire(sessionStorage, "atiya-achat-direct");
-    if (!direct || !produit(direct.id)) direct = null;
+  const estDirect = params.has("id"); // « Acheter maintenant » : l'article est dans le lien
+  let articles;
+  if (estDirect) {
+    const a = { id: params.get("id"), taille: params.get("taille") || "", couleur: params.get("couleur") || "", qte: params.get("qte") || 1 };
+    articles = ligneValide(a) ? [a] : [];
+  } else {
+    articles = Panier.articles;
   }
-  const articles = direct ? [direct] : Panier.articles;
+
+  // Commande déjà validée dans cet onglet (retour depuis WhatsApp, page rechargée…) : on remontre le récapitulatif
+  const derniere = lire("sessionStorage", "atiya-derniere-commande");
+  if (derniere && derniere.cle === location.search && (estDirect || !articles.length)) {
+    afficherMerci(zone, derniere);
+    return;
+  }
+
   if (!articles.length) {
-    zone.innerHTML = `<div class="vide"><p>Votre panier est vide.</p><a class="btn-noir" href="boutique.html">Découvrir la boutique</a></div>`;
+    zone.innerHTML = estDirect
+      ? `<div class="vide"><p>Cet article n'est plus disponible dans ce choix de taille ou de couleur.</p><a class="btn-noir" href="boutique.html">Voir la boutique</a></div>`
+      : `${noteRetires()}<div class="vide"><p>Votre panier est vide.</p><a class="btn-noir" href="boutique.html">Découvrir la boutique</a></div>`;
     return;
   }
 
@@ -581,8 +750,8 @@ function initCommande() {
   const totalTxt = fmt(total) + (frais === null ? " + livraison" : "");
   const totalHTML = fmt(total) + (frais === null ? `<small class="plus-livraison">+ livraison</small>` : "");
   const nb = articles.reduce((n, a) => n + a.qte, 0);
-  const memo = lire(localStorage, "atiya-coordonnees") || {};
-  const vignette = a => { const p = produit(a.id); return `<span class="vignette"><span class="vignette-img ph">${img(p.images?.[0], p.nom)}</span><i>${a.qte}</i></span>`; };
+  const memo = lire("localStorage", "atiya-coordonnees") || {};
+  const vignette = a => { const p = produit(a.id); return `<span class="vignette"><span class="vignette-img ph">${img(p.images[0], p.nom)}</span><i>${a.qte}</i></span>`; };
 
   const resume = `
     <div class="resume">
@@ -595,10 +764,10 @@ function initCommande() {
       </div>
     </div>`;
 
-  const champ = (nom, label, auto, type = "text", requis = true, message = "Ce champ est obligatoire") => `
-    <label class="champ"><input name="${nom}" type="${type}" placeholder=" " autocomplete="${auto}" value="${esc(memo[nom] || "")}" ${requis ? "required" : ""}${type === "tel" ? ' inputmode="tel"' : ""}><span>${label}</span><em>${message}</em></label>`;
+  const champ = (nom, label, auto, type = "text", message = "Ce champ est obligatoire") => `
+    <label class="champ"><input name="${nom}" type="${type}" placeholder=" " autocomplete="${auto}" value="${esc(memo[nom] || "")}" required${type === "tel" ? ' inputmode="tel"' : ""}><span>${label}</span><em>${message}</em></label>`;
 
-  zone.innerHTML = `
+  zone.innerHTML = `${estDirect ? "" : noteRetires()}
     <div class="co">
       <div class="co-gauche">
         <details class="co-resume-mobile"><summary><span>Résumé de la commande ${ICON.chevD}</span><b>${totalHTML}</b></summary>${resume}</details>
@@ -609,7 +778,7 @@ function initCommande() {
           <div class="deux">${champ("prenom", "Prénom", "given-name")}${champ("nom", "Nom", "family-name")}</div>
           ${champ("quartier", "Quartier", "address-level3")}
           ${champ("adresse", "Adresse ou point de repère", "street-address")}
-          ${champ("tel", "Téléphone", "tel", "tel", true, "Entrez un numéro valide (8 chiffres)")}
+          ${champ("tel", "Téléphone", "tel", "tel", "Entrez un numéro valide (8 chiffres)")}
           <label class="case"><input type="checkbox" name="memo" ${memo.prenom ? "checked" : ""}> Sauvegarder mes coordonnées pour la prochaine fois</label>
 
           <h2>Mode de livraison</h2>
@@ -646,8 +815,8 @@ function initCommande() {
 
     const f = Object.fromEntries(new FormData(form));
     for (const k in f) f[k] = String(f[k]).trim();
-    if (f.memo) ecrire(localStorage, "atiya-coordonnees", { prenom: f.prenom, nom: f.nom, quartier: f.quartier, adresse: f.adresse, tel: f.tel });
-    else try { localStorage.removeItem("atiya-coordonnees"); } catch {}
+    if (f.memo) ecrire("localStorage", "atiya-coordonnees", { prenom: f.prenom, nom: f.nom, quartier: f.quartier, adresse: f.adresse, tel: f.tel });
+    else effacer("localStorage", "atiya-coordonnees");
 
     const ref = "AT-" + Date.now().toString(36).toUpperCase().slice(-6);
     const lignes = articles.map(a => {
@@ -670,23 +839,13 @@ function initCommande() {
       "",
       "💵 Paiement à la livraison",
     ].join("\n");
-    const url = waLink(message);
+    const commande = { ref, url: waLink(message), prenom: f.prenom, cle: location.search };
 
-    window.open(url, "_blank");
-    if (direct) { try { sessionStorage.removeItem("atiya-achat-direct"); } catch {} }
-    else Panier.vider();
-
-    zone.innerHTML = `
-      <div class="merci">
-        <div class="merci-icone">${ICON.heart}</div>
-        <h1 class="titre">Merci ${esc(f.prenom)} !</h1>
-        <p>Votre commande n° <b>${ref}</b> est prête.</p>
-        <p class="important">Dernière étape : envoyez-la-nous sur WhatsApp pour la confirmer.</p>
-        <a class="btn-wa plein" href="${url}" target="_blank" rel="noopener">${ICON.whatsapp} Envoyer ma commande sur WhatsApp</a>
-        <p>Nous vous appelons ensuite pour confirmer la livraison. Vous payez en espèces à la réception.</p>
-        <a class="lien" href="index.html">Retour à l'accueil</a>
-      </div>`;
-    scrollTo(0, 0);
+    // On garde le récapitulatif : si la page se recharge en revenant de WhatsApp, rien n'est perdu
+    ecrire("sessionStorage", "atiya-derniere-commande", commande);
+    window.open(commande.url, "_blank");
+    if (!estDirect) Panier.vider();
+    afficherMerci(zone, commande);
   });
 }
 
@@ -704,24 +863,25 @@ function initContact() {
     });
     if (premierFaux) { premierFaux.focus(); return; }
     const f = Object.fromEntries(new FormData(form));
-    const texte = `Bonjour ${CONFIG.nom} 👋\n\n${String(f.message).trim()}\n\n— ${String(f.nom).trim()}${String(f.tel).trim() ? " (" + String(f.tel).trim() + ")" : ""}`;
+    const tel = String(f.tel || "").trim();
+    const texte = `Bonjour ${CONFIG.nom} 👋\n\n${String(f.message).trim()}\n\n— ${String(f.nom).trim()}${tel ? " (" + tel + ")" : ""}`;
     window.open(waLink(texte), "_blank");
     form.reset();
     toast("Votre message est prêt dans WhatsApp ✓");
   });
 
   const reseaux = [
-    CONFIG.instagram && { icone: ICON.insta, titre: "Instagram", texte: "Nos nouveautés en photos", href: CONFIG.instagram },
-    CONFIG.tiktok && { icone: ICON.sparkle, titre: "TikTok", texte: "Nos vidéos", href: CONFIG.tiktok },
-    CONFIG.facebook && { icone: ICON.heart, titre: "Facebook", texte: "Suivez-nous", href: CONFIG.facebook },
-  ].filter(Boolean);
+    [lienReseau(CONFIG.instagram, "https://www.instagram.com/"), ICON.insta, "Instagram", "Nos nouveautés en photos"],
+    [lienReseau(CONFIG.tiktok, "https://www.tiktok.com/@"), ICON.sparkle, "TikTok", "Nos vidéos"],
+    [lienReseau(CONFIG.facebook, "https://www.facebook.com/"), ICON.heart, "Facebook", "Suivez-nous"],
+  ].filter(([href]) => href).map(([href, icone, titre, texte]) => ({ href, icone, titre, texte }));
   const infos = [
-    { icone: ICON.whatsapp, titre: "WhatsApp", texte: "Réponse rapide, 7j/7", href: waLink() },
-    { icone: ICON.phone, titre: "Téléphone", texte: CONFIG.telephone, href: "tel:" + CONFIG.telephone.replace(/[^\d+]/g, "") },
+    { icone: ICON.whatsapp, titre: "WhatsApp", texte: "Réponse rapide", href: waLink() },
+    CONFIG.telephone && { icone: ICON.phone, titre: "Téléphone", texte: CONFIG.telephone, href: "tel:" + String(CONFIG.telephone).replace(/[^\d+]/g, "") },
     { icone: ICON.pin, titre: CONFIG.quartier ? `${CONFIG.quartier}, Bamako` : "Bamako, Mali", texte: "Livraison dans tout Bamako" },
-    { icone: ICON.clock, titre: "Horaires", texte: CONFIG.horaires },
+    CONFIG.horaires && { icone: ICON.clock, titre: "Horaires", texte: CONFIG.horaires },
     ...reseaux,
-  ];
+  ].filter(Boolean);
   $("#infosContact").innerHTML = infos.map(i => {
     const contenu = `<span class="info-icone">${i.icone}</span><span><b>${esc(i.titre)}</b><span>${esc(i.texte)}</span></span>`;
     const ext = i.href && i.href.startsWith("http") ? ' target="_blank" rel="noopener"' : "";
@@ -733,6 +893,16 @@ function initContact() {
 /* ---------- Démarrage ---------- */
 Panier.charger();
 rendreStructure();
-({ accueil: initAccueil, boutique: initBoutique, produit: initProduit, panier: initPanier, commande: initCommande, contact: initContact })[document.body.dataset.page]?.();
+montrerAvertissements();
+({ accueil: initAccueil, boutique: initBoutique, produit: initProduit, panier: initPanier, commande: initCommande, contact: initContact })[page]?.();
 majPastille();
-addEventListener("storage", e => { if (e.key === Panier.cle) { Panier.charger(); majPastille(); } });
+
+// Panier modifié dans un autre onglet : on se remet à jour
+addEventListener("storage", e => {
+  if (e.key !== Panier.cle) return;
+  if (page === "panier" || page === "commande") return location.reload();
+  Panier.charger();
+  majPastille();
+});
+// Page revenue avec le bouton « Retour » : on recharge pour afficher le panier à jour
+addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
