@@ -242,7 +242,8 @@ function activerNav(cle) {
   if (nav && a && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = a.offsetLeft - (nav.clientWidth - a.offsetWidth) / 2;
 }
 
-const logoHTML = `<span class="logo-nom">Atiya</span><span class="logo-sous">Concept</span>`;
+// Logo : images/logo.png (si l'image manque, le nom s'affiche en texte)
+const logoHTML = `<img class="logo-img" src="images/logo.png" alt="${esc(CONFIG.nom)}" width="959" height="405" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="logo-texte" hidden><span class="logo-nom">Atiya</span><span class="logo-sous">Concept</span></span>`;
 
 function montrerAvertissements() {
   avertissements.forEach(m => console.warn("config.js :", m));
