@@ -121,7 +121,6 @@ input, select, textarea { font: inherit; color: inherit; }
 .article-prix s, .fiche-prix s { font-weight: 400; color: #9a9a9a; font-size: .8em; margin-right: .3rem; }
 
 /* Questions fréquentes (page Contact) */
-.faq-titre { margin-top: 0; } }
 .faq-titre { margin: 2.2rem 0 .6rem; scroll-margin-top: 170px; }
 .faq details { border-bottom: 1.5px solid var(--bord); }
 .faq summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.5rem 0; color: var(--rose); font-weight: 600; font-size: clamp(1.05rem, 4.6vw, 1.3rem); cursor: pointer; }
