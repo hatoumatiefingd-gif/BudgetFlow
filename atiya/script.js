@@ -21,8 +21,8 @@ if (!CONFIG_OK) {
 const $ = (sel, el = document) => el.querySelector(sel);
 const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-const typo = s => String(s ?? "").replace(/ ([?!:;»])/g, " $1").replace(/« /g, "« "); // espaces insécables à la française
+const norm = s => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+const typo = s => String(s ?? "").replace(/ ([?!:;»])/g, "\u00a0$1").replace(/« /g, "«\u00a0"); // espaces insécables à la française
 const params = new URLSearchParams(location.search);
 const page = document.body.dataset.page;
 const enLocal = location.protocol === "file:" || /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
@@ -38,7 +38,7 @@ const enListe = v => (Array.isArray(v) ? v : v == null || v === "" ? [] : String
 // Un prix peut être écrit 15000, "15000", "15 000" ou 15.000
 const enNombre = v => {
   if (v == null || v === "") return null;
-  let n = typeof v === "number" ? v : Number(String(v).replace(/[\s  .]/g, "").replace(",", "."));
+  let n = typeof v === "number" ? v : Number(String(v).replace(/[\s\u00a0\u202f.]/g, "").replace(",", "."));
   if (!Number.isFinite(n) || n < 0) return null;
   if (n > 0 && (!Number.isInteger(n) || n < 100)) n = Math.round(n * 1000); // 15.000 écrit à la française = 15 000
   return n;
@@ -78,7 +78,7 @@ PRODUITS.forEach(p => {
 });
 
 /* ---------- Petits outils boutique ---------- */
-const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " " + CONFIG.devise; // le prix ne se coupe jamais
+const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0") + "\u00a0" + CONFIG.devise; // le prix ne se coupe jamais
 const numeroWa = () => {
   let n = String(CONFIG.whatsapp ?? "").replace(/\D/g, "").replace(/^00/, "");
   if (n.length === 8) n = "223" + n; // numéro malien écrit sans l'indicatif
@@ -104,7 +104,7 @@ const prixHTML = p => (p.ancienPrix ? `<s>${fmt(p.ancienPrix)}</s> ` : "") + fmt
 const fraisLivraison = () => enNombre(CONFIG.livraison);
 const texteLivraison = () => { const f = fraisLivraison(); return f === null ? "Selon le livreur" : f === 0 ? "Gratuite" : fmt(f); };
 const jours = n => `${n} jour${n > 1 ? "s" : ""}`;
-const variante = a => [a.couleur && `Couleur : ${a.couleur}`, a.taille && `Taille : ${a.taille}`].filter(Boolean).map(esc).join(" · ");
+const variante = a => [a.couleur && `Couleur\u00a0: ${a.couleur}`, a.taille && `Taille\u00a0: ${a.taille}`].filter(Boolean).map(esc).join(" · ");
 const correspond = (p, q) => norm([p.nom, categorie(p.categorie)?.nom, p.description, ...p.couleurs].join(" ")).includes(norm(q));
 
 /* Couleurs des pastilles (nom de couleur → teinte). Un code comme "#1f2a4d" marche aussi. */
@@ -617,7 +617,7 @@ function initProduit() {
         <div class="accordeons">
           ${p.description ? `<details open><summary>Description</summary><div><p>${esc(typo(p.description))}</p></div></details>` : ""}
           <details><summary>Politique d'échange</summary><div><p>Vous avez ${jours(CONFIG.joursEchange)} après la livraison pour échanger un article (taille ou couleur), s'il n'a pas été porté et a encore son étiquette.</p></div></details>
-          <details><summary>Livraison rapide</summary><div><p>Livraison partout à Bamako en ${esc(CONFIG.delaiLivraison)}. ${fraisLivraison() === null ? "Livraison payante : le prix dépend du livreur, nous vous le confirmons par téléphone." : `Frais de livraison : ${texteLivraison().toLowerCase()}.`} Vous payez uniquement à la livraison, en espèces.</p></div></details>
+          <details><summary>Livraison rapide</summary><div><p>Livraison partout à Bamako en ${esc(CONFIG.delaiLivraison)}. ${fraisLivraison() === null ? "Livraison payante : le prix dépend du livreur, nous vous le confirmons par téléphone." : `Frais de livraison\u00a0: ${texteLivraison().toLowerCase()}.`} Vous payez uniquement à la livraison, en espèces.</p></div></details>
           ${p.tailles.length && guide ? `<details><summary>Guide des tailles</summary><div>${guide}</div></details>` : ""}
         </div>
       </div>
