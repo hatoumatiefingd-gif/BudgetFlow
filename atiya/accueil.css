@@ -1,0 +1,332 @@
+/* ==========================================================
+   ATIYA CONCEPT — Page d'accueil « Éditorial luxe », aux couleurs du logo
+   Toutes les règles sont limitées à l'accueil : body[data-page="accueil"].
+   Les autres pages du site ne changent pas.
+   Photos facultatives (dossier images/) :
+     accueil-hero.jpg   grande photo du haut (verticale)
+     accueil-maison.jpg photo de la section « La maison » (verticale)
+     categorie-*.jpg    photos des catégories (voir config.js)
+   ========================================================== */
+
+body[data-page="accueil"] {
+  --a-ivoire: #fffaf8;
+  --a-papier: #ffffff;
+  --a-blush: #fce1dd;      /* rose poudré du logo */
+  --a-poudre: #f8d2cc;
+  --a-encre: #2a1a1f;
+  --a-vin: #9a2352;         /* framboise profond : titres */
+  --a-vin-fonce: #7e1a42;   /* fond de la section « La maison » */
+  --a-gris: #6e5a60;
+  --a-or: #d0406e;          /* filets fins, comme les traits du logo */
+  --a-or-texte: #b4365f;    /* petits textes roses sur fond clair */
+  --a-or-clair: #f7c4d0;    /* petits textes roses sur fond framboise */
+  --a-rose: #d0406e;        /* mots en italique : rose du logo */
+  --a-rose-clair: #fbd0da;  /* mots en italique sur fond framboise */
+  --a-serif: "Cormorant Garamond", "Cormorant", Georgia, "Times New Roman", serif;
+  --a-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --a-marge: 20px;
+  --a-doux: cubic-bezier(.2, .7, .2, 1);
+/* Textures satin (dessinées en SVG, aucune photo nécessaire) */
+  --a-satin-rose: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='520' viewBox='0 0 400 520' preserveAspectRatio='xMidYMid slice'%3E%3Cfilter id='s' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0011 0.0055' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.6' intercept='-.8'/%3E%3CfeFuncG type='linear' slope='2.6' intercept='-.8'/%3E%3CfeFuncB type='linear' slope='2.6' intercept='-.8'/%3E%3C/feComponentTransfer%3E%3CfeGaussianBlur stdDeviation='4'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='.97 .93 .98 1 .96 .92 .95 .99 .94'/%3E%3CfeFuncG type='table' tableValues='.82 .74 .85 .93 .81 .72 .78 .89 .76'/%3E%3CfeFuncB type='table' tableValues='.81 .73 .84 .91 .80 .71 .77 .87 .75'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect x='-113' y='-75' width='626' height='670' filter='url(%23s)' transform='rotate(-30 200 260)'/%3E%3C/svg%3E");
+  --a-satin-poudre: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='520' viewBox='0 0 400 520' preserveAspectRatio='xMidYMid slice'%3E%3Cfilter id='s' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0013 0.0068' numOctaves='2' seed='23'/%3E%3CfeColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.6' intercept='-.8'/%3E%3CfeFuncG type='linear' slope='2.6' intercept='-.8'/%3E%3CfeFuncB type='linear' slope='2.6' intercept='-.8'/%3E%3C/feComponentTransfer%3E%3CfeGaussianBlur stdDeviation='4'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='.99 .96 1 1 .98 .95 .97 1 .96'/%3E%3CfeFuncG type='table' tableValues='.88 .82 .9 .96 .87 .8 .85 .93 .83'/%3E%3CfeFuncB type='table' tableValues='.87 .81 .89 .95 .86 .79 .84 .92 .82'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect x='-104' y='-71' width='607' height='663' filter='url(%23s)' transform='rotate(-26 200 260)'/%3E%3C/svg%3E");
+  --a-satin-champagne: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='520' viewBox='0 0 400 520' preserveAspectRatio='xMidYMid slice'%3E%3Cfilter id='s' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0013 0.0068' numOctaves='2' seed='31'/%3E%3CfeColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.6' intercept='-.8'/%3E%3CfeFuncG type='linear' slope='2.6' intercept='-.8'/%3E%3CfeFuncB type='linear' slope='2.6' intercept='-.8'/%3E%3C/feComponentTransfer%3E%3CfeGaussianBlur stdDeviation='4'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='1 .98 1 1 .99 .97 .99 1 .98'/%3E%3CfeFuncG type='table' tableValues='.93 .89 .95 .99 .92 .88 .91 .97 .9'/%3E%3CfeFuncB type='table' tableValues='.91 .87 .93 .98 .9 .86 .89 .96 .88'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect x='-93' y='-66' width='586' height='652' filter='url(%23s)' transform='rotate(-22 200 260)'/%3E%3C/svg%3E");
+  --a-satin-vin: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='520' viewBox='0 0 400 520' preserveAspectRatio='xMidYMid slice'%3E%3Cfilter id='s' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0012 0.006' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.6' intercept='-.8'/%3E%3CfeFuncG type='linear' slope='2.6' intercept='-.8'/%3E%3CfeFuncB type='linear' slope='2.6' intercept='-.8'/%3E%3C/feComponentTransfer%3E%3CfeGaussianBlur stdDeviation='4'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='.62 .52 .70 .85 .66 .50 .58 .76 .55'/%3E%3CfeFuncG type='table' tableValues='.13 .09 .17 .30 .15 .08 .12 .22 .11'/%3E%3CfeFuncB type='table' tableValues='.30 .24 .36 .50 .33 .22 .28 .42 .26'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect x='-104' y='-71' width='607' height='663' filter='url(%23s)' transform='rotate(-26 200 260)'/%3E%3C/svg%3E");
+  --a-satin-doux: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='520' viewBox='0 0 400 520' preserveAspectRatio='xMidYMid slice'%3E%3Cfilter id='s' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0016 0.008' numOctaves='2' seed='13'/%3E%3CfeColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.6' intercept='-.8'/%3E%3CfeFuncG type='linear' slope='2.6' intercept='-.8'/%3E%3CfeFuncB type='linear' slope='2.6' intercept='-.8'/%3E%3C/feComponentTransfer%3E%3CfeGaussianBlur stdDeviation='4'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='.93 .87 .95 1 .92 .85 .9 .97 .88'/%3E%3CfeFuncG type='table' tableValues='.93 .87 .95 1 .92 .85 .9 .97 .88'/%3E%3CfeFuncB type='table' tableValues='.93 .87 .95 1 .92 .85 .9 .97 .88'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect x='-109' y='-73' width='617' height='667' filter='url(%23s)' transform='rotate(-28 200 260)'/%3E%3C/svg%3E");
+  --a-satin-appel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400' preserveAspectRatio='xMidYMid slice'%3E%3Cfilter id='s' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0009 0.0045' numOctaves='2' seed='19'/%3E%3CfeColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.6' intercept='-.8'/%3E%3CfeFuncG type='linear' slope='2.6' intercept='-.8'/%3E%3CfeFuncB type='linear' slope='2.6' intercept='-.8'/%3E%3C/feComponentTransfer%3E%3CfeGaussianBlur stdDeviation='4'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='table' tableValues='.97 .93 .98 1 .96 .92 .95 .99 .94'/%3E%3CfeFuncG type='table' tableValues='.82 .74 .85 .93 .81 .72 .78 .89 .76'/%3E%3CfeFuncB type='table' tableValues='.81 .73 .84 .91 .80 .71 .77 .87 .75'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect x='-57' y='-93' width='714' height='586' filter='url(%23s)' transform='rotate(-18 300 200)'/%3E%3C/svg%3E");
+
+  background: var(--a-ivoire);
+  color: var(--a-encre);
+}
+@media (min-width: 700px) { body[data-page="accueil"] { --a-marge: 40px; } }
+
+/* En-tête du site : même fond ivoire que la page */
+body[data-page="accueil"] .entete { background: var(--a-ivoire); }
+
+/* ---------- Éléments communs ---------- */
+body[data-page="accueil"] .ed-in { max-width: 1200px; margin: 0 auto; padding: 0 var(--a-marge); }
+body[data-page="accueil"] .ed-section { padding: 76px 0; }
+@media (min-width: 900px) { body[data-page="accueil"] .ed-section { padding: 120px 0; } }
+
+body[data-page="accueil"] .ed-sur {
+  display: flex; align-items: center; gap: .8rem;
+  font: 500 .7rem/1.2 var(--a-sans); letter-spacing: .24em; text-transform: uppercase;
+  color: var(--a-or-texte); margin-bottom: 1.1rem;
+}
+body[data-page="accueil"] .ed-sur span { display: inline-flex; align-items: center; gap: .8rem; }
+body[data-page="accueil"] .ed-sur span::after { content: ""; width: 34px; height: 1px; background: var(--a-or); }
+body[data-page="accueil"] .ed-titre {
+  font: 300 clamp(2.6rem, 11vw, 4.4rem)/.98 var(--a-serif);
+  color: var(--a-vin); letter-spacing: -.015em;
+}
+body[data-page="accueil"] .ed-titre em { font-style: italic; font-weight: 400; color: var(--a-rose); }
+body[data-page="accueil"] .ed-texte { font-size: .98rem; line-height: 1.7; color: var(--a-gris); max-width: 34rem; }
+
+body[data-page="accueil"] .ed-bouton {
+  display: inline-flex; align-items: center; justify-content: center; gap: .7rem;
+  min-height: 54px; padding: 0 2rem;
+  background: var(--a-vin); color: var(--a-ivoire);
+  font: 600 .74rem/1 var(--a-sans); letter-spacing: .2em; text-transform: uppercase;
+  transition: background .3s, transform .3s var(--a-doux);
+}
+body[data-page="accueil"] .ed-bouton:hover { background: var(--a-vin-fonce); }
+body[data-page="accueil"] .ed-bouton svg { width: 20px; height: 20px; flex-shrink: 0; }
+body[data-page="accueil"] .ed-lien {
+  display: inline-flex; align-items: center; gap: .55rem;
+  font: 600 .72rem/1 var(--a-sans); letter-spacing: .2em; text-transform: uppercase;
+  color: var(--a-vin); padding: .9rem 0 .5rem; border-bottom: 1px solid currentColor;
+  white-space: nowrap;
+}
+body[data-page="accueil"] .ed-lien::after { content: "\2192"; font-size: 1rem; letter-spacing: 0; transition: transform .3s var(--a-doux); }
+body[data-page="accueil"] .ed-lien:hover::after { transform: translateX(4px); }
+
+/* Emplacements photo : texture satin tant qu'il n'y a pas de photo */
+body[data-page="accueil"] .ph { background: var(--a-satin-poudre) center / cover, var(--a-poudre); }
+body[data-page="accueil"] .ph img { z-index: 1; }
+
+/* ---------- 1. Grande image d'accueil ---------- */
+body[data-page="accueil"] .ed-hero {
+  position: relative; isolation: isolate; overflow: hidden;
+  height: clamp(540px, calc(100vh - 236px), 700px);
+  color: var(--a-vin);
+}
+@supports (height: 100svh) { body[data-page="accueil"] .ed-hero { height: clamp(540px, calc(100svh - 236px), 700px); } }
+body[data-page="accueil"] .ed-hero-visuel { position: absolute; inset: 0; z-index: -1; background: var(--a-satin-rose) center / cover, #f6d2cc; }
+body[data-page="accueil"] .ed-hero-visuel::before { /* voile clair sous le texte */
+  content: ""; position: absolute; inset: 0; z-index: 2;
+  background: linear-gradient(180deg, rgba(255, 246, 244, 0) 34%, rgba(255, 246, 244, .5) 62%, rgba(255, 246, 244, .78) 100%);
+}
+body[data-page="accueil"] .ed-hero-visuel::after { /* cadre fin */
+  content: ""; position: absolute; inset: 12px; z-index: 3; border: 1px solid rgba(255, 255, 255, .8); pointer-events: none;
+}
+body[data-page="accueil"] .ed-hero-vertical {
+  position: absolute; z-index: 1; top: 34px; right: 26px;
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  font: 500 .62rem/1 var(--a-sans); letter-spacing: .34em; text-transform: uppercase; color: var(--a-vin);
+  display: flex; align-items: center; gap: .9rem;
+}
+body[data-page="accueil"] .ed-hero-vertical::before { content: ""; height: 46px; width: 1px; background: currentColor; opacity: .5; }
+body[data-page="accueil"] .ed-hero-texte { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 52px 36px 34px; }
+body[data-page="accueil"] .ed-hero-sur {
+  display: flex; align-items: center; gap: .7rem;
+  font: 600 .68rem/1 var(--a-sans); letter-spacing: .26em; text-transform: uppercase; color: var(--a-vin);
+}
+body[data-page="accueil"] .ed-hero-sur span { display: inline-flex; align-items: center; gap: .7rem; font-weight: 500; }
+body[data-page="accueil"] .ed-hero-sur span::before { content: ""; width: 26px; height: 1px; background: currentColor; opacity: .55; }
+body[data-page="accueil"] .ed-hero-titre {
+  font: 300 clamp(3.5rem, 15.5vw, 4.9rem)/.9 var(--a-serif); letter-spacing: -.02em;
+  margin: 1rem 0 1.1rem; color: var(--a-vin);
+}
+body[data-page="accueil"] .ed-hero-titre em { font-style: italic; font-weight: 400; color: var(--a-rose); }
+body[data-page="accueil"] .ed-hero-chapo { font-size: .98rem; line-height: 1.6; max-width: 23rem; color: var(--a-vin); }
+body[data-page="accueil"] .ed-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.6rem; margin-top: 1.5rem; }
+body[data-page="accueil"] .ed-hero-atouts { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; margin-top: 1.4rem; }
+body[data-page="accueil"] .ed-hero-atouts li {
+  display: flex; align-items: center; gap: .5rem;
+  font: 600 .64rem/1.2 var(--a-sans); letter-spacing: .16em; text-transform: uppercase; color: var(--a-vin);
+}
+body[data-page="accueil"] .ed-hero-atouts svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--a-or-texte); }
+
+/* Avec une vraie photo (mobile) : texte clair sur voile sombre */
+@media (max-width: 899px) {
+  body[data-page="accueil"] .ed-hero.a-photo { color: #fff; }
+  body[data-page="accueil"] .ed-hero.a-photo .ed-hero-visuel::before { background: linear-gradient(180deg, rgba(26, 8, 16, 0) 30%, rgba(26, 8, 16, .35) 55%, rgba(26, 8, 16, .72) 100%); }
+  body[data-page="accueil"] .ed-hero.a-photo :is(.ed-hero-sur, .ed-hero-titre, .ed-hero-chapo, .ed-hero-atouts li, .ed-hero-vertical, .ed-lien) { color: #fff; }
+  body[data-page="accueil"] .ed-hero.a-photo .ed-hero-titre em { color: #f7c9d8; }
+  body[data-page="accueil"] .ed-hero.a-photo .ed-hero-atouts svg { color: #fbd0da; }
+  body[data-page="accueil"] .ed-hero.a-photo .ed-bouton { background: var(--a-ivoire); color: var(--a-vin); }
+}
+
+@media (min-width: 900px) {
+  body[data-page="accueil"] .ed-hero {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+    height: clamp(560px, calc(100vh - 236px), 720px);
+  }
+  body[data-page="accueil"] .ed-hero-visuel { position: relative; inset: auto; z-index: 0; grid-column: 2; grid-row: 1; }
+  body[data-page="accueil"] .ed-hero-visuel::before { display: none; }
+  body[data-page="accueil"] .ed-hero-visuel::after { inset: 16px; }
+  body[data-page="accueil"] .ed-hero-vertical { top: 44px; right: 40px; }
+  body[data-page="accueil"] .ed-hero.a-photo .ed-hero-vertical { color: #fff; text-shadow: 0 1px 10px rgba(26, 8, 16, .45); }
+  body[data-page="accueil"] .ed-hero-texte {
+    position: relative; grid-column: 1; grid-row: 1; align-self: center;
+    padding: 0 56px 0 max(var(--a-marge), calc((100vw - 1200px) / 2 + var(--a-marge)));
+  }
+  body[data-page="accueil"] .ed-hero-titre { font-size: clamp(5rem, 7.4vw, 7.4rem); margin: 1.6rem 0 1.6rem; }
+  body[data-page="accueil"] .ed-hero-chapo { font-size: 1.05rem; color: var(--a-gris); max-width: 25rem; }
+  body[data-page="accueil"] .ed-hero-actions { margin-top: 2.2rem; }
+  body[data-page="accueil"] .ed-hero-atouts { margin-top: 2.6rem; padding-top: 1.6rem; border-top: 1px solid rgba(208, 64, 110, .35); max-width: 27rem; }
+}
+
+/* ---------- En-têtes de section ---------- */
+body[data-page="accueil"] .ed-tete { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.2rem 2rem; margin-bottom: 2.4rem; }
+@media (min-width: 900px) { body[data-page="accueil"] .ed-tete { margin-bottom: 3.4rem; } }
+body[data-page="accueil"] .ed-tete-texte { max-width: 22rem; }
+body[data-page="accueil"] #titreNouveautes { scroll-margin-top: 140px; }
+
+/* ---------- 2. Nouveautés ---------- */
+body[data-page="accueil"] .ed-produits {
+  display: flex; gap: 14px; overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; scroll-padding: 0 var(--a-marge);
+  padding: 0 var(--a-marge) 6px; scrollbar-width: none;
+}
+body[data-page="accueil"] .ed-produits::-webkit-scrollbar { display: none; }
+body[data-page="accueil"] .ed-carte { flex: 0 0 64%; max-width: 290px; min-width: 0; scroll-snap-align: start; display: block; color: var(--a-encre); }
+body[data-page="accueil"] .ed-carte-img {
+  display: block; aspect-ratio: 3 / 4; overflow: hidden;
+  background: var(--a-satin-doux) 0 0 / 190% auto, var(--t, #f6d6d1);
+  background-blend-mode: multiply;
+}
+/* chaque carte montre un autre pli du satin */
+body[data-page="accueil"] .ed-carte:nth-child(4n + 2) .ed-carte-img { background-position: 100% 35%, 0 0; }
+body[data-page="accueil"] .ed-carte:nth-child(4n + 3) .ed-carte-img { background-position: 40% 100%, 0 0; }
+body[data-page="accueil"] .ed-carte:nth-child(4n + 4) .ed-carte-img { background-position: 85% 85%, 0 0; }
+body[data-page="accueil"] .ed-carte-img img { transition: transform 1.2s var(--a-doux); }
+@media (hover: hover) { body[data-page="accueil"] .ed-carte:hover .ed-carte-img img { transform: scale(1.04); } }
+body[data-page="accueil"] .ed-carte.epuisee .ed-carte-img::after { content: ""; position: absolute; inset: 0; z-index: 1; background: rgba(255, 250, 248, .45); }
+body[data-page="accueil"] .ed-carte.epuisee :is(.ed-carte-nom, .ed-carte-prix) { color: var(--a-gris); }
+body[data-page="accueil"] .ed-etiquette {
+  position: absolute; z-index: 2; top: 10px; left: 10px;
+  background: rgba(255, 250, 248, .94); color: var(--a-vin);
+  font: 600 .58rem/1 var(--a-sans); letter-spacing: .18em; text-transform: uppercase; padding: .5rem .6rem .45rem;
+}
+body[data-page="accueil"] .ed-carte-cat { margin-top: .95rem; font: 500 .62rem/1.2 var(--a-sans); letter-spacing: .2em; text-transform: uppercase; color: var(--a-or-texte); }
+body[data-page="accueil"] .ed-carte-nom { font: 500 1.32rem/1.12 var(--a-serif); color: var(--a-vin); margin-top: .3rem; }
+body[data-page="accueil"] .ed-carte-prix { margin-top: .4rem; font-size: .9rem; font-weight: 500; color: var(--a-encre); }
+body[data-page="accueil"] .ed-carte-prix s { color: #7a6a6f; font-weight: 400; margin-right: .35rem; font-size: .92em; }
+body[data-page="accueil"] .ed-teintes { display: flex; gap: 6px; margin-top: .65rem; }
+body[data-page="accueil"] .ed-teintes .teinte { width: 11px; height: 11px; border: 0; box-shadow: inset 0 0 0 1px rgba(43, 26, 32, .2); }
+body[data-page="accueil"] .ed-defile { position: relative; height: 1px; margin: 26px var(--a-marge) 0; background: rgba(154, 35, 82, .14); }
+body[data-page="accueil"] .ed-defile span { position: absolute; top: -.5px; left: 0; height: 2px; width: 30%; background: var(--a-vin); transition: left .15s linear; }
+
+@media (min-width: 760px) {
+  body[data-page="accueil"] .ed-produits {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 44px 20px;
+    overflow: visible; max-width: 1200px; margin: 0 auto; padding: 0 var(--a-marge);
+  }
+  body[data-page="accueil"] .ed-carte { max-width: none; }
+  body[data-page="accueil"] .ed-carte-nom { font-size: 1.42rem; }
+  body[data-page="accueil"] .ed-defile { display: none; }
+}
+
+/* ---------- 3. Collections (grille éditoriale) ---------- */
+body[data-page="accueil"] .ed-collections-zone { padding-top: 0; }
+body[data-page="accueil"] .ed-collections { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+body[data-page="accueil"] .ed-collection { position: relative; display: block; overflow: hidden; isolation: isolate; aspect-ratio: 3 / 4; color: var(--a-vin); }
+body[data-page="accueil"] .ed-collection:nth-child(4n + 1) { grid-column: 1 / -1; aspect-ratio: 1 / 1; }
+body[data-page="accueil"] .ed-collection:nth-child(4n + 4) { grid-column: 1 / -1; aspect-ratio: 16 / 10; }
+body[data-page="accueil"] .ed-collection-img { position: absolute; inset: 0; z-index: -1; transition: transform 1.2s var(--a-doux); }
+body[data-page="accueil"] .ed-collection:nth-child(4n + 1) .ed-collection-img { background-image: var(--a-satin-rose); }
+body[data-page="accueil"] .ed-collection:nth-child(4n + 2) .ed-collection-img { background-image: var(--a-satin-champagne); }
+body[data-page="accueil"] .ed-collection:nth-child(4n + 3) .ed-collection-img { background-image: var(--a-satin-vin); }
+body[data-page="accueil"] .ed-collection:nth-child(4n + 3) { color: var(--a-ivoire); }
+body[data-page="accueil"] .ed-collection::after { content: ""; position: absolute; inset: 10px; border: 1px solid rgba(255, 255, 255, .7); pointer-events: none; }
+body[data-page="accueil"] .ed-collection:nth-child(4n + 3)::after { border-color: rgba(208, 64, 110, .45); }
+@media (hover: hover) { body[data-page="accueil"] .ed-collection:hover .ed-collection-img { transform: scale(1.04); } }
+body[data-page="accueil"] .ed-collection-txt { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: flex-start; gap: .45rem; padding: 22px 22px 24px; }
+body[data-page="accueil"] .ed-collection-txt small { font: 500 .62rem/1 var(--a-sans); letter-spacing: .22em; }
+body[data-page="accueil"] .ed-collection-txt b { font: italic 400 clamp(1.75rem, 7.4vw, 2.5rem)/1 var(--a-serif); letter-spacing: -.01em; }
+body[data-page="accueil"] .ed-collection:nth-child(4n + 1) .ed-collection-txt b,
+body[data-page="accueil"] .ed-collection:nth-child(4n + 4) .ed-collection-txt b { font-size: clamp(2.2rem, 10vw, 3.4rem); }
+body[data-page="accueil"] .ed-decouvrir { margin-top: .35rem; font: 600 .62rem/1 var(--a-sans); letter-spacing: .2em; text-transform: uppercase; padding-bottom: .35rem; border-bottom: 1px solid currentColor; }
+body[data-page="accueil"] .ed-collection.a-photo { color: #fff; }
+body[data-page="accueil"] .ed-collection.a-photo .ed-collection-txt { z-index: 2; background: linear-gradient(180deg, rgba(26, 8, 16, 0), rgba(26, 8, 16, .55)); }
+
+@media (min-width: 900px) {
+  body[data-page="accueil"] .ed-collections { grid-template-columns: repeat(12, minmax(0, 1fr)); grid-auto-rows: 300px; gap: 16px; }
+  body[data-page="accueil"] .ed-collection,
+  body[data-page="accueil"] .ed-collection:nth-child(n) { aspect-ratio: auto; grid-column: span 4; }
+  body[data-page="accueil"] .ed-collection:nth-child(1) { grid-column: 1 / 7; grid-row: 1 / 3; }
+  body[data-page="accueil"] .ed-collection:nth-child(2) { grid-column: 7 / 13; grid-row: 1; }
+  body[data-page="accueil"] .ed-collection:nth-child(3) { grid-column: 7 / 10; grid-row: 2; }
+  body[data-page="accueil"] .ed-collection:nth-child(4) { grid-column: 10 / 13; grid-row: 2; }
+  body[data-page="accueil"] .ed-collection-txt { padding: 30px 32px 32px; }
+  body[data-page="accueil"] .ed-collection .ed-collection-txt b,
+  body[data-page="accueil"] .ed-collection:nth-child(n) .ed-collection-txt b { font-size: 2.3rem; }
+  body[data-page="accueil"] .ed-collection:nth-child(1) .ed-collection-txt b { font-size: 4rem; }
+  body[data-page="accueil"] .ed-collection:nth-child(2) .ed-collection-txt b { font-size: 3rem; }
+}
+
+/* ---------- 4. La maison + garanties (fond vin) ---------- */
+body[data-page="accueil"] .ed-maison { background: var(--a-vin); color: var(--a-ivoire); padding: 76px 0; overflow: hidden; }
+body[data-page="accueil"] .ed-maison .ed-sur { color: var(--a-or-clair); }
+body[data-page="accueil"] .ed-maison .ed-sur span::after { background: var(--a-or-clair); opacity: .7; }
+body[data-page="accueil"] .ed-maison .ed-titre { color: var(--a-ivoire); }
+body[data-page="accueil"] .ed-maison .ed-titre em { color: var(--a-rose-clair); }
+body[data-page="accueil"] .ed-maison-grille { display: grid; gap: 40px; }
+body[data-page="accueil"] .ed-maison-photo {
+  position: relative; overflow: hidden; aspect-ratio: 4 / 5; width: 70%; justify-self: end;
+  background: var(--a-satin-champagne) center / cover, #fbe4df;
+}
+body[data-page="accueil"] .ed-maison-photo::after { content: ""; position: absolute; inset: 12px; z-index: 2; border: 1px solid rgba(208, 64, 110, .45); pointer-events: none; }
+body[data-page="accueil"] .ed-monogramme {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font: italic 300 clamp(10rem, 44vw, 19rem)/1 var(--a-serif); color: transparent;
+  -webkit-text-stroke: 1px rgba(208, 64, 110, .55); padding-right: .08em;
+}
+body[data-page="accueil"] .ed-maison-photo.a-photo .ed-monogramme { display: none; }
+body[data-page="accueil"] .ed-chapo { font: 400 clamp(1.3rem, 5.4vw, 1.6rem)/1.4 var(--a-serif); color: #fcebef; margin-top: 1.6rem; max-width: 34rem; }
+body[data-page="accueil"] .ed-chapo strong { font-weight: 600; color: var(--a-ivoire); }
+body[data-page="accueil"] .ed-garanties-titre { margin-top: .4rem; font: 500 .7rem/1.2 var(--a-sans); letter-spacing: .24em; text-transform: uppercase; color: var(--a-or-clair); }
+body[data-page="accueil"] .ed-garanties { display: grid; grid-template-columns: 1fr 1fr; margin-top: 1.1rem; border-top: 1px solid rgba(251, 208, 218, .35); }
+body[data-page="accueil"] .ed-garantie { padding: 1.5rem 1rem 1.5rem 0; border-bottom: 1px solid rgba(251, 208, 218, .35); }
+body[data-page="accueil"] .ed-garantie:nth-child(2n) { padding: 1.5rem 0 1.5rem 1rem; border-left: 1px solid rgba(251, 208, 218, .35); }
+body[data-page="accueil"] .ed-garantie svg { width: 28px; height: 28px; color: var(--a-or-clair); stroke-width: 1.3; }
+body[data-page="accueil"] .ed-garantie h3 { font: 500 1.28rem/1.15 var(--a-serif); color: var(--a-ivoire); margin: .8rem 0 .4rem; }
+body[data-page="accueil"] .ed-garantie p { font-size: .82rem; line-height: 1.55; color: #f5d6de; }
+
+@media (min-width: 900px) {
+  body[data-page="accueil"] .ed-maison { padding: 120px 0; }
+  body[data-page="accueil"] .ed-maison-grille { grid-template-columns: 5fr 7fr; gap: 88px; align-items: center; }
+  body[data-page="accueil"] .ed-maison-photo { width: 100%; max-height: 640px; justify-self: stretch; }
+  body[data-page="accueil"] .ed-monogramme { font-size: 22rem; }
+  body[data-page="accueil"] .ed-garanties-zone { grid-column: 1 / -1; margin-top: 8px; }
+  body[data-page="accueil"] .ed-garanties { grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid rgba(251, 208, 218, .35); }
+  body[data-page="accueil"] .ed-garantie,
+  body[data-page="accueil"] .ed-garantie:nth-child(2n) { padding: 2rem 2rem 2.1rem; border-bottom: 0; border-left: 1px solid rgba(251, 208, 218, .35); }
+  body[data-page="accueil"] .ed-garantie:first-child { padding-left: 0; border-left: 0; }
+  body[data-page="accueil"] .ed-garantie h3 { font-size: 1.5rem; margin-top: 1rem; }
+  body[data-page="accueil"] .ed-garantie p { font-size: .88rem; max-width: 15rem; }
+}
+
+/* ---------- 5. Questions fréquentes ---------- */
+body[data-page="accueil"] .ed-questions-grille { display: grid; gap: 28px; }
+body[data-page="accueil"] .ed-faq details { border-bottom: 1px solid rgba(154, 35, 82, .16); }
+body[data-page="accueil"] .ed-faq details:first-child { border-top: 1px solid rgba(154, 35, 82, .16); }
+body[data-page="accueil"] .ed-faq summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 1.2rem;
+  padding: 1.35rem 0; font: 500 1.28rem/1.25 var(--a-serif); color: var(--a-vin);
+}
+body[data-page="accueil"] .ed-faq summary::-webkit-details-marker { display: none; }
+body[data-page="accueil"] .ed-faq summary::after {
+  content: ""; flex-shrink: 0; width: 13px; height: 13px;
+  background: linear-gradient(var(--a-vin), var(--a-vin)) center / 100% 1px no-repeat, linear-gradient(var(--a-vin), var(--a-vin)) center / 1px 100% no-repeat;
+  transition: transform .35s var(--a-doux);
+}
+body[data-page="accueil"] .ed-faq details[open] summary::after { transform: rotate(45deg); }
+body[data-page="accueil"] .ed-faq details p { padding: 0 2.2rem 1.5rem 0; font-size: .95rem; line-height: 1.7; color: var(--a-gris); }
+@media (min-width: 900px) {
+  body[data-page="accueil"] .ed-questions-grille { grid-template-columns: 5fr 7fr; gap: 88px; align-items: start; }
+  body[data-page="accueil"] .ed-faq summary { font-size: 1.45rem; padding: 1.6rem 0; }
+}
+
+/* ---------- 6. Appel WhatsApp ---------- */
+body[data-page="accueil"] .ed-appel { padding: 0 var(--a-marge) 76px; }
+body[data-page="accueil"] .ed-appel-in {
+  position: relative; max-width: 1200px; margin: 0 auto; text-align: center;
+  padding: 64px 26px 60px; background: var(--a-satin-appel) center / cover, var(--a-blush);
+}
+body[data-page="accueil"] .ed-appel-in::after { content: ""; position: absolute; inset: 12px; border: 1px solid rgba(255, 255, 255, .85); pointer-events: none; }
+body[data-page="accueil"] .ed-appel .ed-sur { justify-content: center; }
+body[data-page="accueil"] .ed-appel .ed-sur::before { content: ""; width: 34px; height: 1px; background: var(--a-or); }
+body[data-page="accueil"] .ed-appel .ed-sur::after { content: ""; width: 34px; height: 1px; background: var(--a-or); }
+body[data-page="accueil"] .ed-appel .ed-texte { margin: 1.2rem auto 2rem; color: var(--a-vin); max-width: 26rem; }
+body[data-page="accueil"] .ed-appel .ed-bouton { position: relative; z-index: 1; }
+body[data-page="accueil"] .ed-insecable { white-space: nowrap; }
+@media (min-width: 900px) {
+  body[data-page="accueil"] .ed-appel { padding-bottom: 120px; }
+  body[data-page="accueil"] .ed-appel-in { padding: 96px 40px 92px; }
+  body[data-page="accueil"] .ed-appel-in::after { inset: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="accueil"] * { transition: none !important; }
+}

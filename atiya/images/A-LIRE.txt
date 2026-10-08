@@ -1,10 +1,14 @@
-Mets tes photos dans ce dossier.
+Mets tes photos dans ce dossier (images).
 
-Noms à utiliser pour l'accueil (facultatif) :
-- banniere.jpg          -> ta propre bannière d'accueil (remplace l'accueil rose rayé)
-- accueil-1.jpg, accueil-2.jpg, accueil-3.jpg -> les 3 photos en arche
-- questions.jpg         -> la photo au-dessus des Questions fréquentes
-- categorie-robes.jpg, categorie-ensembles.jpg, categorie-hauts.jpg, categorie-bas.jpg
+DÉJÀ LÀ (ne pas supprimer) :
+- logo.png, logo-blanc.png  -> ton logo (en haut et en bas du site)
+- favicon.png, apple-touch-icon.png, icone-512.png -> la petite icône « A »
 
-Pour les articles : mets la photo ici (ex. robe-rose-1.jpg), puis dans config.js :
+PHOTOS DE L'ACCUEIL (facultatives, avec exactement ces noms) :
+- accueil-hero.jpg     -> la grande photo en haut (photo en hauteur, une tenue portée)
+- accueil-maison.jpg   -> la photo de la partie « La maison » (photo en hauteur)
+- categorie-robes.jpg, categorie-ensembles.jpg, categorie-hauts.jpg, categorie-bas.jpg -> les 4 catégories
+Tant qu'une photo manque, un joli satin rose s'affiche à sa place.
+
+PHOTOS DES ARTICLES : mets la photo ici (ex. robe-rose-1.jpg), puis dans config.js :
 images: ["images/robe-rose-1.jpg"]

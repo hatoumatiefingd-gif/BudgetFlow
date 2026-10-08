@@ -7,7 +7,7 @@ Les commandes arrivent **sur ton WhatsApp**, et le paiement se fait **uniquement
 
 | Fichier | Page |
 |---|---|
-| `index.html` | Accueil |
+| `index.html` + `accueil.css` | Accueil |
 | `boutique.html` | Boutique et catégories (Robes, Ensembles…) |
 | `produit.html` | Fiche d'un article |
 | `panier.html` | Panier |
@@ -40,12 +40,12 @@ Mets tes photos dans le dossier `images/`, puis :
 - **Articles** : dans `config.js`, `images: ["images/robe-rose-1.jpg", "images/robe-rose-2.jpg"]`.
   La première photo est celle qu'on voit dans la boutique.
 - **Accueil** : il suffit de nommer les fichiers ainsi :
-  - `images/banniere.jpg` : ta propre bannière (faite sur Canva par exemple). Elle remplace l'accueil rose rayé.
-  - `images/accueil-1.jpg`, `accueil-2.jpg`, `accueil-3.jpg` : les 3 photos en arche sous « Bienvenue ».
-  - `images/questions.jpg` : la photo au-dessus des « Questions fréquentes ».
+  - `images/accueil-hero.jpg` : la grande photo en haut de l'accueil (photo en hauteur) ;
+  - `images/accueil-maison.jpg` : la photo de la partie « La maison » ;
 - **Catégories** : `images/categorie-robes.jpg`, `categorie-ensembles.jpg`, `categorie-hauts.jpg`, `categorie-bas.jpg`.
+- **Logo** : déjà installé (`images/logo.png`). Pour le changer, remplace ce fichier par un autre du même nom.
 
-Tant qu'une photo manque, un cintre rose s'affiche à sa place.
+Tant qu'une photo manque, un satin rose ou un cintre s'affiche à sa place.
 
 ## 3. Voir le site sur ton ordinateur
 

@@ -441,15 +441,72 @@ function rendreGaranties(el) {
 
 /* ---------- Page : Accueil ---------- */
 function initAccueil() {
-  $("#nouveautes").innerHTML = PRODUITS.slice(0, 8).map(carteAccueil).join("");
-  $("#collections").innerHTML = CATEGORIES.map(c => `
-    <div class="collection">
-      <a class="collection-img ph" href="${lienCategorie(c.id)}" aria-label="${esc(c.nom)}">${img(c.image, c.nom)}</a>
-      <h3>${esc(c.nom)}</h3>
-      <a class="btn-achetez" href="${lienCategorie(c.id)}">Achetez</a>
-    </div>`).join("");
+  // Photo d'ambiance : si le fichier existe, il remplace le satin (classe a-photo pour adapter le texte)
+  const photo = src => (src ? `<img src="${esc(src)}" alt="" loading="lazy" onload="this.closest('[data-photo]').classList.add('a-photo')" onerror="this.remove()">` : "");
+  // Teinte douce de la 1re couleur de l'article : l'emplacement photo ressemble à un échantillon de tissu
+  const adoucir = hex => {
+    const n = parseInt(hex.slice(1), 16), rgb = [n >> 16, (n >> 8) & 255, n & 255], fond = [255, 250, 248];
+    const k = (rgb[0] + rgb[1] + rgb[2]) / 765 < 0.35 ? 0.24 : 0.42; // couleurs foncées (noir, prune…) : teinte plus légère
+    return "rgb(" + rgb.map((c, i) => Math.round(c * k + fond[i] * (1 - k))).join(",") + ")";
+  };
+  const teinte = p => { const t = couleurCSS(p.couleurs[0] || ""); return /^#[0-9a-f]{6}$/i.test(t) ? ` style="--t:${adoucir(t)}"` : ""; };
+
+  // Nouveautés : les 8 premiers articles de config.js
+  const carte = p => `
+    <a class="ed-carte${enStock(p) ? "" : " epuisee"}" href="${lienProduit(p)}">
+      <span class="ed-carte-img ph"${teinte(p)}>
+        ${!enStock(p) ? `<span class="ed-etiquette">Épuisé</span>` : p.badge ? `<span class="ed-etiquette">${esc(p.badge)}</span>` : ""}
+        ${img(p.images[0], p.nom)}
+      </span>
+      <p class="ed-carte-cat">${esc(categorie(p.categorie)?.nom || "")}</p>
+      <h3 class="ed-carte-nom">${esc(p.nom)}</h3>
+      <p class="ed-carte-prix">${prixHTML(p)}</p>
+      ${p.couleurs.length ? `<span class="ed-teintes">${p.couleurs.map(c => pastille(c)).join("")}</span>` : ""}
+    </a>`;
+  const piste = $("#nouveautes");
+  piste.innerHTML = PRODUITS.slice(0, 8).map(carte).join("");
+
+  // Petite barre qui suit le défilement des nouveautés (mobile)
+  const barre = $("#defile span");
+  const suivre = () => {
+    const max = piste.scrollWidth - piste.clientWidth;
+    const part = piste.scrollWidth ? piste.clientWidth / piste.scrollWidth : 1;
+    barre.style.width = part * 100 + "%";
+    barre.style.left = (max > 0 ? (piste.scrollLeft / max) * (1 - part) * 100 : 0) + "%";
+  };
+  if (barre) {
+    piste.addEventListener("scroll", suivre, { passive: true });
+    addEventListener("resize", suivre);
+    suivre();
+  }
+
+  // Collections (grille éditoriale)
+  $("#collections").innerHTML = CATEGORIES.map((c, i) => `
+    <a class="ed-collection" href="${lienCategorie(c.id)}" data-photo>
+      <span class="ed-collection-img ph">${photo(c.image)}</span>
+      <span class="ed-collection-txt">
+        <small>${String(i + 1).padStart(2, "0")}</small>
+        <b>${esc(c.nom)}</b>
+        <span class="ed-decouvrir">Découvrir</span>
+      </span>
+    </a>`).join("");
+
+  // Questions fréquentes
   rendreFAQ($("#faq"));
-  rendreGaranties($("#garanties"));
+
+  // Garanties (textes tirés de config.js)
+  const f = fraisLivraison();
+  const garanties = [
+    [ICON.cash, "Paiement à la livraison", "En espèces, à la réception de votre colis. Aucun paiement en ligne."],
+    [ICON.truck, "Livraison à Bamako", `Partout à Bamako, en ${CONFIG.delaiLivraison}. ${f === null ? "Le prix dépend du livreur." : f === 0 ? "Livraison gratuite." : `Frais : ${fmt(f)}.`}`],
+    [ICON.retour, `Échange sous ${jours(CONFIG.joursEchange)}`, "Taille ou couleur, si l’article n’a pas été porté."],
+    [ICON.support, "Conseil sur WhatsApp", CONFIG.horaires ? `${CONFIG.horaires}.` : "Nous vous répondons rapidement."],
+  ];
+  $("#garanties").innerHTML = garanties.map(([i, t, d]) => `<div class="ed-garantie">${i}<h3>${esc(typo(t))}</h3><p>${esc(typo(d))}</p></div>`).join("");
+
+  // Liens WhatsApp et horaires (depuis config.js)
+  $$("[data-wa]").forEach(a => { a.href = waLink(a.dataset.wa); });
+  $$("[data-horaires]").forEach(e => { e.textContent = CONFIG.horaires ? CONFIG.horaires + "." : ""; });
 }
 
 /* ---------- Page : Boutique / catégorie ---------- */
