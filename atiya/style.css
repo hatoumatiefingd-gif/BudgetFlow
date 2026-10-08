@@ -10,9 +10,6 @@
   --rose-clair: #fce1dd;   /* rose poudré du fond du logo : fonds de sections */
   --rose-pale: #fdf1ef;
   --vieux-rose: #b8818a;   /* icônes, nom des articles */
-  --peche: #fbd3c4;
-  --raye-1: #f6a3ad;       /* rayures de l'accueil */
-  --raye-2: #f8bd99;
   --noir: #111;
   --texte: #262626;
   --gris: #6f6f6f;
@@ -120,84 +117,11 @@ input, select, textarea { font: inherit; color: inherit; }
 .resultat small { color: var(--gris); }
 .sans-resultat { padding: 1rem 0; color: var(--gris); }
 
-/* ---------- Accueil : bannière ---------- */
-.hero { position: relative; overflow: hidden; text-align: center; background: repeating-linear-gradient(90deg, var(--raye-1) 0 54px, var(--raye-2) 54px 108px); padding: 2.6rem 1rem 0; }
-.hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 16px; z-index: 3; background: radial-gradient(circle at 13px 0, transparent 11px, var(--peche) 12px) 0 0 / 26px 16px repeat-x; }
-.hero-banniere { display: block; width: 100%; height: auto; }
-.hero.a-banniere { padding: 0; background: none; }
-.hero.a-banniere::after, .hero.a-banniere .hero-contenu, .hero.a-banniere .deco { display: none; }
-.hero-contenu { position: relative; z-index: 2; max-width: 760px; margin: 0 auto; }
-.hero-marque { font-family: var(--f-serif); color: var(--rose-fonce); font-size: clamp(2.4rem, 10vw, 3.6rem); line-height: .9; }
-.hero-marque small { display: block; font-family: var(--f-texte); font-size: clamp(.7rem, 2.6vw, .9rem); letter-spacing: .5em; margin-top: .55rem; padding-left: .5em; color: var(--rose); }
-.hero h1 { font-family: var(--f-serif); font-weight: 900; color: var(--rose-fonce); font-size: clamp(3.6rem, 17vw, 8.5rem); line-height: 1; margin-top: 1.4rem; letter-spacing: -.02em; }
-.hero-script { font-family: var(--f-script); color: #fff; font-size: clamp(2.8rem, 13vw, 6.4rem); line-height: 1.1; margin-top: -.42em; text-shadow: 0 2px 10px rgba(200, 51, 108, .35); }
-.hero-sep { display: flex; align-items: center; justify-content: center; gap: .6rem; color: var(--rose-fonce); margin: 1rem 0 .8rem; }
-.hero-sep::before, .hero-sep::after { content: ""; width: 72px; height: 2px; background: currentColor; border-radius: 2px; }
-.hero-sep svg { width: 18px; height: 18px; fill: currentColor; }
-.hero-accroche { color: #a8395e; font-size: clamp(.72rem, 2.9vw, .9rem); letter-spacing: .16em; font-weight: 600; text-transform: uppercase; line-height: 1.7; }
-.hero-pilule { display: inline-flex; gap: .8rem; align-items: center; margin: 1.3rem 0 1.8rem; background: #e2558d; color: #fff; border-radius: 999px; padding: .65rem 1.6rem; font-size: clamp(.68rem, 2.6vw, .8rem); letter-spacing: .2em; font-weight: 600; text-transform: uppercase; box-shadow: 0 4px 14px rgba(200, 51, 108, .25); }
-.hero-pilule span { color: #ffd76a; }
-.hero-photos { display: flex; justify-content: center; align-items: flex-end; gap: 10px; max-width: 720px; margin: 0 auto; }
-.arche { flex: 1; max-width: 210px; aspect-ratio: 3 / 4; border-radius: 999px 999px 0 0; border: 4px solid #fff; border-bottom: 0; overflow: hidden; }
-.arche.milieu { max-width: 250px; aspect-ratio: 3 / 4.4; }
-.deco { position: absolute; z-index: 1; font-size: clamp(2.2rem, 8vw, 4rem); filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .12)); pointer-events: none; line-height: 1; }
-.d1 { top: 14px; left: 4%; transform: rotate(-18deg); }
-.d2 { top: 20px; right: 5%; transform: rotate(14deg); }
-.d3 { top: 46%; left: 3%; }
-.d4 { top: 42%; right: 3%; transform: rotate(10deg); }
+/* Prix barrés */
+.article-prix s, .fiche-prix s { font-weight: 400; color: #9a9a9a; font-size: .8em; margin-right: .3rem; }
 
-/* Bande pêche sous la bannière */
-.bande { background: var(--peche); display: grid; grid-template-columns: repeat(5, 1fr); gap: .3rem; padding: 1.1rem .5rem 1rem; text-align: center; color: #94485f; }
-.bande div { display: flex; flex-direction: column; align-items: center; gap: .35rem; font-size: .68rem; line-height: 1.2; }
-.bande svg { width: 24px; height: 24px; color: var(--rose-fonce); }
-.bande .script { font-family: var(--f-script); font-size: 1.5rem; line-height: 1; color: var(--rose-fonce); }
-@media (min-width: 700px) { .bande div { font-size: .85rem; } }
-
-/* Ligne de mots style magazine */
-.valeurs { display: flex; justify-content: space-around; align-items: center; gap: .8rem; padding: 2.2rem .8rem; color: #c79aa1; overflow: hidden; }
-.v1 { font-family: var(--f-serif); font-size: clamp(1.2rem, 5.5vw, 2rem); letter-spacing: .14em; font-weight: 500; }
-.v2 { font-family: var(--f-serif); font-weight: 900; font-size: clamp(1.3rem, 6vw, 2.2rem); letter-spacing: .04em; }
-.v3 { font-family: var(--f-texte); font-weight: 800; font-style: italic; font-size: clamp(1.2rem, 5.5vw, 1.9rem); letter-spacing: -.03em; }
-.v4 { font-family: var(--f-texte); font-weight: 500; font-size: clamp(.85rem, 3.8vw, 1.25rem); letter-spacing: .22em; }
-
-/* ---------- Sections roses & cartes de l'accueil ---------- */
-.section-rose { background: var(--rose-clair); padding: 2.8rem 0 2.5rem; }
-.section-rose > .titre { margin-bottom: 1.5rem; text-align: center; }
-.carrousel { display: flex; gap: 1.1rem; overflow-x: auto; scroll-snap-type: x mandatory; padding: .3rem 12% 1.8rem; scroll-padding: 0 12%; scrollbar-width: none; }
-.carrousel::-webkit-scrollbar { display: none; }
-@media (min-width: 900px) {
-  .carrousel { padding-left: max(1.25rem, calc((100vw - 1200px) / 2)); padding-right: max(1.25rem, calc((100vw - 1200px) / 2)); scroll-padding: 0 max(1.25rem, calc((100vw - 1200px) / 2)); }
-}
-.carte { flex: 0 0 76%; max-width: 330px; scroll-snap-align: start; background: #fff; border-radius: 22px; padding: 1.1rem; box-shadow: 0 8px 22px rgba(208, 64, 110, .08); display: flex; flex-direction: column; transition: transform .25s; }
-@media (min-width: 900px) {
-  .carrousel { display: grid; grid-template-columns: repeat(4, 1fr); overflow: visible; max-width: 1200px; margin: 0 auto; padding: .3rem 1.25rem 1.8rem; scroll-snap-type: none; }
-  .carte { max-width: none; }
-}
-@media (hover: hover) { .carte:hover { transform: translateY(-4px); } }
-.carte-img { aspect-ratio: 1; border-radius: 14px; overflow: hidden; }
-.carte-nom { font-family: var(--f-titre); font-weight: 600; color: var(--rose); font-size: 1.75rem; line-height: 1.2; margin: 1.1rem 0 .6rem; }
-.stock { display: flex; align-items: center; gap: .55rem; color: #555; font-size: 1rem; }
-.stock::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--vert); flex-shrink: 0; }
-.stock.epuise::before { background: #d64545; }
-.carte-prix { margin-top: auto; padding-top: 1.1rem; font-weight: 700; font-size: 1.4rem; color: var(--noir); }
-.carte-prix s, .article-prix s, .fiche-prix s { font-weight: 400; color: #9a9a9a; font-size: .8em; margin-right: .3rem; }
-.badge { position: absolute; top: 10px; left: 10px; z-index: 2; background: var(--fuchsia); color: #fff; font-size: .72rem; font-weight: 600; padding: .3rem .75rem; border-radius: 999px; }
-.voir-tout { text-align: center; margin: .4rem 0 2.2rem; }
-.voir-tout .btn-noir { padding: 1.2rem 3.6rem; font-size: 1.15rem; }
-
-/* Blocs catégories (fond fuchsia) */
-.collections { display: grid; gap: 1.4rem; padding: 0 1rem; max-width: 1200px; margin: 0 auto 2.4rem; }
-@media (min-width: 800px) { .collections { grid-template-columns: 1fr 1fr; } }
-.collection { background: var(--fuchsia); padding: 1.8rem 1.8rem 2rem; text-align: center; }
-.collection-img { display: block; aspect-ratio: 3 / 2; border-radius: 14px; overflow: hidden; }
-.collection h3 { font-family: var(--f-titre); font-weight: 600; font-size: clamp(2rem, 8vw, 2.4rem); color: #000; margin: 1.4rem 0 1rem; line-height: 1.15; }
-.btn-achetez { display: block; max-width: 300px; margin: 0 auto; background: #000; color: #f47aab; border-radius: 10px; padding: 1rem; font-size: 1.3rem; }
-
-/* Panneau blanc : photo + questions fréquentes */
-.panneau { background: #fff; max-width: 1100px; margin: 0 1rem; padding: 2.2rem 1.4rem 1rem; }
-@media (min-width: 1132px) { .panneau { margin: 0 auto; } }
-.panneau-img { aspect-ratio: 4 / 5; max-height: 640px; width: 100%; border-radius: 4px; overflow: hidden; }
-@media (min-width: 800px) { .panneau-grille { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2.5rem; align-items: start; } .panneau-grille .faq-titre { margin-top: 0; } }
+/* Questions fréquentes (page Contact) */
+.faq-titre { margin-top: 0; } }
 .faq-titre { margin: 2.2rem 0 .6rem; scroll-margin-top: 170px; }
 .faq details { border-bottom: 1.5px solid var(--bord); }
 .faq summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.5rem 0; color: var(--rose); font-weight: 600; font-size: clamp(1.05rem, 4.6vw, 1.3rem); cursor: pointer; }
@@ -205,15 +129,6 @@ input, select, textarea { font: inherit; color: inherit; }
 .faq summary::after { content: "+"; font-size: 1.7rem; font-weight: 400; line-height: 1; transition: transform .25s; }
 .faq details[open] summary::after { transform: rotate(45deg); }
 .faq details p { padding: 0 0 1.4rem; color: #4a4a4a; line-height: 1.65; }
-
-/* Encadré des garanties */
-.garanties { display: grid; grid-template-columns: 1fr 1fr; gap: 2.2rem .8rem; max-width: 1100px; margin: 0 1rem; padding: 2.2rem .8rem; border: 1.5px solid var(--rose); border-radius: 18px; background: #fff; text-align: center; box-shadow: 0 6px 0 rgba(208, 64, 110, .12); }
-@media (min-width: 800px) { .garanties { grid-template-columns: repeat(4, 1fr); } }
-@media (min-width: 1132px) { .garanties { margin: 0 auto; } }
-.garantie svg { width: 64px; height: 64px; color: var(--vieux-rose); stroke-width: 1.3; }
-.garantie h4 { font-family: var(--f-titre); font-weight: 600; font-size: clamp(1.35rem, 5.2vw, 1.6rem); color: #000; margin: .9rem 0 .4rem; line-height: 1.2; }
-.garantie p { color: var(--rose); font-size: clamp(.9rem, 3.8vw, 1.05rem); line-height: 1.3; }
-.section-rose .garanties { margin-top: 0; }
 
 /* ---------- Pied de page ---------- */
 .pied { background: var(--beige) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .38 0 0 0 0 .3 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); padding: 3rem 1.25rem 6rem; color: #5a4646; }

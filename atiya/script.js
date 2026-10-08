@@ -397,14 +397,6 @@ function toast(html) {
 }
 
 /* ---------- Morceaux réutilisés ---------- */
-const carteAccueil = p => `
-  <a class="carte" href="${lienProduit(p)}">
-    <div class="carte-img ph">${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ""}${img(p.images[0], p.nom)}</div>
-    <h3 class="carte-nom">${esc(p.nom)}</h3>
-    <p class="stock${enStock(p) ? "" : " epuise"}">${enStock(p) ? "En stock" : "Épuisé"}</p>
-    <p class="carte-prix">${prixHTML(p)}</p>
-  </a>`;
-
 const carteGrille = p => `
   <a class="article" href="${lienProduit(p)}">
     <div class="article-img ph">
@@ -421,22 +413,6 @@ const carteGrille = p => `
 function rendreFAQ(el) {
   if (!el) return;
   el.innerHTML = LISTE_FAQ.map(f => `<details><summary>${esc(typo(f.question))}</summary><p>${esc(typo(f.reponse))}</p></details>`).join("");
-}
-
-const texteSupport = () => CONFIG.horaires
-  ? `Disponibles sur WhatsApp : ${CONFIG.horaires.charAt(0).toLowerCase() + CONFIG.horaires.slice(1)}.`
-  : "Écrivez-nous sur WhatsApp, nous vous répondons rapidement.";
-
-function rendreGaranties(el) {
-  if (!el) return;
-  const f = fraisLivraison();
-  const items = [
-    [ICON.truck, "Livraison à Bamako", f === null ? "Livraison payante : le prix dépend du livreur." : f === 0 ? "Livraison gratuite partout à Bamako." : `Livraison partout à Bamako pour ${fmt(f)}.`],
-    [ICON.retour, "Satisfaction garantie", `Vous avez ${jours(CONFIG.joursEchange)} pour échanger vos articles.`],
-    [ICON.cash, "Paiement à la livraison", "Vous payez en espèces à la réception de votre colis."],
-    [ICON.support, "Conseil WhatsApp", texteSupport()],
-  ];
-  el.innerHTML = items.map(([i, t, d]) => `<div class="garantie">${i}<h4>${t}</h4><p>${esc(typo(d))}</p></div>`).join("");
 }
 
 /* ---------- Page : Accueil ---------- */
