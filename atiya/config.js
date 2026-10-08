@@ -21,6 +21,9 @@ const CONFIG = {
   //   0    → livraison gratuite
   livraison: null,
 
+  // Paiement à la livraison : en espèces, ou par Orange Money sur ce numéro (mets "" pour espèces seulement)
+  orangeMoney: "+223 77 47 71 59",
+
   // Délai de livraison : commande passée avant cette heure → livrée le jour même ; après → livrée le lendemain
   heureLimite: "16 h",
 
@@ -172,7 +175,9 @@ const FAQ = [
   },
   {
     question: "Comment se passe le paiement ?",
-    reponse: "Le paiement se fait uniquement à la livraison, en espèces, au moment où vous recevez votre colis. Aucun paiement en ligne n'est demandé.",
+    reponse: CONFIG.orangeMoney
+      ? `Le paiement se fait à la livraison, au moment où vous recevez votre colis : en espèces ou par Orange Money au ${CONFIG.orangeMoney}. Rien n'est à payer au moment de la commande.`
+      : "Le paiement se fait à la livraison, en espèces, au moment où vous recevez votre colis. Rien n'est à payer au moment de la commande.",
   },
   {
     question: "Puis-je échanger un article ?",

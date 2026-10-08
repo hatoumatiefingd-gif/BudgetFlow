@@ -22,7 +22,7 @@ const $ = (sel, el = document) => el.querySelector(sel);
 const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const norm = s => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-const typo = s => String(s ?? "").replace(/ ([?!:;»])/g, "\u00a0$1").replace(/« /g, "«\u00a0").replace(/(\d) h\b/g, "$1\u00a0h"); // espaces insécables à la française
+const typo = s => String(s ?? "").replace(/ ([?!:;»])/g, "\u00a0$1").replace(/« /g, "«\u00a0").replace(/(\d) h\b/g, "$1\u00a0h").replace(/(\d) (?=\d)/g, "$1\u00a0"); // espaces insécables à la française (« 16 h », numéros de téléphone)
 const params = new URLSearchParams(location.search);
 const page = document.body.dataset.page;
 const enLocal = location.protocol === "file:" || /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
@@ -48,6 +48,7 @@ CONFIG.nom ??= "Atiya Concept";
 CONFIG.devise ??= "FCFA";
 CONFIG.heureLimite ??= "16 h";
 CONFIG.echange ??= "";
+CONFIG.orangeMoney ??= "";
 CONFIG.telephone ??= "";
 CONFIG.horaires ??= "";
 const LISTE_FAQ = (() => { try { return Array.isArray(FAQ) ? FAQ : []; } catch { return []; } })();
@@ -105,6 +106,8 @@ const fraisLivraison = () => enNombre(CONFIG.livraison);
 const texteLivraison = () => { const f = fraisLivraison(); return f === null ? "Prix fixé par le livreur" : f === 0 ? "Gratuite" : fmt(f); };
 // Délai : commande passée avant l'heure limite → livrée le jour même, après → le lendemain
 const texteDelai = () => CONFIG.heureLimite ? `Commande passée avant ${CONFIG.heureLimite} : livrée le jour même. Après ${CONFIG.heureLimite} : livrée le lendemain.` : "";
+// Moyens de paiement à la livraison : espèces, et Orange Money si un numéro est donné dans config.js
+const moyensPaiement = () => CONFIG.orangeMoney ? "en espèces ou par Orange Money" : "en espèces";
 const textePrixLivraison = () => { const f = fraisLivraison(); return f === null ? "C'est le livreur qui fixe le prix de la livraison." : f === 0 ? "Livraison gratuite." : `Frais de livraison : ${fmt(f)}.`; };
 const variante = a => [a.couleur && `Couleur\u00a0: ${a.couleur}`, a.taille && `Taille\u00a0: ${a.taille}`].filter(Boolean).map(esc).join(" · ");
 const correspond = (p, q) => norm([p.nom, categorie(p.categorie)?.nom, p.description, ...p.couleurs].join(" ")).includes(norm(q));
@@ -475,7 +478,7 @@ function initAccueil() {
   // Garanties (textes tirés de config.js)
   const h = CONFIG.heureLimite;
   const garanties = [
-    [ICON.cash, "Paiement à la livraison", "En espèces, à la réception de votre colis. Aucun paiement en ligne."],
+    [ICON.cash, "Paiement à la livraison", `À la réception de votre colis, ${moyensPaiement()}. Rien à payer à la commande.`],
     h ? [ICON.truck, "Livraison le jour même", `Pour toute commande passée avant ${h}, partout à Bamako. Après ${h} : livraison le lendemain. ${textePrixLivraison()}`]
       : [ICON.truck, "Livraison à Bamako", `Partout à Bamako. ${textePrixLivraison()}`],
     CONFIG.echange && [ICON.retour, "Échange à la livraison", "Uniquement avec le livreur, au moment où il vous remet le colis. Même si vous rendez l’article, la livraison reste à payer."],
@@ -620,7 +623,7 @@ function initProduit() {
         <div class="accordeons">
           ${p.description ? `<details open><summary>Description</summary><div><p>${esc(typo(p.description))}</p></div></details>` : ""}
           ${CONFIG.echange ? `<details><summary>Politique d'échange</summary><div><p>${esc(typo(CONFIG.echange))}</p></div></details>` : ""}
-          <details><summary>Livraison rapide</summary><div><p>${esc(typo(`Livraison partout à Bamako. ${texteDelai()} ${textePrixLivraison()} Vous payez uniquement à la livraison, en espèces.`))}</p></div></details>
+          <details><summary>Livraison rapide</summary><div><p>${esc(typo(`Livraison partout à Bamako. ${texteDelai()} ${textePrixLivraison()} Vous payez à la livraison, ${moyensPaiement()}.`))}</p></div></details>
           ${p.tailles.length && guide ? `<details><summary>Guide des tailles</summary><div>${guide}</div></details>` : ""}
         </div>
       </div>
@@ -718,7 +721,7 @@ function initPanier() {
         <div class="panier-resume">
           <div class="ligne-total"><span>Sous-total</span><b>${fmt(sousTotal(Panier.articles))}</b></div>
           <div class="ligne-total"><span>Livraison</span><b>${texteLivraison()}</b></div>
-          <p class="note">${ICON.cash} Paiement uniquement à la livraison, en espèces.</p>
+          <p class="note">${ICON.cash} Paiement à la livraison, ${moyensPaiement()}.</p>
           <a class="btn-noir large" href="commande.html">Passer la commande</a>
           <a class="lien" href="boutique.html">Continuer mes achats</a>
         </div>
@@ -749,7 +752,7 @@ function afficherMerci(zone, c) {
       <p>Votre commande n° <b>${esc(c.ref)}</b> est prête.</p>
       <p class="important">Dernière étape : envoyez-la-nous sur WhatsApp pour la confirmer.</p>
       <a class="btn-wa plein" href="${esc(c.url)}" target="_blank" rel="noopener">${ICON.whatsapp} Envoyer ma commande sur WhatsApp</a>
-      <p>Nous vous appelons ensuite pour confirmer la livraison. Vous payez en espèces à la réception.</p>
+      <p>Nous vous appelons ensuite pour confirmer la livraison. Vous payez à la réception, ${moyensPaiement()}.</p>
       <a class="lien" href="index.html" id="finCommande">Retour à l'accueil</a>
     </div>`;
   $("#finCommande").addEventListener("click", () => effacer("sessionStorage", "atiya-derniere-commande"));
@@ -830,7 +833,9 @@ function initCommande() {
           <p class="co-sous">Le paiement se fait uniquement à la livraison.</p>
           <div class="paiement">
             <div class="option"><span class="rond"></span><span>💵 Paiement à la livraison</span></div>
-            <p class="paiement-note">Vous payez en espèces au livreur, au moment où vous recevez votre commande. Aucun paiement en ligne.</p>
+            <p class="paiement-note">${esc(typo(CONFIG.orangeMoney
+              ? `Vous payez au moment où vous recevez votre commande : en espèces au livreur, ou par Orange Money au ${CONFIG.orangeMoney}. Rien à payer maintenant.`
+              : "Vous payez en espèces au livreur, au moment où vous recevez votre commande. Rien à payer maintenant."))}</p>
           </div>
 
           <label class="champ"><textarea name="note" placeholder=" " rows="2"></textarea><span>Remarque (facultatif)</span></label>
@@ -879,7 +884,7 @@ function initCommande() {
       `📍 ${f.quartier}`,
       ...(f.note ? [`📝 ${f.note}`] : []),
       "",
-      "💵 Paiement à la livraison",
+      `💵 Paiement à la livraison (${CONFIG.orangeMoney ? "espèces ou Orange Money" : "espèces"})`,
     ].join("\n");
     const commande = { ref, url: waLink(message), prenom: f.prenom, cle: location.search };
 
@@ -922,6 +927,7 @@ function initContact() {
     CONFIG.telephone && { icone: ICON.phone, titre: "Téléphone", texte: CONFIG.telephone, href: "tel:" + String(CONFIG.telephone).replace(/[^\d+]/g, "") },
     { icone: ICON.pin, titre: CONFIG.quartier ? `${CONFIG.quartier}, Bamako` : "Bamako, Mali", texte: "Livraison dans tout Bamako" },
     CONFIG.horaires && { icone: ICON.clock, titre: "Horaires", texte: typo(CONFIG.horaires) },
+    CONFIG.orangeMoney && { icone: ICON.cash, titre: "Orange Money", texte: typo(`${CONFIG.orangeMoney} · paiement à la livraison`) },
     ...reseaux,
   ].filter(Boolean);
   $("#infosContact").innerHTML = infos.map(i => {
