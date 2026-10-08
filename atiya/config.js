@@ -25,7 +25,7 @@ const CONFIG = {
   heureLimite: "16 h",
 
   // Ta règle d'échange (affichée sur chaque article et dans les questions fréquentes)
-  echange: "Les échanges se font uniquement le jour de la livraison, directement avec le livreur, au moment où il vous remet votre colis. Même si vous rendez l'article, la livraison reste à payer. Après le départ du livreur, aucun échange n'est possible.",
+  echange: "Les échanges se font uniquement à la livraison, directement avec le livreur, au moment où il vous remet votre colis. Même si vous rendez l'article, la livraison reste à payer. Après le départ du livreur, aucun échange n'est possible.",
 
   horaires: "Tous les jours, de 10 h à minuit",
 
@@ -166,7 +166,9 @@ const PRODUITS = [
 const FAQ = [
   {
     question: "Quels sont les délais de livraison ?",
-    reponse: `Les commandes passées avant ${CONFIG.heureLimite} sont livrées le jour même, partout à Bamako. Les commandes passées après ${CONFIG.heureLimite} sont livrées le lendemain. Après votre commande, nous vous appelons pour confirmer l'heure de livraison.`,
+    reponse: CONFIG.heureLimite
+      ? `Les commandes passées avant ${CONFIG.heureLimite} sont livrées le jour même, partout à Bamako. Les commandes passées après ${CONFIG.heureLimite} sont livrées le lendemain. Après votre commande, nous vous appelons pour confirmer l'heure de livraison.`
+      : "Nous livrons partout à Bamako. Après votre commande, nous vous appelons pour confirmer l'heure de livraison.",
   },
   {
     question: "Comment se passe le paiement ?",

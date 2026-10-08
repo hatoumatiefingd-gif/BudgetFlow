@@ -414,7 +414,7 @@ const carteGrille = p => `
 
 function rendreFAQ(el) {
   if (!el) return;
-  el.innerHTML = LISTE_FAQ.map(f => `<details><summary>${esc(typo(f.question))}</summary><p>${esc(typo(f.reponse))}</p></details>`).join("");
+  el.innerHTML = LISTE_FAQ.filter(f => f && String(f.reponse ?? "").trim()).map(f => `<details><summary>${esc(typo(f.question))}</summary><p>${esc(typo(f.reponse))}</p></details>`).join("");
 }
 
 /* ---------- Page : Accueil ---------- */
@@ -476,16 +476,16 @@ function initAccueil() {
   const h = CONFIG.heureLimite;
   const garanties = [
     [ICON.cash, "Paiement à la livraison", "En espèces, à la réception de votre colis. Aucun paiement en ligne."],
-    h ? [ICON.truck, "Livrée le jour même", `Commandez avant ${h}, partout à Bamako. Après ${h}, livraison le lendemain. ${textePrixLivraison()}`]
+    h ? [ICON.truck, "Livraison le jour même", `Pour toute commande passée avant ${h}, partout à Bamako. Après ${h} : livraison le lendemain. ${textePrixLivraison()}`]
       : [ICON.truck, "Livraison à Bamako", `Partout à Bamako. ${textePrixLivraison()}`],
-    [ICON.retour, "Échange à la livraison", "Uniquement avec le livreur, au moment où il vous remet le colis. La livraison reste à payer."],
+    CONFIG.echange && [ICON.retour, "Échange à la livraison", "Uniquement avec le livreur, au moment où il vous remet le colis. Même si vous rendez l’article, la livraison reste à payer."],
     [ICON.support, "Conseil sur WhatsApp", CONFIG.horaires ? `${CONFIG.horaires}.` : "Nous vous répondons rapidement."],
   ];
-  $("#garanties").innerHTML = garanties.map(([i, t, d]) => `<div class="ed-garantie">${i}<h3>${esc(typo(t))}</h3><p>${esc(typo(d))}</p></div>`).join("");
+  $("#garanties").innerHTML = garanties.filter(Boolean).map(([i, t, d]) => `<div class="ed-garantie">${i}<h3>${esc(typo(t))}</h3><p>${esc(typo(d))}</p></div>`).join("");
 
   // Liens WhatsApp et horaires (depuis config.js)
   $$("[data-wa]").forEach(a => { a.href = waLink(a.dataset.wa); });
-  $$("[data-horaires]").forEach(e => { e.textContent = CONFIG.horaires ? CONFIG.horaires + "." : ""; });
+  $$("[data-horaires]").forEach(e => { e.textContent = CONFIG.horaires ? typo(CONFIG.horaires) + "." : ""; });
 }
 
 /* ---------- Page : Boutique / catégorie ---------- */
@@ -788,7 +788,11 @@ function initCommande() {
   const totalHTML = fmt(total) + (frais === null ? `<small class="plus-livraison">+ livraison</small>` : "");
   const nb = articles.reduce((n, a) => n + a.qte, 0);
   const memo = lire("localStorage", "atiya-coordonnees") || {};
-  const noteLivraison = [texteDelai(), frais === null ? "C'est le livreur qui fixe le prix de la livraison. Vous le payez à la réception, avec votre commande." : ""].filter(Boolean).join(" ");
+  const noteLivraison = [
+    texteDelai(),
+    frais === null ? "C'est le livreur qui fixe le prix de la livraison. Vous le payez à la réception, avec votre commande." : "",
+    CONFIG.echange ? "Échange uniquement avec le livreur, au moment où il vous remet le colis : même si vous rendez l'article, la livraison reste à payer." : "",
+  ].filter(Boolean).join(" ");
   const vignette = a => { const p = produit(a.id); return `<span class="vignette"><span class="vignette-img ph">${img(p.images[0], p.nom)}</span><i>${a.qte}</i></span>`; };
 
   const resume = `
@@ -917,7 +921,7 @@ function initContact() {
     { icone: ICON.whatsapp, titre: "WhatsApp", texte: "Réponse rapide", href: waLink() },
     CONFIG.telephone && { icone: ICON.phone, titre: "Téléphone", texte: CONFIG.telephone, href: "tel:" + String(CONFIG.telephone).replace(/[^\d+]/g, "") },
     { icone: ICON.pin, titre: CONFIG.quartier ? `${CONFIG.quartier}, Bamako` : "Bamako, Mali", texte: "Livraison dans tout Bamako" },
-    CONFIG.horaires && { icone: ICON.clock, titre: "Horaires", texte: CONFIG.horaires },
+    CONFIG.horaires && { icone: ICON.clock, titre: "Horaires", texte: typo(CONFIG.horaires) },
     ...reseaux,
   ].filter(Boolean);
   $("#infosContact").innerHTML = infos.map(i => {
