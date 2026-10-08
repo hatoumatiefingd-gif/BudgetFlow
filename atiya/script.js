@@ -22,7 +22,7 @@ const $ = (sel, el = document) => el.querySelector(sel);
 const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const norm = s => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-const typo = s => String(s ?? "").replace(/ ([?!:;»])/g, "\u00a0$1").replace(/« /g, "«\u00a0"); // espaces insécables à la française
+const typo = s => String(s ?? "").replace(/ ([?!:;»])/g, "\u00a0$1").replace(/« /g, "«\u00a0").replace(/(\d) h\b/g, "$1\u00a0h"); // espaces insécables à la française
 const params = new URLSearchParams(location.search);
 const page = document.body.dataset.page;
 const enLocal = location.protocol === "file:" || /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
@@ -46,8 +46,8 @@ const enNombre = v => {
 
 CONFIG.nom ??= "Atiya Concept";
 CONFIG.devise ??= "FCFA";
-CONFIG.joursEchange ??= 3;
-CONFIG.delaiLivraison ??= "24 à 48 h";
+CONFIG.heureLimite ??= "16 h";
+CONFIG.echange ??= "";
 CONFIG.telephone ??= "";
 CONFIG.horaires ??= "";
 const LISTE_FAQ = (() => { try { return Array.isArray(FAQ) ? FAQ : []; } catch { return []; } })();
@@ -103,7 +103,9 @@ const img = (src, alt = "") => (src ? `<img src="${esc(src)}" alt="${esc(alt)}" 
 const prixHTML = p => (p.ancienPrix ? `<s>${fmt(p.ancienPrix)}</s> ` : "") + fmt(p.prix);
 const fraisLivraison = () => enNombre(CONFIG.livraison);
 const texteLivraison = () => { const f = fraisLivraison(); return f === null ? "Prix fixé par le livreur" : f === 0 ? "Gratuite" : fmt(f); };
-const jours = n => `${n} jour${n > 1 ? "s" : ""}`;
+// Délai : commande passée avant l'heure limite → livrée le jour même, après → le lendemain
+const texteDelai = () => CONFIG.heureLimite ? `Commande passée avant ${CONFIG.heureLimite} : livrée le jour même. Après ${CONFIG.heureLimite} : livrée le lendemain.` : "";
+const textePrixLivraison = () => { const f = fraisLivraison(); return f === null ? "C'est le livreur qui fixe le prix de la livraison." : f === 0 ? "Livraison gratuite." : `Frais de livraison : ${fmt(f)}.`; };
 const variante = a => [a.couleur && `Couleur\u00a0: ${a.couleur}`, a.taille && `Taille\u00a0: ${a.taille}`].filter(Boolean).map(esc).join(" · ");
 const correspond = (p, q) => norm([p.nom, categorie(p.categorie)?.nom, p.description, ...p.couleurs].join(" ")).includes(norm(q));
 
@@ -471,11 +473,12 @@ function initAccueil() {
   rendreFAQ($("#faq"));
 
   // Garanties (textes tirés de config.js)
-  const f = fraisLivraison();
+  const h = CONFIG.heureLimite;
   const garanties = [
     [ICON.cash, "Paiement à la livraison", "En espèces, à la réception de votre colis. Aucun paiement en ligne."],
-    [ICON.truck, "Livraison à Bamako", `Partout à Bamako, en ${CONFIG.delaiLivraison}. ${f === null ? "C’est le livreur qui fixe le prix." : f === 0 ? "Livraison gratuite." : `Frais : ${fmt(f)}.`}`],
-    [ICON.retour, `Échange sous ${jours(CONFIG.joursEchange)}`, "Taille ou couleur, si l’article n’a pas été porté."],
+    h ? [ICON.truck, "Livrée le jour même", `Commandez avant ${h}, partout à Bamako. Après ${h}, livraison le lendemain. ${textePrixLivraison()}`]
+      : [ICON.truck, "Livraison à Bamako", `Partout à Bamako. ${textePrixLivraison()}`],
+    [ICON.retour, "Échange à la livraison", "Uniquement avec le livreur, au moment où il vous remet le colis. La livraison reste à payer."],
     [ICON.support, "Conseil sur WhatsApp", CONFIG.horaires ? `${CONFIG.horaires}.` : "Nous vous répondons rapidement."],
   ];
   $("#garanties").innerHTML = garanties.map(([i, t, d]) => `<div class="ed-garantie">${i}<h3>${esc(typo(t))}</h3><p>${esc(typo(d))}</p></div>`).join("");
@@ -616,8 +619,8 @@ function initProduit() {
         <a class="btn-wa" id="btnWa" target="_blank" rel="noopener">${ICON.whatsapp} ${disponible ? "Commander sur WhatsApp" : "Demander la disponibilité"}</a>
         <div class="accordeons">
           ${p.description ? `<details open><summary>Description</summary><div><p>${esc(typo(p.description))}</p></div></details>` : ""}
-          <details><summary>Politique d'échange</summary><div><p>Vous avez ${jours(CONFIG.joursEchange)} après la livraison pour échanger un article (taille ou couleur), s'il n'a pas été porté et a encore son étiquette.</p></div></details>
-          <details><summary>Livraison rapide</summary><div><p>Livraison partout à Bamako en ${esc(CONFIG.delaiLivraison)}. ${fraisLivraison() === null ? "C'est le livreur qui fixe le prix de la livraison." : `Frais de livraison\u00a0: ${texteLivraison().toLowerCase()}.`} Vous payez uniquement à la livraison, en espèces.</p></div></details>
+          ${CONFIG.echange ? `<details><summary>Politique d'échange</summary><div><p>${esc(typo(CONFIG.echange))}</p></div></details>` : ""}
+          <details><summary>Livraison rapide</summary><div><p>${esc(typo(`Livraison partout à Bamako. ${texteDelai()} ${textePrixLivraison()} Vous payez uniquement à la livraison, en espèces.`))}</p></div></details>
           ${p.tailles.length && guide ? `<details><summary>Guide des tailles</summary><div>${guide}</div></details>` : ""}
         </div>
       </div>
@@ -785,6 +788,7 @@ function initCommande() {
   const totalHTML = fmt(total) + (frais === null ? `<small class="plus-livraison">+ livraison</small>` : "");
   const nb = articles.reduce((n, a) => n + a.qte, 0);
   const memo = lire("localStorage", "atiya-coordonnees") || {};
+  const noteLivraison = [texteDelai(), frais === null ? "C'est le livreur qui fixe le prix de la livraison. Vous le payez à la réception, avec votre commande." : ""].filter(Boolean).join(" ");
   const vignette = a => { const p = produit(a.id); return `<span class="vignette"><span class="vignette-img ph">${img(p.images[0], p.nom)}</span><i>${a.qte}</i></span>`; };
 
   const resume = `
@@ -813,11 +817,10 @@ function initCommande() {
           <label class="case"><input type="checkbox" name="memo" ${memo.prenom ? "checked" : ""}> Sauvegarder mes coordonnées pour la prochaine fois</label>
 
           <h2>Mode de livraison</h2>
-          ${frais === null ? `
           <div class="paiement">
-            <div class="option"><span class="rond"></span><span>🚚 Livraison à domicile</span></div>
-            <p class="paiement-note">C'est le livreur qui fixe le prix de la livraison. Vous le payez à la réception, avec votre commande.</p>
-          </div>` : `<div class="option"><span>Livraison à domicile</span><b>${texteLivraison()}</b></div>`}
+            <div class="option"><span class="rond"></span><span>🚚 Livraison à domicile${frais === null ? "" : ` · ${texteLivraison()}`}</span></div>
+            ${noteLivraison ? `<p class="paiement-note">${esc(typo(noteLivraison))}</p>` : ""}
+          </div>
 
           <h2>Paiement</h2>
           <p class="co-sous">Le paiement se fait uniquement à la livraison.</p>

@@ -28,7 +28,11 @@ Ouvre `config.js` avec un éditeur de texte (Bloc-notes, VS Code…).
    - le nom, le prix (**sans espace ni guillemets**, ex. `prix: 15000,`) et la catégorie (`"robes"`, `"ensembles"`, `"hauts"` ou `"bas"`) ;
    - les tailles et les couleurs ;
    - la description (sur une seule ligne).
-4. **Tes réseaux** : Instagram, TikTok et Facebook (laisse `""` si tu n'en as pas).
+4. **Délai, échanges et horaires** :
+   - `heureLimite: "16 h"` : commande passée avant 16 h → livrée le jour même ; après → livrée le lendemain ;
+   - `echange: "..."` : ta règle d'échange, affichée sur chaque article et dans les questions fréquentes ;
+   - `horaires: "Tous les jours, de 10 h à minuit"`.
+5. **Tes réseaux** : Instagram, TikTok et Facebook (laisse `""` si tu n'en as pas).
 
 ⚠️ Garde bien les guillemets `"..."` autour des textes et les virgules à la fin des lignes. Les nombres (prix, livraison) s'écrivent **sans** guillemets.
 Si tu fais une erreur, le site affiche un message (rouge ou jaune) qui t'explique quoi corriger. Le message jaune n'apparaît que sur ton ordinateur, jamais chez les clientes.

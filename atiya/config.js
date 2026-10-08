@@ -20,10 +20,14 @@ const CONFIG = {
   //   1000 → prix fixe de 1 000 FCFA ajouté au total
   //   0    → livraison gratuite
   livraison: null,
-  delaiLivraison: "24 à 48 h", // délai annoncé aux clientes
 
-  joursEchange: 3, // nombre de jours pour échanger un article
-  horaires: "Tous les jours, de 8 h à 21 h",
+  // Délai de livraison : commande passée avant cette heure → livrée le jour même ; après → livrée le lendemain
+  heureLimite: "16 h",
+
+  // Ta règle d'échange (affichée sur chaque article et dans les questions fréquentes)
+  echange: "Les échanges se font uniquement le jour de la livraison, directement avec le livreur, au moment où il vous remet votre colis. Même si vous rendez l'article, la livraison reste à payer. Après le départ du livreur, aucun échange n'est possible.",
+
+  horaires: "Tous les jours, de 10 h à minuit",
 
   // Tes réseaux : le nom du compte suffit (laisse "" si tu n'en as pas)
   instagram: "", // ex. "atiyaconcept" ou "https://www.instagram.com/atiyaconcept"
@@ -162,7 +166,7 @@ const PRODUITS = [
 const FAQ = [
   {
     question: "Quels sont les délais de livraison ?",
-    reponse: `Nous livrons partout à Bamako en ${CONFIG.delaiLivraison}. Après votre commande, nous vous appelons pour confirmer l'adresse et l'heure de livraison.`,
+    reponse: `Les commandes passées avant ${CONFIG.heureLimite} sont livrées le jour même, partout à Bamako. Les commandes passées après ${CONFIG.heureLimite} sont livrées le lendemain. Après votre commande, nous vous appelons pour confirmer l'heure de livraison.`,
   },
   {
     question: "Comment se passe le paiement ?",
@@ -170,7 +174,7 @@ const FAQ = [
   },
   {
     question: "Puis-je échanger un article ?",
-    reponse: `Oui, vous avez ${CONFIG.joursEchange} jours après la livraison pour échanger un article (taille ou couleur), s'il n'a pas été porté et a encore son étiquette.`,
+    reponse: CONFIG.echange,
   },
   {
     question: "Comment passer commande ?",
