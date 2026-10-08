@@ -53,14 +53,17 @@ Double-clique sur `index.html` : le site s'ouvre dans ton navigateur.
 
 ## 4. Mettre le site en ligne gratuitement
 
-On utilise **Cloudflare** (gratuit, et la vente est autorisée) :
+Ton site est en ligne sur **Cloudflare Pages** (gratuit, et la vente est autorisée) :
+👉 **https://atiya-concept.pages.dev**
 
-1. Connecte-toi sur https://dash.cloudflare.com (compte gratuit).
-2. Va dans **Workers & Pages**, clique sur **Create**, puis sur **Upload your static files**.
-3. Donne le nom `atiya-concept`, choisis ton dossier `ATIYA` puis clique sur **Deploy**.
-4. Tu reçois un lien en `.workers.dev` à partager (sur Instagram, WhatsApp, TikTok…).
+Pour mettre à jour le site après une modification :
 
-Pour mettre à jour le site, ouvre ton projet `atiya-concept` dans **Workers & Pages** et renvoie tout le dossier `ATIYA`. Tu pourras aussi acheter un nom de domaine (ex. `atiyaconcept.com`) et le relier dans Cloudflare.
+1. Connecte-toi sur https://dash.cloudflare.com
+2. Va dans **Compute** → **Workers & Pages**, puis clique sur ton projet `atiya-concept`.
+3. Clique sur **Create deployment** (nouveau déploiement), choisis ton dossier `ATIYA` en entier puis **Save and Deploy**.
+4. Après une minute, recharge le site sur ton téléphone.
+
+Tu pourras aussi acheter un nom de domaine (ex. `atiyaconcept.com`) et le relier dans Cloudflare (onglet **Custom domains** du projet).
 
 ## 5. Comment se passe une commande
 
