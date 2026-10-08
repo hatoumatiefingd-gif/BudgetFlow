@@ -68,7 +68,7 @@ Tu pourras aussi acheter un nom de domaine (ex. `atiyaconcept.com`) et le relier
 ## 5. Comment se passe une commande
 
 1. La cliente choisit un article, sa couleur et sa taille, puis clique sur **Acheter maintenant** (ou ajoute plusieurs articles au panier).
-2. Elle remplit : prénom, nom, quartier, adresse ou point de repère, téléphone.
+2. Elle remplit : prénom, nom, quartier et téléphone.
 3. Elle clique sur **Valider la commande** : WhatsApp s'ouvre avec le récapitulatif, et elle appuie sur **Envoyer**.
-4. Tu reçois la commande sur WhatsApp, avec son numéro (ex. `AT-4F7K2Q`), les articles, le total et l'adresse.
+4. Tu reçois la commande sur WhatsApp, avec son numéro (ex. `AT-4F7K2Q`), les articles, le total et le quartier.
 5. Tu l'appelles pour confirmer, tu livres, et elle paie en espèces à la livraison.

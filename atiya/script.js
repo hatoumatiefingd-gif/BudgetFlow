@@ -809,7 +809,6 @@ function initCommande() {
           <h2>Livraison</h2>
           <div class="deux">${champ("prenom", "Prénom", "given-name")}${champ("nom", "Nom", "family-name")}</div>
           ${champ("quartier", "Quartier", "address-level3")}
-          ${champ("adresse", "Adresse ou point de repère", "street-address")}
           ${champ("tel", "Téléphone", "tel", "tel", "Entrez un numéro valide (8 chiffres)")}
           <label class="case"><input type="checkbox" name="memo" ${memo.prenom ? "checked" : ""}> Sauvegarder mes coordonnées pour la prochaine fois</label>
 
@@ -851,7 +850,7 @@ function initCommande() {
 
     const f = Object.fromEntries(new FormData(form));
     for (const k in f) f[k] = String(f[k]).trim();
-    if (f.memo) ecrire("localStorage", "atiya-coordonnees", { prenom: f.prenom, nom: f.nom, quartier: f.quartier, adresse: f.adresse, tel: f.tel });
+    if (f.memo) ecrire("localStorage", "atiya-coordonnees", { prenom: f.prenom, nom: f.nom, quartier: f.quartier, tel: f.tel });
     else effacer("localStorage", "atiya-coordonnees");
 
     const ref = "AT-" + Date.now().toString(36).toUpperCase().slice(-6);
@@ -870,7 +869,7 @@ function initCommande() {
       "",
       `👤 ${f.prenom} ${f.nom}`,
       `📞 ${f.tel}`,
-      `📍 ${f.quartier} — ${f.adresse}`,
+      `📍 ${f.quartier}`,
       ...(f.note ? [`📝 ${f.note}`] : []),
       "",
       "💵 Paiement à la livraison",
