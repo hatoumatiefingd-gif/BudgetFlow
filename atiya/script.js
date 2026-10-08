@@ -102,7 +102,7 @@ const lienCategorie = id => `boutique.html?cat=${encodeURIComponent(id)}`;
 const img = (src, alt = "") => (src ? `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" onerror="this.remove()">` : "");
 const prixHTML = p => (p.ancienPrix ? `<s>${fmt(p.ancienPrix)}</s> ` : "") + fmt(p.prix);
 const fraisLivraison = () => enNombre(CONFIG.livraison);
-const texteLivraison = () => { const f = fraisLivraison(); return f === null ? "Selon le livreur" : f === 0 ? "Gratuite" : fmt(f); };
+const texteLivraison = () => { const f = fraisLivraison(); return f === null ? "Prix fixé par le livreur" : f === 0 ? "Gratuite" : fmt(f); };
 const jours = n => `${n} jour${n > 1 ? "s" : ""}`;
 const variante = a => [a.couleur && `Couleur\u00a0: ${a.couleur}`, a.taille && `Taille\u00a0: ${a.taille}`].filter(Boolean).map(esc).join(" · ");
 const correspond = (p, q) => norm([p.nom, categorie(p.categorie)?.nom, p.description, ...p.couleurs].join(" ")).includes(norm(q));
@@ -474,7 +474,7 @@ function initAccueil() {
   const f = fraisLivraison();
   const garanties = [
     [ICON.cash, "Paiement à la livraison", "En espèces, à la réception de votre colis. Aucun paiement en ligne."],
-    [ICON.truck, "Livraison à Bamako", `Partout à Bamako, en ${CONFIG.delaiLivraison}. ${f === null ? "Le prix dépend du livreur." : f === 0 ? "Livraison gratuite." : `Frais : ${fmt(f)}.`}`],
+    [ICON.truck, "Livraison à Bamako", `Partout à Bamako, en ${CONFIG.delaiLivraison}. ${f === null ? "C’est le livreur qui fixe le prix." : f === 0 ? "Livraison gratuite." : `Frais : ${fmt(f)}.`}`],
     [ICON.retour, `Échange sous ${jours(CONFIG.joursEchange)}`, "Taille ou couleur, si l’article n’a pas été porté."],
     [ICON.support, "Conseil sur WhatsApp", CONFIG.horaires ? `${CONFIG.horaires}.` : "Nous vous répondons rapidement."],
   ];
@@ -617,7 +617,7 @@ function initProduit() {
         <div class="accordeons">
           ${p.description ? `<details open><summary>Description</summary><div><p>${esc(typo(p.description))}</p></div></details>` : ""}
           <details><summary>Politique d'échange</summary><div><p>Vous avez ${jours(CONFIG.joursEchange)} après la livraison pour échanger un article (taille ou couleur), s'il n'a pas été porté et a encore son étiquette.</p></div></details>
-          <details><summary>Livraison rapide</summary><div><p>Livraison partout à Bamako en ${esc(CONFIG.delaiLivraison)}. ${fraisLivraison() === null ? "Livraison payante : le prix dépend du livreur, nous vous le confirmons par téléphone." : `Frais de livraison\u00a0: ${texteLivraison().toLowerCase()}.`} Vous payez uniquement à la livraison, en espèces.</p></div></details>
+          <details><summary>Livraison rapide</summary><div><p>Livraison partout à Bamako en ${esc(CONFIG.delaiLivraison)}. ${fraisLivraison() === null ? "C'est le livreur qui fixe le prix de la livraison." : `Frais de livraison\u00a0: ${texteLivraison().toLowerCase()}.`} Vous payez uniquement à la livraison, en espèces.</p></div></details>
           ${p.tailles.length && guide ? `<details><summary>Guide des tailles</summary><div>${guide}</div></details>` : ""}
         </div>
       </div>
@@ -714,7 +714,7 @@ function initPanier() {
         }).join("")}</div>
         <div class="panier-resume">
           <div class="ligne-total"><span>Sous-total</span><b>${fmt(sousTotal(Panier.articles))}</b></div>
-          <div class="ligne-total"><span>Livraison (Bamako)</span><b>${texteLivraison()}</b></div>
+          <div class="ligne-total"><span>Livraison</span><b>${texteLivraison()}</b></div>
           <p class="note">${ICON.cash} Paiement uniquement à la livraison, en espèces.</p>
           <a class="btn-noir large" href="commande.html">Passer la commande</a>
           <a class="lien" href="boutique.html">Continuer mes achats</a>
@@ -807,8 +807,6 @@ function initCommande() {
         <details class="co-resume-mobile"><summary><span>Résumé de la commande ${ICON.chevD}</span><b>${totalHTML}</b></summary>${resume}</details>
         <form id="formCommande" novalidate>
           <h2>Livraison</h2>
-          <div class="champ fixe"><span>Pays/région</span><b>Mali</b></div>
-          <div class="champ fixe"><span>Ville</span><b>Bamako</b></div>
           <div class="deux">${champ("prenom", "Prénom", "given-name")}${champ("nom", "Nom", "family-name")}</div>
           ${champ("quartier", "Quartier", "address-level3")}
           ${champ("adresse", "Adresse ou point de repère", "street-address")}
@@ -816,7 +814,11 @@ function initCommande() {
           <label class="case"><input type="checkbox" name="memo" ${memo.prenom ? "checked" : ""}> Sauvegarder mes coordonnées pour la prochaine fois</label>
 
           <h2>Mode de livraison</h2>
-          <div class="option"><span>Livraison à domicile — Bamako</span><b>${texteLivraison()}</b></div>
+          ${frais === null ? `
+          <div class="paiement">
+            <div class="option"><span class="rond"></span><span>🚚 Livraison à domicile</span></div>
+            <p class="paiement-note">C'est le livreur qui fixe le prix de la livraison. Vous le payez à la réception, avec votre commande.</p>
+          </div>` : `<div class="option"><span>Livraison à domicile</span><b>${texteLivraison()}</b></div>`}
 
           <h2>Paiement</h2>
           <p class="co-sous">Le paiement se fait uniquement à la livraison.</p>
@@ -868,7 +870,7 @@ function initCommande() {
       "",
       `👤 ${f.prenom} ${f.nom}`,
       `📞 ${f.tel}`,
-      `📍 Bamako — ${f.quartier}, ${f.adresse}`,
+      `📍 ${f.quartier} — ${f.adresse}`,
       ...(f.note ? [`📝 ${f.note}`] : []),
       "",
       "💵 Paiement à la livraison",

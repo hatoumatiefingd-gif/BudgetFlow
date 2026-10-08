@@ -20,7 +20,7 @@ Ouvre `config.js` avec un éditeur de texte (Bloc-notes, VS Code…).
 
 1. **Ton numéro WhatsApp** (déjà rempli) : `whatsapp: "22375883468"`.
 2. **Les frais de livraison** :
-   - `livraison: null` : « selon le livreur », tu donnes le prix au téléphone.
+   - `livraison: null` : « prix fixé par le livreur » (c'est le livreur qui fixe le prix).
    - `livraison: 1000` : 1 000 FCFA ajoutés au total.
    - `livraison: 0` : livraison gratuite.
 3. **Tes articles** : dans `PRODUITS`, copie un bloc `{ ... },` et change :

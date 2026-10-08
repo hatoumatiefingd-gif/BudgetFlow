@@ -16,7 +16,7 @@ const CONFIG = {
   devise: "FCFA",
 
   // Frais de livraison à Bamako (écris le nombre sans guillemets ni espace) :
-  //   null → « selon le livreur » (le prix dépend du livreur, tu le confirmes au téléphone)
+  //   null → « prix fixé par le livreur » (c'est le livreur qui fixe le prix de la livraison)
   //   1000 → prix fixe de 1 000 FCFA ajouté au total
   //   0    → livraison gratuite
   livraison: null,
